@@ -1,0 +1,49 @@
+# Module payment — Thanh toán
+
+**Owner đề xuất:** D theo [bảng ownership](../../../../../../../docs/architecture/03-ownership.md). Chưa gán thành viên thật. **Trạng thái:** skeleton hướng dẫn; các class dưới đây chưa triển khai. Thiết kế chi tiết cần được nhóm chốt khi nhận task.
+
+## Trách nhiệm
+
+Bản ghi thanh toán COD, thanh toán online mô phỏng và tích hợp VNPay ở giai đoạn sau. Xác minh callback và ghi giao dịch.
+
+## Cần viết gì
+
+| Thành phần | Class định hướng |
+|---|---|
+| Entity | Payment, PaymentTransaction |
+| Repository | PaymentRepository, PaymentTransactionRepository |
+| Service | PaymentService |
+| Controller | PaymentController, PaymentCallbackController |
+| Request | StartPaymentRequest, RecordCodPaymentRequest |
+| Response/contract | PaymentResponse, PaymentSessionResponse |
+
+Đây là danh sách gợi ý theo use case, không bắt buộc tạo đủ class trước khi có nhu cầu.
+
+## Dữ liệu và phụ thuộc
+
+**Dữ liệu sở hữu:** payments, payment_transactions.
+
+**Được gọi:** order.service qua OrderQueryService/OrderPaymentService. Không đọc OrderRepository hoặc ghi entity Order trực tiếp. Không gọi repository/entity module khác. Xem [allowlist và contract](../../../../../../../docs/architecture/04-dependencies.md).
+
+## Bất biến và ràng buộc
+
+- Order được tạo trước; payment khởi tạo bằng request riêng sau checkout. Tạo order không đồng nghĩa đã có giao dịch payment.
+- Số tiền lấy từ snapshot order, không tin amount/status do browser gửi.
+- Callback phải kiểm tra nguồn/chữ ký theo provider, mã tham chiếu, tiền, currency và kết quả. Redirect browser chỉ dùng hiển thị.
+- Deduplicate bằng provider transaction id/event id và khóa payment; nhận callback lặp không tạo giao dịch hay cập nhật order lần hai.
+- Ghi payment và cập nhật order qua service trong cùng transaction DB. Gọi HTTP provider ở ngoài transaction giữ khóa.
+- Thanh toán thành công đến sau hủy: lưu chứng cứ PAID và cờ RECONCILIATION_REQUIRED, không đổi order CANCELLED, không rollback mất giao dịch. Hoàn tiền tự động ngoài MVP.
+- Endpoint mô phỏng chỉ mở profile dev/test, có xác thực phù hợp; không dùng nó làm webhook production. COD chỉ STAFF/ADMIN xác nhận thu tiền sau giao hàng.
+
+## Luồng triển khai điển hình
+
+Kiểm tra order/ownership → lập payment attempt → tạo session ngoài khóa DB → nhận callback → khóa payment/order → ghi kết quả và cập nhật projection của order.
+
+## Bàn giao và kiểm tra
+
+Các ca cần chứng minh: sai chữ ký/số tiền; callback lặp; callback trễ sau hủy; timeout provider; retry session; user tự đánh dấu PAID; COD bị ghi hai lần. Cập nhật API, migration và test module cùng PR; ghi kết quả thật. Owner phối hợp người dùng contract khi đổi input/output/lỗi.
+
+## Quy tắc các tầng và liên kết kiến trúc
+
+Quy tắc và ràng buộc chi tiết cho từng tầng (`controller`, `service`, `repository`, `entity`, `dto`, `mapper`, `integration`) tuân thủ theo [luật tầng](../../../../../../../docs/architecture/02-structure-and-layers.md) và [luồng nghiệp vụ](../../../../../../../docs/architecture/06-business-flows.md).
+
