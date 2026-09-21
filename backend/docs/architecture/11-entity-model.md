@@ -12,9 +12,33 @@ Tài liệu này chốt baseline entity/schema trước khi viết Flyway. Đây
 - password hash không xuất DTO;
 - role qua bảng nối, không enum cứng trực tiếp trong user nếu dùng nhiều role.
 
-### Role / UserRole
+### Role và mapping User–Role
 
-`Role(id, code)` với code `USER`, `STAFF`, `ADMIN`. `user_roles(user_id, role_id)` unique theo cặp.
+`Role(id, code)` với code `USER`, `STAFF`, `ADMIN`. **Không tạo entity `UserRole` riêng** khi bảng nối không có thuộc tính nghiệp vụ.
+
+Trong Java, `User` giữ collection role trực tiếp:
+
+```java
+@ManyToMany(fetch = FetchType.LAZY)
+@JoinTable(
+    name = "user_roles",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "role_id")
+)
+private Set<Role> roles = new HashSet<>();
+```
+
+Database vẫn có join table:
+
+```text
+user_roles
+----------
+user_id  FK -> users.id
+role_id  FK -> roles.id
+PRIMARY KEY (user_id, role_id)
+```
+
+Dùng `Set<Role>` thay vì `List<Role>` để biểu diễn mỗi role chỉ xuất hiện một lần. Chỉ nâng `user_roles` thành entity riêng nếu sau này quan hệ có dữ liệu nghiệp vụ như `assignedAt`, `assignedBy`, `expiresAt`.
 
 ### Address
 

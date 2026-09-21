@@ -12,7 +12,7 @@ Các bảng thay đổi có created_at/updated_at; ledger/history append-only c�
 
 | Bảng hoặc nhóm | Trường/constraint quan trọng |
 |---|---|
-| users, roles, user_roles | unique lower(email), role code unique; unique(user_id, role_id); password_hash không public |
+| users, roles, user_roles | unique lower(email), role code unique; PK(user_id, role_id); `user_roles` là join table cho `User.roles`, không phải entity riêng khi không có field nghiệp vụ; password_hash không public |
 | addresses | FK user_id; truy vấn luôn kiểm tra chủ sở hữu |
 | refresh_tokens | token_hash unique, user_id, family_id, expires_at, used_at, revoked_at; khóa khi rotate |
 | brands, categories | slug unique, trạng thái active; parent category nếu có phải tránh vòng |

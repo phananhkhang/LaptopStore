@@ -30,6 +30,8 @@ Sở hữu tài khoản, vai trò, hồ sơ và địa chỉ. Không phát hành
 - Chuẩn hóa email và có unique constraint ở DB; mật khẩu chỉ lưu dạng hash.
 - Mọi truy vấn địa chỉ cá nhân ràng buộc userId từ principal; addressId hợp lệ chưa đủ chứng minh ownership.
 - Chỉ ADMIN đổi role/trạng thái người dùng; DTO sửa profile không chứa role, passwordHash hoặc status.
+- `User` giữ `Set<Role>` bằng `@ManyToMany`; `user_roles` chỉ là join table, **không tạo `UserRole` entity** nếu bảng nối chỉ có `user_id` và `role_id`.
+- `user_roles` dùng khóa chính `(user_id, role_id)` để chống gán trùng role ở tầng DB.
 - UserCredentialService có thể trả hash cho auth/security bằng DTO nội bộ, tuyệt đối không dùng DTO này làm HTTP response.
 
 ## Luồng triển khai điển hình
