@@ -1,5 +1,10 @@
-# Kiểm tra ranh giới kiến trúc
+# Architecture tests
 
-Owner A. Hiện chưa có ArchUnit/dependency hoặc test enforce tự động. Khi thêm, kiểm controller không gọi repository; module chỉ dùng service/DTO allowlist; common không import module; graph không cycle; stock contract chỉ inventory gọi. Test cần phân biệt import DTO/entity và hướng phụ thuộc thực, không chỉ tên folder.
+Owner A điều phối, nhưng mỗi owner phải sửa rule khi thay đổi dependency hợp lệ. `ModuleArchitectureTest` dùng ArchUnit để tự động chặn các lỗi kiến trúc cơ bản:
 
-Đọc [kiến trúc](../../../../../../../docs/architecture/README.md) và [kiểm thử/vận hành](../../../../../../../docs/architecture/09-testing-and-operation.md).
+- controller phụ thuộc trực tiếp repository;
+- module import repository/entity của module khác;
+- module gọi business module ngoài allowlist trong `04-dependencies.md`;
+- vòng phụ thuộc giữa top-level package/module.
+
+README/allowlist vẫn là nguồn mô tả đầy đủ; ArchUnit là lớp bảo vệ tự động, không thay review thiết kế.

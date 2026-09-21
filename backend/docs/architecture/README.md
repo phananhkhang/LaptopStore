@@ -1,6 +1,6 @@
 # Kiến trúc LaptopStore
 
-**Phạm vi:** backend đồ án Spring Boot, một ứng dụng và một PostgreSQL. **Ngày rà soát:** 2026-09-18. **Người điều phối:** Owner A, chưa gán danh tính. Tài liệu phục vụ lập trình viên và reviewer; README trong source là quy tắc tại vị trí làm việc.
+**Phạm vi:** backend đồ án Spring Boot, một ứng dụng và một PostgreSQL. **Ngày rà soát:** 2026-09-21. **Người điều phối:** Owner A, chưa gán danh tính. Tài liệu phục vụ lập trình viên và reviewer; README trong source là quy tắc tại vị trí làm việc.
 
 | Tài liệu | Đọc để làm gì |
 |---|---|
@@ -14,6 +14,7 @@
 | [08 Bảo mật](08-security.md) | Role, ownership, token, thông tin nhạy cảm |
 | [09 Kiểm thử và vận hành](09-testing-and-operation.md) | Cách chạy, ca kiểm tra và khoảng trống công cụ |
 | [10 Hoàn tất và triển khai](10-delivery-checklist.md) | Các mốc, checklist PR, rủi ro và việc cần chốt |
+| [11 Entity model](11-entity-model.md) | Baseline entity/schema trước khi viết Flyway |
 
 ## Cách áp dụng
 

@@ -2,7 +2,7 @@
 
 ## Công cụ hiện có và giới hạn
 
-POM có starter test cho JPA/Flyway/Web MVC, nhưng source chỉ có `contextLoads`. Chưa có Testcontainers, ArchUnit, OpenAPI, Actuator hay CI riêng. Thư mục test mới chỉ chứa README kế hoạch, chưa tự tạo kiểm thử thành công.
+POM có starter test cho JPA/Flyway/Web MVC và ArchUnit. Source có `contextLoads` cùng `ModuleArchitectureTest` để enforce các ranh giới nền; chưa có Testcontainers, OpenAPI, Actuator hay CI riêng.
 
 ## Chạy bằng Docker Compose
 
@@ -40,7 +40,7 @@ Spring Boot chạy trực tiếp không tự đọc `.env` của Compose. Cần 
 | Web | Controller/security | Validation, status/body, role, principal, error filter |
 | Repository | SQL/JPA trên PostgreSQL | Constraint, query phân trang, lock, version, FK |
 | Integration | Use case nhiều module | Checkout rollback, oversell, hủy lặp, nhập lặp, callback lặp/trễ |
-| Architecture | Import/đồ thị | Không controller → repository; không gọi repo khác module; không cycle |
+| Architecture | Import/đồ thị | ArchUnit: controller không phụ thuộc repository; module không import repository/entity module khác; kiểm cycle khi có đủ class |
 
 Test khóa/constraint dùng PostgreSQL 17 thật hoặc Testcontainers khi thêm dependency, không coi H2 là bằng chứng tương đương. Test concurrency cần hai transaction/thread độc lập với dữ liệu kiểm soát; test chạy một transaction không chứng minh chống oversell. Ưu tiên test hành vi, không viết test chỉ lặp lại getter/mapper tầm thường.
 

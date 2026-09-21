@@ -18,7 +18,7 @@ flowchart TD
     API -. Giai đoạn sau .-> Storage[Kho ảnh]
 ```
 
-React, cổng thanh toán và kho ảnh là thành phần dự kiến; không có source frontend trong bản ZIP nhận vào. Spring Boot xử lý quyền, giá, trạng thái và transaction; không giao các quyết định đó cho frontend.
+React, cổng thanh toán và kho ảnh là thành phần dự kiến; hiện chưa có source frontend. Spring Boot xử lý quyền, giá, trạng thái và transaction; không giao các quyết định đó cho frontend.
 
 ## Hiện trạng xác minh từ source
 
@@ -33,9 +33,9 @@ React, cổng thanh toán và kho ảnh là thành phần dự kiến; không c�
 | Auth | Chưa có starter security/JWT và code auth | Cần triển khai trước API cá nhân/admin |
 | API support | Web MVC đã khai báo | Bean Validation, OpenAPI chưa khai báo trực tiếp |
 | Vận hành | `.env.example`, Dockerfile, Compose | Chưa có CI kiểm tra ranh giới/branch protection |
-| Tài liệu | 10 tài liệu kiến trúc trong `docs/architecture/`; bản ZIP chưa có `backend/docs/adr/` | Nhóm thống nhất giải pháp trực tiếp qua 10 tài liệu kiến trúc |
+| Tài liệu | 11 tài liệu kiến trúc trong `docs/architecture/` | Nhóm thống nhất giải pháp trực tiếp qua 11 tài liệu kiến trúc |
 
-Không đổi `pom.xml`, file Java, Docker hoặc cấu hình ứng dụng trong đợt bổ sung này. README mới là tài liệu và giữ folder trong Git, không đăng ký bean hay tạo bảng.
+Đợt rà soát 2026-09-21 cập nhật ownership tồn kho, entity model, migration guideline và bổ sung ArchUnit test kiến trúc; chưa tạo entity/migration nghiệp vụ thật.
 
 ## Mục tiêu chất lượng và cách chứng minh
 

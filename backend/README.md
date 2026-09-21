@@ -1,6 +1,6 @@
 # LaptopStore backend
 
-Backend Java Spring Boot, tổ chức theo nghiệp vụ và phân tầng Controller → Service → Repository. Bộ khung tài liệu ngày 2026-09-18 giúp owner biết phần mình được viết, phụ thuộc nào được phép và tiêu chí bàn giao.
+Backend Java Spring Boot, tổ chức theo nghiệp vụ và phân tầng Controller → Service → Repository. Bộ khung tài liệu được rà soát ngày 2026-09-21 giúp owner biết phần mình được viết, phụ thuộc nào được phép và tiêu chí bàn giao.
 
 ## Bắt đầu
 
@@ -17,13 +17,13 @@ Backend Java Spring Boot, tổ chức theo nghiệp vụ và phân tầng Contro
 | `src/main/java/org/akira/laptopstore/` | 10 module nghiệp vụ và 4 package hạ tầng dùng chung |
 | `src/main/resources/` | Cấu hình và migration |
 | `src/test/` | Test theo module và test tích hợp |
-| `docs/architecture/` | Thiết kế, ranh giới, luồng, quy tắc và ownership (10 tài liệu chuẩn hóa) |
+| `docs/architecture/` | Thiết kế, ranh giới, luồng, quy tắc và ownership (11 tài liệu chuẩn hóa) |
 
 ## Trạng thái thực tế
 
 Source nhận vào chỉ có `LaptopStoreApplication` và một test `contextLoads`. Chưa có API nghiệp vụ, entity hay SQL migration. Các thư mục mới được giữ trong Git bằng README; tên class trong hướng dẫn là việc cần triển khai, không phải class đã tồn tại.
 
-`pom.xml` hiện ghi Java **25**, Spring Boot **4.1.1**; Docker dùng Temurin 25 và PostgreSQL 17. Không đổi phiên bản trong lần bổ sung tài liệu này. Security, JWT, Bean Validation, OpenAPI và Testcontainers còn cần bổ sung dependency/cấu hình khi triển khai. Xem [hiện trạng và khoảng trống](docs/architecture/01-overview.md).
+`pom.xml` hiện ghi Java **25**, Spring Boot **4.1.1**; Docker dùng Temurin 25 và PostgreSQL 17. Không đổi phiên bản trong lần bổ sung tài liệu này. Security, JWT, Bean Validation, OpenAPI và Testcontainers còn cần bổ sung dependency/cấu hình khi triển khai. ArchUnit đã được thêm để bắt đầu enforce ranh giới package/module. Xem [hiện trạng và khoảng trống](docs/architecture/01-overview.md).
 
 ## Chạy và kiểm tra
 

@@ -182,7 +182,6 @@ Từ thư mục `backend/`:
 > [!IMPORTANT]
 > - **Cơ sở dữ liệu:** Cấu hình `spring.jpa.hibernate.ddl-auto=validate`. Khi chạy `mvnw test` hoặc khởi động app, Spring Boot kết nối tới PostgreSQL và yêu cầu schema hợp lệ (thông qua Flyway migration sẽ được nhóm bổ sung ở Milestone 0/1).
 > - **Không tự ý hạ phiên bản:** Không tự ý hạ Java 25 xuống Java 21 hay Spring Boot 4.1.1 xuống 3.x nếu chưa có quyết định được cả nhóm thống nhất.
-> - **Tài liệu ADR:** Bản ZIP ban đầu chưa có thư mục `backend/docs/adr/`. Mọi ranh giới kỹ thuật, quy ước và quyết định kiến trúc được chuẩn hóa trực tiếp qua 10 tài liệu trong [backend/docs/architecture/](backend/docs/architecture/).
 
 ---
 

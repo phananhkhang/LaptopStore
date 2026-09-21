@@ -6,10 +6,10 @@ Các luồng là thiết kế đề xuất, cần được nhóm chốt và th�
 
 1. USER gửi addressId, paymentMethod, couponCode tùy chọn, note và Idempotency-Key; actorId lấy từ principal.
 2. Order kiểm tra key cũ trước; khóa cart và lấy items cần mua; từ chối giỏ trống.
-3. User service kiểm tra địa chỉ thuộc khách; catalog trả variant/giá/trạng thái/version.
-4. Khóa coupon nếu có, kiểm tra điều kiện bằng snapshot và tính subtotal, discount, shippingFee, total tại server; MVP shippingFee = 0 là lựa chọn đề xuất. Tổng không âm; không nhận tổng từ client.
-5. Tạo Order PENDING để có orderId trong transaction. Inventory nhận lines kèm expectedVersion, khóa variants theo id tăng dần; catalog kiểm tra trạng thái bán/version và tồn. Snapshot đã thay đổi trả 409 PRODUCT_CHANGED và rollback, chưa chốt đơn cho khách.
-6. Inventory giảm tồn và ghi SALE gắn orderId; hoàn tất items/snapshot/history; promotion ghi usage; cart xóa mục đã mua. Mọi việc trong cùng transaction; order tạo sớm cũng rollback nếu bước sau thất bại.
+3. User service kiểm tra địa chỉ thuộc khách. Catalog khóa các variant theo ID tăng dần và trả snapshot gồm product/variant name, SKU, giá và trạng thái đang bán.
+4. Promotion khóa coupon nếu có, kiểm tra điều kiện bằng snapshot và tính subtotal, discount, shippingFee, total tại server; MVP shippingFee = 0. Tổng không âm; không nhận tổng từ client.
+5. Tạo Order PENDING để có orderId trong transaction. Inventory khóa `inventory_stocks` của các variant theo ID tăng dần, kiểm tra đủ quantity và giảm tồn. Nếu thiếu, trả 409 `INSUFFICIENT_STOCK` và rollback.
+6. Inventory append SALE movement gắn orderId; order hoàn tất items/snapshot/history; promotion ghi usage; cart xóa mục đã mua. Mọi việc trong cùng transaction; order tạo sớm cũng rollback nếu bước sau thất bại.
 7. Commit rồi trả order. COD chờ xác nhận/giao; online mở payment session bằng request khác. Checkout lỗi ở bất kỳ bước nào rollback toàn bộ.
 
 ```mermaid
@@ -17,10 +17,13 @@ flowchart TD
     Request[Request checkout] --> Existing{Key đã tồn tại}
     Existing -->|Cùng payload| Previous[Trả đơn cũ]
     Existing -->|Khác payload| Conflict[409 Conflict]
-    Existing -->|Chưa có| Validate[Khóa và kiểm tra dữ liệu]
-    Validate --> Valid{Hợp lệ}
+    Existing -->|Chưa có| Cart[Khóa cart]
+    Cart --> Catalog[Khóa variant và chốt giá/SKU]
+    Catalog --> Coupon[Khóa/kiểm tra coupon nếu có]
+    Coupon --> Stock[Khóa inventory stock và trừ tồn]
+    Stock --> Valid{Hợp lệ}
     Valid -->|Không| Rollback[Rollback toàn bộ]
-    Valid -->|Có| Save[Ghi đơn tồn coupon giỏ]
+    Valid -->|Có| Save[Ghi order snapshot + ledger + coupon + dọn giỏ]
     Save --> Commit[Commit và trả orderId]
 ```
 
@@ -42,19 +45,17 @@ DELIVERED và CANCELLED là trạng thái cuối trong MVP. USER chỉ tự hủ
 
 ## Hủy và payment callback đồng thời
 
-Hủy khóa order, kiểm tra paymentStatus projection rồi chuyển CANCELLED và hoàn tồn/coupon. Callback khóa payment rồi order. Nếu callback PAID được xử lý trước, hủy online bị chặn. Nếu hủy commit trước, callback lưu tiền đã nhận với `RECONCILIATION_REQUIRED`; order vẫn CANCELLED. OrderPaymentService trả outcome này thay vì throw làm mất bản ghi tiền đã nhận.
+Hủy khóa order, kiểm tra paymentStatus projection rồi chuyển CANCELLED, release coupon và gọi inventory restore đúng một lần. Callback khóa payment rồi order. Nếu callback PAID được xử lý trước, hủy online bị chặn. Nếu hủy commit trước, callback lưu tiền đã nhận với `RECONCILIATION_REQUIRED`; order vẫn CANCELLED. OrderPaymentService trả outcome này thay vì throw làm mất bản ghi tiền đã nhận.
 
 ## Thanh toán
 
 Payment có trạng thái UNPAID/PENDING/PAID/FAILED; hoàn tiền đầy đủ/partial ngoài MVP. `Order.paymentStatus` là projection nhận từ payment. COD mới tạo order có UNPAID và chưa cần Payment; sau DELIVERED, STAFF/ADMIN gọi ghi nhận thu tiền, payment tạo bản ghi PAID và cập nhật order cùng transaction. DELIVERED đơn thuần chưa chứng minh đã thu tiền.
 
-Online: payment kiểm tra order và số tiền → tạo attempt PENDING có idempotency key → commit → gọi provider/mô phỏng ngoài transaction → cập nhật session → callback xác minh → ghi kết quả và thông báo order service trong cùng transaction. Session timeout có thể có kết quả không rõ: tra cứu lại theo reference/idempotency trước tạo attempt khác, không tự coi FAILED khi chưa biết provider đã thu tiền hay chưa.
-
-Callback FAILED lặp hoặc đến sau PAID không làm PAID lùi về FAILED. Order service chỉ áp dụng một kết quả thanh toán thành công cho mỗi order, dưới khóa order; payment attempt thứ hai thành công phải giữ record và đưa vào đối soát. Hai request ghi thu COD cạnh tranh cũng phải kiểm tra lại projection dưới khóa, không tạo hai khoản thu hợp lệ. Browser return page luôn đọc lại trạng thái backend.
+Online: payment kiểm tra order và số tiền → tạo attempt PENDING có idempotency key → commit → gọi provider/mô phỏng ngoài transaction → callback xác minh → ghi kết quả và thông báo order service trong cùng transaction. Callback FAILED lặp hoặc đến sau PAID không làm PAID lùi về FAILED. Payment attempt thứ hai thành công phải giữ record và đưa vào đối soát thay vì ghi đè lịch sử.
 
 ## Nhập hàng
 
-STAFF/ADMIN tạo phiếu DRAFT cho supplier và các variant. Khi nhận toàn bộ: khóa phiếu → xác minh DRAFT → inventory tăng stock/ghi PURCHASE_RECEIPT → chuyển RECEIVED → commit. Gọi receive lần nữa trả kết quả cũ mà không cộng tồn. DRAFT có thể CANCELLED; RECEIVED không chỉnh sửa trực tiếp. Một dòng lỗi rollback cả phiếu.
+STAFF/ADMIN tạo phiếu DRAFT cho supplier và các variant. Khi nhận toàn bộ: khóa phiếu → xác minh DRAFT → inventory khóa stock rows và tăng quantity/ghi PURCHASE_RECEIPT → chuyển RECEIVED → commit. Gọi receive lần nữa trả kết quả cũ mà không cộng tồn. DRAFT có thể CANCELLED; RECEIVED không chỉnh sửa trực tiếp. Một dòng lỗi rollback cả phiếu.
 
 ## Coupon và review
 

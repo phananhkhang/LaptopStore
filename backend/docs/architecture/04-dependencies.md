@@ -8,16 +8,16 @@ Mũi tên A → B nghĩa là service A gọi contract service/DTO của B. “Kh
 |---|---|---|
 | auth | user | Tạo tài khoản, lấy credential/profile |
 | user | Không | Nguồn người dùng và địa chỉ |
-| catalog | Không | Nguồn sản phẩm, giá, tồn mức thấp |
+| catalog | Không | Nguồn sản phẩm, variant, giá, thông số |
 | cart | catalog | Xác minh variant, dữ liệu hiển thị |
 | order | user, cart, catalog, inventory, promotion | Điều phối checkout/hủy |
 | payment | order | Đọc payable order, cập nhật kết quả đã xác minh |
 | promotion | Không | Nhận các giá trị server truyền vào |
-| inventory | catalog | Khóa và cập nhật stock qua service |
-| procurement | catalog, inventory | Kiểm tra SKU và nhận hàng |
+| inventory | catalog | Chỉ đọc/kiểm tra variant reference khi use case cần; không ghi catalog |
+| procurement | catalog, inventory | Kiểm tra SKU/variant và nhận hàng |
 | review | order, catalog | Kiểm tra đã mua/giao và thông tin public |
 
-Không có cạnh `cart → order`, `order → payment`, `catalog → inventory` hoặc `catalog → review`. Frontend bắt đầu payment sau khi nhận orderId; frontend gọi API reviews riêng. Quy trình nghiệp vụ có thể đi qua nhiều bước HTTP mà không tạo dependency Java hai chiều.
+Không có cạnh `catalog → inventory`, `order → payment`, `cart → order` hoặc `catalog → review`. Inventory sở hữu bảng tồn nên không còn contract ghi stock nằm trong catalog.
 
 ## Hạ tầng chung
 
@@ -37,11 +37,13 @@ Tên dưới đây là thiết kế để owner triển khai, chưa có Java cla
 | user | `findCredentialByEmail(email)` | email chuẩn hóa → credential nội bộ | Chỉ auth/security dùng; không HTTP serialize |
 | cart | `lockAndGetCheckoutCart(userId)` | user → CartSnapshot | Cùng transaction; khóa cart như thao tác sửa giỏ |
 | cart | `clearPurchasedItems(userId, itemIds)` | mục đã đặt → void | Không xóa toàn bộ giỏ ngoài transaction |
-| catalog | `getSellableVariants(ids)` | ids → VariantSnapshot[] | Kiểm tra active, lấy giá mới, không trả entity |
-| catalog | `applyStockChanges(changes)` | variant/delta, expectedVersion khi checkout → before/after | Chỉ inventory gọi; khóa tăng dần; checkout kiểm tra version và trạng thái bán; transaction bắt buộc |
-| inventory | `deductForOrder(...)`, `restoreForOrder(...)` | orderId, lines, operationKey → kết quả | Một lần mỗi key/variant; tồn và ledger atomic |
-| inventory | `receivePurchase(...)` | purchaseId, lines, operationKey | Cùng transaction nhận phiếu |
-| promotion | `lockAndEvaluateForCheckout(...)` | coupon, userId, subtotal → CouponEvaluation | Khóa coupon trước variants; không giữ lượt ngoài transaction checkout |
+| catalog | `getSellableVariants(ids)` | ids → VariantSnapshot[] | Dùng cho đọc/giỏ; kiểm tra active, lấy giá mới, không trả entity |
+| catalog | `lockAndGetCheckoutVariants(ids)` | ids → CheckoutVariantSnapshot[] | Khóa variant theo id tăng dần trong transaction checkout; chốt giá/trạng thái/SKU snapshot |
+| catalog | `getVariantReferences(ids)` | ids → VariantReference[] | Read-only cho inventory/procurement khi cần xác minh ID/SKU |
+| inventory | `deductForOrder(...)`, `restoreForOrder(...)` | orderId, lines, operationKey → kết quả | Khóa `inventory_stocks` tăng dần; một lần mỗi key/variant; stock và ledger atomic |
+| inventory | `receivePurchase(...)` | purchaseId, lines, operationKey | Cùng transaction nhận phiếu; tăng stock và ledger atomic |
+| inventory | `adjustStock(...)` | variantId, delta, reason, actorId, operationKey | Không âm; bắt buộc reason cho adjustment |
+| promotion | `lockAndEvaluateForCheckout(...)` | coupon, userId, subtotal → CouponEvaluation | Khóa coupon; không giữ lượt ngoài transaction checkout |
 | promotion | `reserveForOrder(...)`, `releaseForOrder(...)` | coupon, userId, orderId, subtotal → CouponEvaluation | Khóa và ghi usage; không tự query order |
 | order | `getPayableOrder(actorId, orderId)` | ID → OrderPaymentSnapshot | Ownership, total, method, status |
 | order | `recordVerifiedPayment(result)` | kết quả nội bộ từ payment → outcome | Khóa order, cập nhật projection; CANCELLED → RECONCILIATION_REQUIRED |
@@ -49,13 +51,24 @@ Tên dưới đây là thiết kế để owner triển khai, chưa có Java cla
 
 Lỗi chéo dùng exception cơ sở/mã lỗi đã công bố, ví dụ `INSUFFICIENT_STOCK`, `INVALID_ORDER_STATE`, `COUPON_NOT_APPLICABLE`. Caller không bắt mọi Exception rồi trả thành công. Chốt chính xác signature và contract lỗi trong PR trước khi cả hai owner code.
 
-Type của contract do **module cung cấp** khai báo. Ví dụ `OrderPaymentService` khai báo `VerifiedPaymentCommand` bất biến trong contract service của order; payment chuyển dữ liệu provider sang command đó. Order không import DTO hoặc enum của payment, nếu không sẽ tạo vòng phụ thuộc dù service chỉ gọi một chiều. Tương tự, inventory chuyển lệnh sang type stock contract do catalog sở hữu.
+Type của contract do **module cung cấp** khai báo. Ví dụ `OrderPaymentService` khai báo `VerifiedPaymentCommand` bất biến trong contract service của order; payment chuyển dữ liệu provider sang command đó. Order không import DTO hoặc enum của payment, nếu không sẽ tạo vòng phụ thuộc dù service chỉ gọi một chiều.
+
+## Quy tắc entity/JPA xuyên module
+
+- Quan hệ JPA (`@OneToMany`, `@ManyToOne`, ...) chỉ dùng bên trong cùng module.
+- Sang module khác chỉ giữ ID (`Long userId`, `Long variantId`, ...), dù DB vẫn có foreign key.
+- Không truyền JPA entity qua contract module; chỉ truyền record/DTO bất biến.
+- Không module nào import `..repository..` hoặc `..entity..` của module khác.
+
+Ví dụ `inventory.InventoryStock` giữ `variantId`; không có `@ManyToOne ProductVariant`. `OrderItem` giữ `variantId` và snapshot tên/SKU/giá; không có quan hệ JPA sang catalog.
 
 ## Quy tắc transaction xuyên module
 
 Use case điều phối mở transaction; các service ghi tham gia cùng transaction bằng REQUIRED hoặc MANDATORY cho helper không được chạy độc lập. Không REQUIRES_NEW cho stock/ledger/coupon trong checkout. Không gọi HTTP provider khi đang giữ khóa DB. Không truyền entity giữa module dù cùng PersistenceContext.
 
-Phải gọi phương thức transactional qua Spring bean proxy; gọi `this.otherMethod()` không tạo transaction mới chỉ vì có annotation. Xem [Spring transaction annotations](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative/annotations.html).
+Checkout khóa theo thứ tự ổn định: cart → catalog variants (ID tăng dần) → coupon nếu chiến lược yêu cầu → inventory stocks (ID tăng dần). Nếu nhóm đổi thứ tự khóa, phải cập nhật tất cả luồng ghi liên quan để tránh deadlock.
+
+Phải gọi phương thức transactional qua Spring bean proxy; gọi `this.otherMethod()` không tạo transaction mới chỉ vì có annotation.
 
 ## Đọc dữ liệu và báo cáo
 

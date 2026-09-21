@@ -28,7 +28,7 @@
 ## Bất biến và ràng buộc
 
 - Một transaction bao trùm order/items/history, trừ tồn/ledger, lượt coupon và dọn giỏ. Không gọi HTTP cổng thanh toán trong transaction này.
-- Giá, phí, giảm giá và tổng tính ở server. Lưu snapshot tên, SKU, đơn giá, địa chỉ để lịch sử không đổi khi dữ liệu gốc sửa.
+- Giá, phí, giảm giá và tổng tính ở server. Order snapshot người nhận/điện thoại/địa chỉ; OrderItem snapshot productName, SKU, variantName, unitPrice và lineTotal để lịch sử không đổi khi dữ liệu gốc sửa.
 - Checkout hỗ trợ Idempotency-Key ràng buộc user; cùng key và payload trả đơn cũ, khác payload trả 409.
 - Khóa order trước khi chuyển trạng thái/hủy. Chỉ hoàn tồn/coupon một lần khi chuyển thành CANCELLED.
 - Order.paymentStatus chỉ là bản phản chiếu cho workflow; chỉ OrderPaymentService cập nhật theo kết quả đã xác minh từ payment. Không có HTTP endpoint tự đánh dấu đã trả tiền.
@@ -36,7 +36,7 @@
 
 ## Luồng triển khai điển hình
 
-Khóa giỏ → kiểm tra địa chỉ → snapshot catalog → khóa/kiểm tra coupon → tạo order để có ID → inventory khóa variant và kiểm tra version/giá/trạng thái → trừ tồn/ghi ledger → hoàn tất items/history/coupon → dọn giỏ → commit. Order tạo sớm vẫn rollback nếu bước sau thất bại; không trả đơn ra ngoài trước commit.
+Khóa giỏ → kiểm tra địa chỉ → catalog khóa variants và chốt snapshot giá/SKU/trạng thái → khóa/kiểm tra coupon → tạo order để có ID → inventory khóa InventoryStock và trừ tồn/ghi ledger → hoàn tất items/history/coupon → dọn giỏ → commit. Order tạo sớm vẫn rollback nếu bước sau thất bại; không trả đơn ra ngoài trước commit.
 
 ## Bàn giao và kiểm tra
 
