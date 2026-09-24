@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a654a07a-5cf2-4059-9c24-e1fd51e2a97c" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/docs/architecture/01-overview.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/docs/architecture/01-overview.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/docs/phan_chia_cong_viec.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/docs/phan_chia_cong_viec.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -14,32 +13,106 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="108" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Kotlin Enum" />
+        <option value="Record" />
+        <option value="Class" />
+        <option value="Interface" />
+        <option value="Enum" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "phananhkhang"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;phananhkhang&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/phananhkhang/LaptopStore.git",
-    "accountId": "0cc3f9a9-5bef-49ad-934e-aa231c062e3d"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/phananhkhang/LaptopStore.git&quot;,
+    &quot;accountId&quot;: &quot;0cc3f9a9-5bef-49ad-934e-aa231c062e3d&quot;
   }
-}]]></component>
+}</component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3,
-  "fromUser": false
-}]]></component>
+  <component name="NextEditCompletionFeaturesState">
+    <decayedCancelled>
+      <entry key="MS100" value="1.0000002451214378" />
+      <entry key="MS500" value="1.04763026962777" />
+      <entry key="S2" value="1.5425690671877408" />
+      <entry key="S5" value="2.5426724448139564" />
+      <entry key="S10" value="3.648991917136528" />
+      <entry key="S30" value="5.34020978464762" />
+      <entry key="S60" value="7.7012414353839205" />
+      <entry key="M2" value="12.81190782874009" />
+      <entry key="M5" value="24.303002667681138" />
+      <entry key="M10" value="39.477604635241235" />
+      <entry key="M15" value="54.02838334538044" />
+      <entry key="M30" value="92.73688409503335" />
+      <entry key="H1" value="151.87124027666482" />
+      <entry key="H2" value="226.08446419738723" />
+      <entry key="H4" value="294.60838544650807" />
+      <entry key="D1" value="383.2603582693497" />
+      <entry key="W1" value="402.6282624162415" />
+    </decayedCancelled>
+    <decayedSelected>
+      <entry key="MS100" value="3.337855322676867E-15" />
+      <entry key="MS500" value="0.0012726046380500916" />
+      <entry key="S2" value="0.18887452077427413" />
+      <entry key="S5" value="0.5134162834716666" />
+      <entry key="S10" value="0.7171146106687066" />
+      <entry key="S30" value="0.9876968552084605" />
+      <entry key="S60" value="1.4464827121879804" />
+      <entry key="M2" value="2.778222985570707" />
+      <entry key="M5" value="6.657655134508524" />
+      <entry key="M10" value="11.70277725272352" />
+      <entry key="M15" value="15.739353419666928" />
+      <entry key="M30" value="25.147282402758474" />
+      <entry key="H1" value="40.27137718232736" />
+      <entry key="H2" value="61.24974061694507" />
+      <entry key="H4" value="81.68376432542915" />
+      <entry key="D1" value="108.91795076490563" />
+      <entry key="W1" value="114.9478985098477" />
+    </decayedSelected>
+    <decayedShown>
+      <entry key="MS100" value="4.855569421843189E-5" />
+      <entry key="MS500" value="0.1407977863427081" />
+      <entry key="S2" value="0.9568202457460231" />
+      <entry key="S5" value="2.4239128738806635" />
+      <entry key="S10" value="3.925674888958477" />
+      <entry key="S30" value="6.126112543062616" />
+      <entry key="S60" value="9.005557273372288" />
+      <entry key="M2" value="15.468086723199928" />
+      <entry key="M5" value="30.86071793505106" />
+      <entry key="M10" value="51.099009459589055" />
+      <entry key="M15" value="69.69633080851646" />
+      <entry key="M30" value="117.82778357524106" />
+      <entry key="H1" value="192.09884225355793" />
+      <entry key="H2" value="287.3023183422493" />
+      <entry key="H4" value="376.27150889022636" />
+      <entry key="D1" value="492.17384335156305" />
+      <entry key="W1" value="517.5754907595658" />
+    </decayedShown>
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3,
+  &quot;fromUser&quot;: false
+}</component>
   <component name="ProjectId" id="3JdAu95kbm84tECcsdRaZ2Kn1vC" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -48,10 +121,15 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "Spring Boot.LaptopStoreApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
@@ -67,6 +145,65 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration default="true" type="JetRunConfigurationType">
+      <module name="LaptopStore" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="KotlinStandaloneScriptRunConfigurationType">
+      <module name="LaptopStore" />
+      <option name="filePath" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <module name="LaptopStore" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="false" />
+      <option name="RUN_TOOL" value="" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="LaptopStoreApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+      <module name="LaptopStore" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="org.akira.laptopstore.LaptopStoreApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration default="true" type="Tox" factoryName="Tox">
+      <module name="LaptopStore" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="DEBUG_JUST_MY_CODE" value="false" />
+      <option name="RUN_TOOL" value="" />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -83,6 +220,10 @@
       <option name="presentableId" value="Default" />
       <updated>1789980791613</updated>
       <workItem from="1789980793063" duration="1154000" />
+      <workItem from="1790125948009" duration="42000" />
+      <workItem from="1790126025955" duration="277000" />
+      <workItem from="1790168787516" duration="87000" />
+      <workItem from="1790254131013" duration="14934000" />
     </task>
     <servers />
   </component>
