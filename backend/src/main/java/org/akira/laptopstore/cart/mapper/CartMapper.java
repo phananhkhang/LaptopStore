@@ -3,12 +3,16 @@ package org.akira.laptopstore.cart.mapper;
 import org.akira.laptopstore.cart.dto.response.CartItemResponse;
 import org.akira.laptopstore.cart.dto.response.CartResponse;
 import org.akira.laptopstore.cart.entity.Cart;
-import org.akira.laptopstore.common.util.*;
+import org.akira.laptopstore.common.util.VariantUtils;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-public class CartMapper {
+public final class CartMapper {
+    private CartMapper() {
+    }
+
     public record VariantSummary(
             Long id,
             String productName,
@@ -19,20 +23,26 @@ public class CartMapper {
             BigDecimal price
     ) {}
     public static CartResponse toResponse(Cart cart) {
+        return toResponse(cart, Map.of());
+    }
+
+    public static CartResponse toResponse(Cart cart, Map<Long, VariantSummary> variantsById) {
         if (cart == null) {
             return null;
         }
-        Map<Long, VariantSummary> variantMap = Map.of();
+        Map<Long, VariantSummary> safeVariants = variantsById == null ? Map.of() : variantsById;
         List<CartItemResponse> itemResponses = cart.getItems().stream()
                 .map(item -> {
-                    VariantSummary variant = variantMap.get(item.getVariantId());
-                    String productName = (variant != null) ? variant.productName() : null;
-                    String sku = (variant != null) ? variant.sku() : null;
-                    String ram = (variant != null) ? variant.ram() : null;
-                    String storage = (variant != null) ? variant.storage() : null;
-                    String color = (variant != null) ? variant.color() : null;
+                    VariantSummary variant = safeVariants.get(item.getVariantId());
+                    String productName = variant == null ? null : variant.productName();
+                    String sku = variant == null ? null : variant.sku();
+                    String ram = variant == null ? null : variant.ram();
+                    String storage = variant == null ? null : variant.storage();
+                    String color = variant == null ? null : variant.color();
                     String variantName = VariantUtils.formatFullProductName(productName, ram, storage, color);
-                    BigDecimal unitPrice = (variant != null) ? variant.price() : BigDecimal.ZERO;
+                    BigDecimal unitPrice = variant == null || variant.price() == null
+                            ? BigDecimal.ZERO
+                            : variant.price();
                     BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
                     return new CartItemResponse(
                             item.getVariantId(),

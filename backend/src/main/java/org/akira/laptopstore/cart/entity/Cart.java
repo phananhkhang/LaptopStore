@@ -8,11 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "carts")
-@Setter
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "carts",
+        uniqueConstraints = @UniqueConstraint(name = "uk_carts_user_id", columnNames = "user_id")
+)
+@Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Cart {
     @Id
@@ -32,4 +35,17 @@ public class Cart {
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        Instant now = Instant.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
+
 }
