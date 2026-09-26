@@ -1,306 +1,216 @@
-# Entity model đề xuất
+# Entity model theo ERD
 
-Tài liệu này chốt baseline entity/schema trước khi viết Flyway. Đây là **logical model**, chưa phải Java code bắt buộc; owner có thể điều chỉnh tên field nhưng không đổi ownership/ràng buộc cốt lõi nếu chưa thống nhất nhóm.
+Tài liệu này ánh xạ trực tiếp từ [`database/LaptopStore_ERD.jpg`](../../../database/LaptopStore_ERD.jpg). Tên bên trái là tên cột trong ERD; tên trong ngoặc là tên field Java khuyến nghị. Không tự thêm cột, khóa hoặc quan hệ chưa xuất hiện trong ERD. Danh sách đầy đủ theo dạng bảng và toàn bộ bội số quan hệ nằm tại [12 ERD LaptopStore](12-ERD-LaptopStore.md).
 
-## 1. Identity
+## 1. Identity & Access
 
 ### User
 
-`id`, `email`, `passwordHash`, `fullName`, `phone`, `status`, `createdAt`, `updatedAt`.
+`users`: `id`, `email`, `password_hash` (`passwordHash`), `full_name` (`fullName`), `phone`, `token_version` (`tokenVersion`), `status`, `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-- unique index trên `lower(email)`;
-- password hash không xuất DTO;
-- role qua bảng nối, không enum cứng trực tiếp trong user nếu dùng nhiều role.
+- PK: `id`.
+- UQ: `email`.
+- Quan hệ: một user có nhiều address, refresh token, order, coupon usage, order-status history, stock movement và purchase order; có tối đa một cart; có nhiều role qua `user_roles`.
+- `password_hash` không được đưa ra DTO/API.
 
-### Role và mapping User–Role
+### Role và UserRole
 
-`Role(id, code)` với code `USER`, `STAFF`, `ADMIN`. **Không tạo entity `UserRole` riêng** khi bảng nối không có thuộc tính nghiệp vụ.
+`roles`: `id`, `name`; PK `id`, UQ `name`.
 
-Trong Java, `User` giữ collection role trực tiếp:
+`user_roles`: `user_id` (`userId`), `role_id` (`roleId`); cả hai cột cùng là PK ghép và đồng thời là FK.
 
-```java
-@ManyToMany(fetch = FetchType.LAZY)
-@JoinTable(
-    name = "user_roles",
-    joinColumns = @JoinColumn(name = "user_id"),
-    inverseJoinColumns = @JoinColumn(name = "role_id")
-)
-private Set<Role> roles = new HashSet<>();
-```
-
-Database vẫn có join table:
-
-```text
-user_roles
-----------
-user_id  FK -> users.id
-role_id  FK -> roles.id
-PRIMARY KEY (user_id, role_id)
-```
-
-Dùng `Set<Role>` thay vì `List<Role>` để biểu diễn mỗi role chỉ xuất hiện một lần. Chỉ nâng `user_roles` thành entity riêng nếu sau này quan hệ có dữ liệu nghiệp vụ như `assignedAt`, `assignedBy`, `expiresAt`.
+`users` và `roles` là quan hệ N:N qua `user_roles`. Có thể ánh xạ bảng nối bằng `@ManyToMany` nếu không cần entity trung gian, nhưng schema vẫn phải giữ PK ghép `(user_id, role_id)`.
 
 ### Address
 
-`id`, `userId`, `recipientName`, `phone`, `line1`, `line2`, `ward`, `district`, `city`, `postalCode`, `isDefault`, timestamps.
+`addresses`: `id`, `user_id` (`userId`), `recipient_name` (`recipientName`), `phone`, `ward`, `district`, `city`, `street`, `postal_code` (`postalCode`), `is_default` (`isDefault`), `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-Order chỉ dùng address để **tạo snapshot**; không dựng hóa đơn lịch sử bằng dữ liệu address hiện tại.
+- PK: `id`; FK: `user_id -> users.id`.
+- Một user có thể có nhiều address.
+- Khi checkout, ghép các thành phần địa chỉ thành snapshot `orders.shipping_address`; không dựng lại hóa đơn cũ từ address hiện tại.
 
 ### RefreshToken
 
-`id`, `userId`, `tokenHash`, `familyId`, `expiresAt`, `usedAt`, `revokedAt`, `createdAt`.
+`refresh_tokens`: `id`, `user_id` (`userId`), `token_hash` (`tokenHash`), `family_id` (`familyId`), `expires_at` (`expiresAt`), `used_at` (`usedAt`), `revoked_at` (`revokedAt`), `created_at` (`createdAt`).
 
-- unique token hash;
-- lưu hash, không lưu raw token;
-- family phục vụ rotation/reuse detection khi triển khai.
+- PK: `id`; FK: `user_id -> users.id`; UQ: `token_hash`.
+- Một user có thể có nhiều refresh token.
 
 ## 2. Catalog
 
-### Brand / Category
+### Brand
 
-`id`, `name`, `slug`, `active`, timestamps. Category có thể có `parentId` nếu thật sự cần phân cấp; MVP có thể để phẳng.
+`brands`: `id`, `name`, `logo_url` (`logoUrl`), `description`, `active`.
+
+- PK: `id`; UQ: `name`.
+- Một brand có thể có nhiều product.
+
+### Category
+
+`categories`: `id`, `name`, `description`, `active`.
+
+- PK: `id`; UQ: `name`.
+- Một category có thể có nhiều product.
 
 ### Product
 
-```text
-id
-brandId
-categoryId
-name
-slug
-description
-status
-warrantyMonths
-createdAt
-updatedAt
-```
+`products`: `id`, `brand_id` (`brandId`), `category_id` (`categoryId`), `name`, `description`, `status`, `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-Product là **model chung**, không chứa RAM/SSD/color nếu các giá trị này thay đổi theo SKU.
+- PK: `id`.
+- FK: `brand_id -> brands.id`, `category_id -> categories.id`.
+- Một product có nhiều variant, image, specification và order item.
 
 ### ProductVariant
 
-```text
-id
-productId
-sku
-price
-ramGb
-storageGb
-color
-status
-version
-createdAt
-updatedAt
-```
+`product_variants`: `id`, `product_id` (`productId`), `ram`, `storage`, `color`, `price`, `quantity`, `sku`, `status`, `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-- `sku` unique;
-- `price >= 0`;
-- `ramGb > 0`, `storageGb > 0` khi dùng;
-- **không có `stockQuantity`**;
-- `version` bảo vệ concurrent update metadata/giá của variant.
-
-### ProductSpecification
-
-Baseline 1:1 với Product:
-
-```text
-id
-productId UNIQUE
-cpuModel
-gpuModel
-screenSizeInches
-screenResolution
-panelType
-refreshRateHz
-batteryWh
-weightKg
-operatingSystem
-extraSpecsJsonb?   # chỉ thêm khi thật sự cần
-```
-
-Các field dùng filter thường xuyên nên là cột typed thay vì key/value string.
+- PK: `id`; FK: `product_id -> products.id`; UQ: `sku`.
+- `quantity` là tồn hiện tại theo đúng ERD; không có bảng `inventory_stocks`.
+- Một variant có thể xuất hiện trong nhiều cart item, order item, stock movement và purchase-order item.
 
 ### ProductImage
 
-`id`, `productId`, `url`, `altText`, `sortOrder`, `isPrimary`; unique `(product_id, sort_order)`.
+`product_images`: `id`, `product_id` (`productId`), `image_url` (`imageUrl`), `is_primary` (`isPrimary`).
 
-## 3. Inventory
+- PK: `id`; FK: `product_id -> products.id`.
+- ERD không khai báo `alt_text`, `sort_order` hay unique constraint bổ sung.
 
-### InventoryStock
+### ProductSpecification
 
-```text
-id
-variantId UNIQUE
-quantity
-version
-createdAt
-updatedAt
-```
+`product_specifications`: `id`, `product_id` (`productId`), `cpu`, `gpu`, `screen_size` (`screenSize`), `screen_resolution` (`screenResolution`), `refresh_rate` (`refreshRate`), `battery`, `weight`, `os`.
 
-- `quantity >= 0`;
-- inventory sở hữu entity/repository này;
-- Java chỉ giữ `variantId`, không `@ManyToOne ProductVariant`;
-- một variant có tối đa một stock row trong mô hình một kho của MVP; missing row được hiểu là 0 cho tới lệnh inventory đầu tiên.
-- baseline tạo row bằng `INSERT ... ON CONFLICT DO NOTHING` rồi `SELECT ... FOR UPDATE`/pessimistic lock để tránh race khi khởi tạo.
+- PK: `id`; FK: `product_id -> products.id`.
+- Vì `product_id` không có UQ trong ERD, quan hệ được schema hiện tại biểu diễn là Product 1:N ProductSpecification, không phải 1:1.
 
-### StockMovement
+## 3. Cart
 
-```text
-id
-variantId
-type
-delta
-quantityBefore
-quantityAfter
-referenceType
-referenceId
-operationKey
-actorId
-reason
-createdAt
-```
+### Cart
 
-- unique `(operation_key, variant_id)`;
-- append-only;
-- `quantityAfter = quantityBefore + delta`;
-- SALE âm; PURCHASE_RECEIPT/CANCEL_RESTORE dương; ADJUSTMENT bắt buộc reason.
+`carts`: `id`, `user_id` (`userId`), `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-Nếu sau này có nhiều kho, mở rộng thành `warehouses` + unique `(warehouse_id, variant_id)` thay vì sửa ProductVariant.
+- PK: `id`; `user_id` vừa là FK tới `users.id` vừa là UQ.
+- Một user có tối đa một cart; một cart có nhiều cart item.
 
-## 4. Cart
+### CartItem
 
-### Cart / CartItem
+`cart_items`: `id`, `cart_id` (`cartId`), `variant_id` (`variantId`), `quantity`, `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-`Cart(id, userId UNIQUE, createdAt, updatedAt)`.
+- PK: `id`.
+- FK: `cart_id -> carts.id`, `variant_id -> product_variants.id`.
+- ERD không khai báo UQ `(cart_id, variant_id)`.
 
-`CartItem(id, cartId, variantId, quantity, createdAt, updatedAt)` với unique `(cart_id, variant_id)` và `quantity > 0`.
-
-Không lưu giá chính thức để checkout dùng lại; checkout luôn đọc giá catalog hiện tại.
-
-## 5. Order
+## 4. Ordering
 
 ### Order
 
-```text
-id
-orderCode UNIQUE
-userId
-status
-paymentMethod
-paymentStatus
+`orders`: `id`, `user_id` (`userId`), `order_code` (`orderCode`), `status`, `subtotal`, `discount_amount` (`discountAmount`), `shipping_fee` (`shippingFee`), `total_amount` (`totalAmount`), `recipient_name` (`recipientName`), `recipient_phone` (`recipientPhone`), `shipping_address` (`shippingAddress`), `coupon_code_snapshot` (`couponCodeSnapshot`), `idempotency_key` (`idempotencyKey`), `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-recipientName
-recipientPhone
-shippingLine1
-shippingLine2
-shippingWard
-shippingDistrict
-shippingCity
-shippingPostalCode
-
-subtotal
-discountAmount
-shippingFee
-totalAmount
-couponCodeSnapshot
-
-idempotencyKey
-requestHash
-note
-createdAt
-updatedAt
-```
-
-- unique `(user_id, idempotency_key)`;
-- tất cả tổng tiền do server tính;
-- snapshot địa chỉ nằm trực tiếp trên order hoặc embeddable cùng bảng, không chỉ lưu `addressId`.
+- PK: `id`; FK: `user_id -> users.id`.
+- UQ riêng: `order_code`, `idempotency_key`.
+- Một order có nhiều order item và status-history row; có tối đa một payment và tối đa một coupon usage.
+- ERD không đặt `payment_method`, `payment_status`, `request_hash` hoặc `note` trong `orders`.
 
 ### OrderItem
 
-```text
-id
-orderId
-productId
-variantId
-productName
-sku
-variantName
-unitPrice
-quantity
-lineTotal
-createdAt
-```
+`order_items`: `id`, `order_id` (`orderId`), `product_id` (`productId`), `variant_id` (`variantId`), `product_name` (`productName`), `variant_name` (`variantName`), `sku`, `unit_price` (`unitPrice`), `quantity`.
 
-Giữ ID để truy vết, nhưng UI hóa đơn cũ dùng snapshot. `variantName` có thể được tạo chuẩn từ RAM/SSD/color tại checkout.
+- PK: `id`.
+- FK: `order_id -> orders.id`, `product_id -> products.id`, `variant_id -> product_variants.id`.
+- Một order item có tối đa một review vì `reviews.order_item_id` là UQ.
+- ERD không có `line_total` hoặc timestamps trong `order_items`.
 
 ### OrderStatusHistory
 
-`id`, `orderId`, `fromStatus`, `toStatus`, `actorId`, `reason`, `createdAt`; append-only.
+`order_status_history`: `id`, `order_id` (`orderId`), `from_status` (`fromStatus`), `to_status` (`toStatus`), `changed_at` (`changedAt`), `changed_by_user_id` (`changedByUserId`).
+
+- PK: `id`.
+- FK: `order_id -> orders.id`, `changed_by_user_id -> users.id`.
+- ERD không có cột `reason`.
+
+## 5. Payment
+
+### Payment
+
+`payments`: `id`, `order_id` (`orderId`), `method`, `amount`, `status`, `created_at` (`createdAt`), `updated_at` (`updatedAt`), `expires_at` (`expiresAt`).
+
+- PK: `id`; `order_id` vừa là FK tới `orders.id` vừa là UQ.
+- Một order có tối đa một logical payment; một payment có nhiều payment transaction.
+- ERD không có `currency` hoặc `reconciliation_status`.
+
+### PaymentTransaction
+
+`payment_transactions`: `id`, `payment_id` (`paymentId`), `provider`, `provider_transaction_id` (`providerTransactionId`), `provider_reference` (`providerReference`), `amount`, `status`, `created_at` (`createdAt`).
+
+- PK: `id`; FK: `payment_id -> payments.id`.
+- ERD không đánh UQ cho provider transaction và không có `type` hoặc `raw_result_code`.
 
 ## 6. Promotion
 
 ### Coupon
 
-`id`, `code`, `discountType`, `discountValue`, `maxDiscount`, `minOrderAmount`, `usageLimit`, `usagePerUser`, `startsAt`, `endsAt`, `active`, timestamps.
+`coupons`: `id`, `code`, `discount_type` (`discountType`), `discount_value` (`discountValue`), `max_discount` (`maxDiscount`), `min_order_amount` (`minOrderAmount`), `usage_limit` (`usageLimit`), `usage_per_user` (`usagePerUser`), `starts_at` (`startsAt`), `ends_at` (`endsAt`), `active`, `created_at` (`createdAt`), `updated_at` (`updatedAt`).
+
+- PK: `id`; UQ: `code`.
+- Một coupon có nhiều coupon usage.
 
 ### CouponUsage
 
-`id`, `couponId`, `userId`, `orderId`, `discountAmount`, `status`, `createdAt`, `releasedAt`; unique `(coupon_id, order_id)`.
+`coupon_usages`: `id`, `coupon_id` (`couponId`), `user_id` (`userId`), `order_id` (`orderId`), `discount_amount` (`discountAmount`), `status`, `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-## 7. Payment
+- PK: `id`.
+- FK: `coupon_id -> coupons.id`, `user_id -> users.id`, `order_id -> orders.id`.
+- `order_id` đồng thời là UQ, nên một order có tối đa một coupon usage.
 
-### Payment
+## 7. Inventory
 
-`id`, `orderId`, `method`, `amount`, `currency`, `status`, `reconciliationStatus`, timestamps. Trong MVP, `orderId` unique để một order có một logical payment; các attempt nằm ở `PaymentTransaction`.
+### StockMovement
 
-### PaymentTransaction
+`stock_movements`: `id`, `variant_id` (`variantId`), `type`, `delta`, `quantity_before` (`quantityBefore`), `quantity_after` (`quantityAfter`), `reference_type` (`referenceType`), `reference_id` (`referenceId`), `operation_key` (`operationKey`), `note`, `created_by_user_id` (`createdByUserId`), `created_at` (`createdAt`).
 
-`id`, `paymentId`, `provider`, `providerTransactionId`, `providerReference`, `type`, `amount`, `status`, `rawResultCode`, `createdAt`.
-
-Một logical payment có thể có nhiều attempt/transaction. Không ghi đè attempt cũ để che mất lịch sử.
+- PK: `id`.
+- FK: `variant_id -> product_variants.id`, `created_by_user_id -> users.id`.
+- UQ: `operation_key` (toàn cục, không phải khóa ghép với `variant_id`).
+- `reference_id` là tham chiếu nghiệp vụ đa hình, không phải FK cố định trong ERD.
+- Tồn hiện tại nằm ở `product_variants.quantity`; stock movement là lịch sử biến động.
 
 ## 8. Procurement
 
 ### Supplier
 
-`id`, `code`, `name`, `phone`, `email`, `address`, `active`, timestamps.
+`suppliers`: `id`, `name`, `phone`, `email`, `address`, `status`, `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-### PurchaseOrder / PurchaseOrderItem
+- PK: `id`.
+- Một supplier có nhiều purchase order.
+- ERD không khai báo `code`, `active` hoặc UQ trên email.
 
-PurchaseOrder: `id`, `code`, `supplierId`, `status`, `createdBy`, `createdAt`, `receivedAt`.
+### PurchaseOrder
 
-PurchaseOrderItem: `id`, `purchaseOrderId`, `variantId`, `quantity`, `unitCost`; unique `(purchase_order_id, variant_id)`. `unitCost` là snapshot giá nhập.
+`purchase_orders`: `id`, `supplier_id` (`supplierId`), `created_by_user_id` (`createdByUserId`), `status`, `note`, `created_at` (`createdAt`), `received_at` (`receivedAt`).
+
+- PK: `id`.
+- FK: `supplier_id -> suppliers.id`, `created_by_user_id -> users.id`.
+- Một purchase order có nhiều purchase-order item.
+
+### PurchaseOrderItem
+
+`purchase_order_items`: `id`, `purchase_order_id` (`purchaseOrderId`), `variant_id` (`variantId`), `quantity`, `received_quantity` (`receivedQuantity`), `unit_cost` (`unitCost`).
+
+- PK: `id`.
+- FK: `purchase_order_id -> purchase_orders.id`, `variant_id -> product_variants.id`.
+- ERD không khai báo UQ `(purchase_order_id, variant_id)`.
 
 ## 9. Review
 
 ### Review
 
-`id`, `orderItemId UNIQUE`, `userId`, `productId`, `variantId`, `rating`, `comment`, `status/visible`, `hiddenReason`, `hiddenBy`, timestamps.
+`reviews`: `id`, `order_item_id` (`orderItemId`), `rating`, `comment`, `visible`, `created_at` (`createdAt`), `updated_at` (`updatedAt`).
 
-Review chỉ được tạo khi order item thuộc actor và order đã DELIVERED.
+- PK: `id`; `order_item_id` vừa là FK tới `order_items.id` vừa là UQ.
+- Một order item có tối đa một review.
+- ERD không lặp `user_id`, `product_id`, `variant_id` trong review; các dữ liệu này truy ngược qua order item.
 
-## Quan hệ Java giữa module
+## Nguyên tắc ánh xạ Java
 
-Ví dụ đúng:
-
-```java
-class InventoryStock {
-    Long variantId;
-}
-
-class OrderItem {
-    Long productId;
-    Long variantId;
-    String productName;
-    String sku;
-}
-```
-
-Không dùng:
-
-```java
-@ManyToOne
-ProductVariant variant; // sai nếu ProductVariant thuộc module catalog
-```
-
-Quan hệ JPA chỉ giữ trong module, ví dụ `OrderItem -> Order` hoặc `ProductVariant -> Product` là hợp lệ.
+- Quan hệ JPA chỉ nên được dùng trong cùng module. Với FK xuyên module, entity giữ ID và module giao tiếp qua service/DTO contract.
+- Không suy diễn UQ từ nghiệp vụ. Chỉ các cột được đánh UQ trong ERD mới được mô tả là unique trong baseline.
+- Nếu cần thêm field/constraint ngoài ERD, phải cập nhật ERD và tài liệu 12 trước hoặc cùng thay đổi schema.

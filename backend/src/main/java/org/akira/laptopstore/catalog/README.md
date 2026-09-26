@@ -4,7 +4,7 @@
 
 ## Trách nhiệm
 
-Sở hữu thông tin laptop, biến thể/SKU, giá bán, ảnh, thông số, brand/category. Catalog **không sở hữu hoặc cập nhật tồn kho**.
+Sở hữu thông tin laptop, biến thể/SKU, giá bán, ảnh, thông số, brand/category. Cột tồn nằm tại `product_variants.quantity` theo ERD, nhưng catalog **không tự cập nhật quantity**; việc đổi tồn phải đi qua inventory service.
 
 ## Cần viết gì
 
@@ -26,12 +26,12 @@ Sở hữu thông tin laptop, biến thể/SKU, giá bán, ảnh, thông số, b
 ## Bất biến và ràng buộc
 
 - Product là model chung; RAM/SSD/color nằm ở ProductVariant nếu thay đổi theo SKU.
-- ProductSpecification baseline 1:1 với Product và dùng typed columns cho CPU/GPU/màn hình/pin/trọng lượng/OS.
-- SKU, slug unique; giá BigDecimal không âm; ảnh lưu URL/object key.
-- ProductVariant **không có `stockQuantity`**. Tồn nằm tại `inventory.InventoryStock`.
+- ProductSpecification dùng typed columns cho CPU/GPU/màn hình/pin/trọng lượng/OS. `product_id` chỉ là FK nên ERD hiện biểu diễn Product 1:N ProductSpecification.
+- Chỉ `sku` được đánh UQ trong ProductVariant; ERD không có cột `slug`. Giá nên dùng BigDecimal không âm; ảnh lưu ở `image_url`.
+- ProductVariant có cột `quantity`; chỉ inventory service được thay đổi cột này và phải ghi StockMovement cùng transaction.
 - API public chỉ trả product ACTIVE và variant đang bán; admin có query riêng.
 - Checkout dùng `lockAndGetCheckoutVariants(ids)` để chốt giá/trạng thái/SKU snapshot trong transaction; khóa variant theo ID tăng dần.
-- Dùng optimistic version cho cập nhật metadata/giá tránh lost update. Không hard-delete variant đã được tham chiếu.
+- Khi cập nhật metadata/giá, tránh ghi đè `quantity` đã được inventory thay đổi đồng thời. Không hard-delete variant đã được tham chiếu.
 
 ## Bàn giao và kiểm tra
 

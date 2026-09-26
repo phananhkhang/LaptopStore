@@ -243,21 +243,23 @@ flowchart TD
 ### Giai đoạn 3: Thiết kế Dữ liệu, Nghiệp vụ & API chi tiết
 
 6. [05-data-and-consistency.md](backend/docs/architecture/05-data-and-consistency.md) — **Dữ liệu và tính nhất quán:**
-   - **Mục đích:** Quy ước kiểu dữ liệu (tiền dùng `BigDecimal`, thời gian dùng `Instant` UTC), cơ chế quản lý tồn kho khả dụng (`ProductVariant.stockQuantity`) kết hợp sổ cái biến động kho (`stock_movements`), thứ tự khóa bản ghi (Lock ordering) theo ID tăng dần để ngăn ngừa tuyệt đối Deadlock.
+   - **Mục đích:** Quy ước kiểu dữ liệu (tiền dùng `BigDecimal`, thời gian dùng `Instant` UTC), cơ chế quản lý tồn kho khả dụng (`product_variants.quantity`) kết hợp sổ cái biến động kho (`stock_movements`), thứ tự khóa bản ghi (Lock ordering) theo ID tăng dần để ngăn ngừa deadlock.
 7. [06-business-flows.md](backend/docs/architecture/06-business-flows.md) — **Luồng nghiệp vụ và trạng thái:**
    - **Mục đích:** Nắm vững từng bước trong Luồng Checkout nguyên tử (Atomic checkout), kịch bản hoàn tồn/coupon khi hủy đơn, và cỗ máy trạng thái đơn hàng (Order State Machine: `PENDING` → `CONFIRMED` → `PACKING` → `SHIPPING` → `DELIVERED` / `CANCELLED`).
 8. [07-api-contracts.md](backend/docs/architecture/07-api-contracts.md) — **Quy ước API và lỗi:**
    - **Mục đích:** Chuẩn hóa REST API prefix `/api/v1`, định dạng phân trang `PageResponse<T>`, mã lỗi chuẩn RFC 7807/thống nhất, và header chống trùng lặp `Idempotency-Key` khi tạo đơn hàng.
 9. [08-security.md](backend/docs/architecture/08-security.md) — **Bảo mật và quyền truy cập:**
    - **Mục đích:** Ma trận phân quyền 3 roles (`USER`, `STAFF`, `ADMIN`), kiểm tra Ownership khi truy cập tài nguyên cá nhân (`/me/**`), cơ chế bảo mật xác thực với access token Bearer và refresh token lưu trong HttpOnly Cookie, mã hóa mật khẩu qua `PasswordEncoder`.
+10. [11-entity-model.md](backend/docs/architecture/11-entity-model.md) và [12-ERD-LaptopStore.md](backend/docs/architecture/12-ERD-LaptopStore.md) — **Entity và ERD chuẩn:**
+    - **Mục đích:** Đọc đúng 25 thực thể, từng thuộc tính, PK/FK/UQ, tên field Java và 29 quan hệ trước khi viết entity hoặc migration.
 
 ---
 
 ### Giai đoạn 4: Kiểm thử, Vận hành & Tiêu chuẩn bàn giao
 
-10. [09-testing-and-operation.md](backend/docs/architecture/09-testing-and-operation.md) — **Kiểm thử và vận hành:**
+11. [09-testing-and-operation.md](backend/docs/architecture/09-testing-and-operation.md) — **Kiểm thử và vận hành:**
     - **Mục đích:** Chiến lược test theo rủi ro (Unit test cho tính toán giá/coupon; WebMvc test cho phân quyền/validation; Integration test trên PostgreSQL thật cho concurrency, chống oversell và rollback).
-11. [10-delivery-checklist.md](backend/docs/architecture/10-delivery-checklist.md) — **Kế hoạch triển khai và tiêu chí hoàn tất:**
+12. [10-delivery-checklist.md](backend/docs/architecture/10-delivery-checklist.md) — **Kế hoạch triển khai và tiêu chí hoàn tất:**
     - **Mục đích:** 5 Milestones triển khai dự án (từ Milestone 0 chốt nền đến Milestone 4 demo). Bảng **Checklist 9 bước** bắt buộc phải tự kiểm tra trước khi tạo Pull Request bàn giao bất kỳ use case nào.
 
 ---

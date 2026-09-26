@@ -1,7 +1,7 @@
-# Mô hình dữ liệu quan hệ (RDM) — LaptopStore
+# Mô hình dữ liệu quan hệ (ERD) — LaptopStore
 
-> Nguồn: RDM hiện tại `LaptopStore(3).drawio`.
-> Quan hệ trong tài liệu này được xác định theo **PK / FK / UQ được khai báo trong các entity**. Nếu một đường connector trong Draw.io neo nhầm vào field khác với FK, khóa dữ liệu được xem là nguồn chân lý.
+> Nguồn chuẩn: [`database/LaptopStore_ERD.jpg`](../../../database/LaptopStore_ERD.jpg).
+> Thuộc tính và quan hệ trong tài liệu này được đọc theo **PK / FK / UQ hiển thị trong ERD**. Không suy diễn thêm cột hoặc unique constraint chỉ từ yêu cầu nghiệp vụ.
 
 ## 1. Quy ước
 
@@ -363,7 +363,7 @@ Thông tin nhà cung cấp.
 | PK | `id` | Định danh bản ghi. |
 | — | `name` | Tên hiển thị. |
 | — | `phone` | Số điện thoại. |
-| — | `email` | Email đăng nhập. |
+| — | `email` | Email liên hệ. |
 | — | `address` | Địa chỉ. |
 | — | `status` | Trạng thái nghiệp vụ của bản ghi. |
 | — | `created_at` | Thời điểm tạo. |
@@ -423,7 +423,7 @@ Các dòng biến thể sản phẩm cần nhập trong một phiếu nhập.
 | `categories` | `products` | **1 : N** | `products.category_id` | Một category có nhiều product. |
 | `products` | `product_variants` | **1 : N** | `product_variants.product_id` | Một product có nhiều biến thể. |
 | `products` | `product_images` | **1 : N** | `product_images.product_id` | Một product có nhiều hình ảnh. |
-| `products` | `product_specifications` | **1 : N theo khóa hiện tại** | `product_specifications.product_id` | RDM hiện chỉ đánh FK, chưa đánh UQ; vì vậy DB chưa ép một product chỉ có một specification. |
+| `products` | `product_specifications` | **1 : N theo khóa hiện tại** | `product_specifications.product_id` | ERD chỉ đánh FK, chưa đánh UQ; vì vậy DB chưa ép một product chỉ có một specification. |
 | `users` | `carts` | **1 : 0..1** | `carts.user_id` (FK, UQ) | Một user có tối đa một cart. |
 | `carts` | `cart_items` | **1 : N** | `cart_items.cart_id` | Một cart có nhiều cart item. |
 | `product_variants` | `cart_items` | **1 : N** | `cart_items.variant_id` | Một variant có thể xuất hiện trong nhiều cart. |
@@ -513,4 +513,4 @@ product_variants ─< stock_movements
 
 ## Kết luận
 
-RDM hiện tại mô tả đầy đủ các miền Identity, Catalog, Cart, Ordering, Payment, Promotion, Inventory, Procurement và Review của LaptopStore. Điểm đáng chú ý nhất là quan hệ `users ↔ roles` được triển khai N:N qua `user_roles`, còn các quan hệ 1:1/0..1 được biểu diễn bằng `FK + UQ` ở `carts.user_id`, `payments.order_id`, `coupon_usages.order_id` và `reviews.order_item_id`.
+ERD hiện tại mô tả đầy đủ các miền Identity, Catalog, Cart, Ordering, Payment, Promotion, Inventory, Procurement và Review của LaptopStore. Điểm đáng chú ý nhất là quan hệ `users ↔ roles` được triển khai N:N qua `user_roles`, còn các quan hệ 1:1/0..1 được biểu diễn bằng `FK + UQ` ở `carts.user_id`, `payments.order_id`, `coupon_usages.order_id` và `reviews.order_item_id`.

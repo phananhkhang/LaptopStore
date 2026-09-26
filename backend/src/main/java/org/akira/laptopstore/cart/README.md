@@ -27,7 +27,7 @@ Giỏ tạm của từng USER, thêm/xóa/sửa số lượng và cung cấp sna
 
 ## Bất biến và ràng buộc
 
-- Mỗi user một cart; unique(cart_id, variant_id); quantity phải lớn hơn 0.
+- Mỗi user tối đa một cart vì `carts.user_id` là UQ. ERD không có UQ `(cart_id, variant_id)`; service phải tìm/gộp dòng cùng variant trong cart. Quantity phải lớn hơn 0.
 - actorId lấy từ principal; không nhận userId tùy ý trong request.
 - Giá hiển thị trong giỏ chỉ là tham khảo; order phải kiểm tra và tính lại khi checkout.
 - Mọi thao tác sửa giỏ và checkout khóa cùng hàng cart để tránh xóa mất mục vừa được người dùng thêm.
@@ -44,4 +44,3 @@ Các ca cần chứng minh: quantity 0/âm; hai lần thêm cùng SKU không t�
 ## Quy tắc các tầng và liên kết kiến trúc
 
 Quy tắc và ràng buộc chi tiết cho từng tầng (`controller`, `service`, `repository`, `entity`, `dto`, `mapper`) tuân thủ theo [luật tầng](../../../../../../../docs/architecture/02-structure-and-layers.md) và [luồng nghiệp vụ](../../../../../../../docs/architecture/06-business-flows.md).
-

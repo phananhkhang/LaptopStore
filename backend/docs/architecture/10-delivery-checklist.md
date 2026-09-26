@@ -29,7 +29,7 @@ Không có deadline cụ thể vì chưa biết lịch nhóm. Không cần chờ
 | Nội dung | Đề xuất hiện tại | Owner điều phối |
 |---|---|---|
 | Danh tính ownership | A/B/C/D theo tài liệu 03 | Leader |
-| Chi tiết tồn/transaction | Tồn khả dụng ở `inventory_stocks`; catalog không ghi stock; khóa tăng dần theo ID (tài liệu 04, 05, 11) | B + C |
+| Chi tiết tồn/transaction | Tồn khả dụng ở `product_variants.quantity`; chỉ inventory service đổi quantity và ghi `stock_movements`; khóa variant tăng dần theo ID (tài liệu 04, 05, 11) | B + C |
 | Token, CORS, CSRF, TTL | Topology frontend, access token Bearer, refresh token trong HttpOnly cookie (tài liệu 08) | A |
 | Payment order dependency | Payment gọi order, tách session sau checkout (tài liệu 04, 06) | C + D |
 | Response/data convention | DTO trực tiếp và lỗi thống nhất (tài liệu 07) | A + frontend |
@@ -41,8 +41,8 @@ Không có deadline cụ thể vì chưa biết lịch nhóm. Không cần chờ
 | Rủi ro | Cách xử lý dự kiến |
 |---|---|
 | Dùng tutorial Boot 3 cho project Boot 4.1.1 | Kiểm tra dependency/API theo version hiện có trước thêm code |
-| Catalog và inventory lệch ownership | Đã tách `inventory_stocks` khỏi ProductVariant; mỗi module ghi bảng của mình; review contract B/C |
+| Catalog và inventory dùng chung ProductVariant | Khoanh quyền ghi theo cột: catalog ghi metadata/giá, inventory ghi quantity và movement qua contract; review contract B/C |
 | Double checkout/double receive/callback lặp | Khóa + unique key + test hai transaction |
-| Mất dữ liệu tiền khi callback trễ | Lưu payment và cờ đối soát, không hồi sinh đơn đã hủy |
+| Mất dữ liệu tiền khi callback trễ | Luôn lưu payment transaction; service đánh dấu/xử lý đối soát mà không giả định có cột ngoài ERD; không hồi sinh đơn đã hủy |
 | Tài liệu dài nhưng không được theo | README cạnh source, checklist PR nhỏ, bám sát các tài liệu kiến trúc trọng tâm |
 | Nhầm thư mục là code đã có | Tài liệu ghi rõ skeleton và trạng thái hiện có; cập nhật theo từng PR |
