@@ -31,13 +31,13 @@ Bản ghi thanh toán COD, thanh toán online mô phỏng và tích hợp VNPay 
 - Số tiền lấy từ snapshot order, không tin amount/status do browser gửi.
 - Callback phải kiểm tra nguồn/chữ ký theo provider, mã tham chiếu, tiền, currency và kết quả. Redirect browser chỉ dùng hiển thị.
 - Deduplicate bằng provider transaction id/event id và khóa payment; nhận callback lặp không tạo giao dịch hay cập nhật order lần hai.
-- Ghi payment và cập nhật order qua service trong cùng transaction DB. Gọi HTTP provider ở ngoài transaction giữ khóa.
-- Thanh toán thành công đến sau hủy: lưu chứng cứ PAID và cờ RECONCILIATION_REQUIRED, không đổi order CANCELLED, không rollback mất giao dịch. Hoàn tiền tự động ngoài MVP.
+- Ghi payment/transaction và phối hợp trạng thái order qua service trong cùng transaction DB. `orders` không có cột payment projection. Gọi HTTP provider ở ngoài transaction giữ khóa.
+- Thanh toán thành công đến sau hủy: lưu chứng cứ và trạng thái cần đối soát trong `payments.status`/`payment_transactions.status`, không đổi order CANCELLED, không rollback mất giao dịch. ERD không có cột `reconciliation_status`; hoàn tiền tự động ngoài MVP.
 - Endpoint mô phỏng chỉ mở profile dev/test, có xác thực phù hợp; không dùng nó làm webhook production. COD chỉ STAFF/ADMIN xác nhận thu tiền sau giao hàng.
 
 ## Luồng triển khai điển hình
 
-Kiểm tra order/ownership → lập payment attempt → tạo session ngoài khóa DB → nhận callback → khóa payment/order → ghi kết quả và cập nhật projection của order.
+Kiểm tra order/ownership → lập payment → tạo session ngoài khóa DB → nhận callback → khóa payment/order → ghi payment transaction, cập nhật `payments.status` và phối hợp trạng thái order.
 
 ## Bàn giao và kiểm tra
 
@@ -46,4 +46,3 @@ Các ca cần chứng minh: sai chữ ký/số tiền; callback lặp; callback 
 ## Quy tắc các tầng và liên kết kiến trúc
 
 Quy tắc và ràng buộc chi tiết cho từng tầng (`controller`, `service`, `repository`, `entity`, `dto`, `mapper`, `integration`) tuân thủ theo [luật tầng](../../../../../../../docs/architecture/02-structure-and-layers.md) và [luồng nghiệp vụ](../../../../../../../docs/architecture/06-business-flows.md).
-

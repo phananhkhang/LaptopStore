@@ -46,8 +46,7 @@ Header `Idempotency-Key: checkout-example-001`. Request không nhận giá/tổn
 {
   "addressId": 15,
   "paymentMethod": "COD",
-  "couponCode": "STUDENT10",
-  "note": "Giao trong giờ hành chính"
+  "couponCode": "STUDENT10"
 }
 ```
 
@@ -66,6 +65,8 @@ Response 201 minh họa:
   "createdAt": "2026-09-18T10:30:00Z"
 }
 ```
+
+`paymentStatus` là field DTO được suy ra từ `payments.status`, không phải cột của `orders`. `paymentMethod` được lưu ở `payments.method`.
 
 Retry cùng key/payload trả order cũ với 200; cùng key khác payload trả 409. BigDecimal được serialize dạng số JSON theo contract MVP VND; frontend không dùng số do nó tính làm số tiền authoritative.
 

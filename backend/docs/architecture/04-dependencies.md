@@ -13,11 +13,11 @@ Mũi tên A → B nghĩa là service A gọi contract service/DTO của B. “Kh
 | order | user, cart, catalog, inventory, promotion | Điều phối checkout/hủy |
 | payment | order | Đọc payable order, cập nhật kết quả đã xác minh |
 | promotion | Không | Nhận các giá trị server truyền vào |
-| inventory | catalog | Chỉ đọc/kiểm tra variant reference khi use case cần; không ghi catalog |
+| inventory | catalog | Khóa variant, đọc và cập nhật `product_variants.quantity` qua contract; không sửa metadata/giá |
 | procurement | catalog, inventory | Kiểm tra SKU/variant và nhận hàng |
 | review | order, catalog | Kiểm tra đã mua/giao và thông tin public |
 
-Không có cạnh `catalog → inventory`, `order → payment`, `cart → order` hoặc `catalog → review`. Inventory sở hữu bảng tồn nên không còn contract ghi stock nằm trong catalog.
+Không có cạnh `catalog → inventory`, `order → payment`, `cart → order` hoặc `catalog → review`. ERD đặt tồn tại `product_variants.quantity`; catalog cung cấp contract nội bộ có phạm vi hẹp để inventory khóa và cập nhật đúng cột này.
 
 ## Hạ tầng chung
 
@@ -40,13 +40,14 @@ Tên dưới đây là thiết kế để owner triển khai, chưa có Java cla
 | catalog | `getSellableVariants(ids)` | ids → VariantSnapshot[] | Dùng cho đọc/giỏ; kiểm tra active, lấy giá mới, không trả entity |
 | catalog | `lockAndGetCheckoutVariants(ids)` | ids → CheckoutVariantSnapshot[] | Khóa variant theo id tăng dần trong transaction checkout; chốt giá/trạng thái/SKU snapshot |
 | catalog | `getVariantReferences(ids)` | ids → VariantReference[] | Read-only cho inventory/procurement khi cần xác minh ID/SKU |
-| inventory | `deductForOrder(...)`, `restoreForOrder(...)` | orderId, lines, operationKey → kết quả | Khóa `inventory_stocks` tăng dần; một lần mỗi key/variant; stock và ledger atomic |
+| catalog | `changeVariantQuantity(...)` | variantId, delta → before/after | Chỉ inventory gọi; khóa variant, không âm, không sửa metadata/giá |
+| inventory | `deductForOrder(...)`, `restoreForOrder(...)` | orderId, lines, operationKey → kết quả | Khóa variant tăng dần; cập nhật quantity và ledger atomic; mỗi movement có operation key UQ |
 | inventory | `receivePurchase(...)` | purchaseId, lines, operationKey | Cùng transaction nhận phiếu; tăng stock và ledger atomic |
 | inventory | `adjustStock(...)` | variantId, delta, reason, actorId, operationKey | Không âm; bắt buộc reason cho adjustment |
 | promotion | `lockAndEvaluateForCheckout(...)` | coupon, userId, subtotal → CouponEvaluation | Khóa coupon; không giữ lượt ngoài transaction checkout |
 | promotion | `reserveForOrder(...)`, `releaseForOrder(...)` | coupon, userId, orderId, subtotal → CouponEvaluation | Khóa và ghi usage; không tự query order |
-| order | `getPayableOrder(actorId, orderId)` | ID → OrderPaymentSnapshot | Ownership, total, method, status |
-| order | `recordVerifiedPayment(result)` | kết quả nội bộ từ payment → outcome | Khóa order, cập nhật projection; CANCELLED → RECONCILIATION_REQUIRED |
+| order | `getPayableOrder(actorId, orderId)` | ID → OrderPaymentSnapshot | Ownership, total và trạng thái order; payment tự quản lý method/status |
+| order | `recordVerifiedPayment(result)` | kết quả nội bộ từ payment → outcome | Khóa order, kiểm tra trạng thái; trạng thái thanh toán vẫn nằm ở `payments` |
 | order | `getDeliveredItem(userId, orderItemId)` | ID → PurchasedItemView | Chỉ đúng chủ đơn và DELIVERED |
 
 Lỗi chéo dùng exception cơ sở/mã lỗi đã công bố, ví dụ `INSUFFICIENT_STOCK`, `INVALID_ORDER_STATE`, `COUPON_NOT_APPLICABLE`. Caller không bắt mọi Exception rồi trả thành công. Chốt chính xác signature và contract lỗi trong PR trước khi cả hai owner code.
@@ -60,13 +61,13 @@ Type của contract do **module cung cấp** khai báo. Ví dụ `OrderPaymentSe
 - Không truyền JPA entity qua contract module; chỉ truyền record/DTO bất biến.
 - Không module nào import `..repository..` hoặc `..entity..` của module khác.
 
-Ví dụ `inventory.InventoryStock` giữ `variantId`; không có `@ManyToOne ProductVariant`. `OrderItem` giữ `variantId` và snapshot tên/SKU/giá; không có quan hệ JPA sang catalog.
+Ví dụ `StockMovement` giữ `variantId`; không có `@ManyToOne ProductVariant`. `OrderItem` giữ `variantId` và snapshot tên/SKU/giá; không có quan hệ JPA sang catalog.
 
 ## Quy tắc transaction xuyên module
 
 Use case điều phối mở transaction; các service ghi tham gia cùng transaction bằng REQUIRED hoặc MANDATORY cho helper không được chạy độc lập. Không REQUIRES_NEW cho stock/ledger/coupon trong checkout. Không gọi HTTP provider khi đang giữ khóa DB. Không truyền entity giữa module dù cùng PersistenceContext.
 
-Checkout khóa theo thứ tự ổn định: cart → catalog variants (ID tăng dần) → coupon nếu chiến lược yêu cầu → inventory stocks (ID tăng dần). Nếu nhóm đổi thứ tự khóa, phải cập nhật tất cả luồng ghi liên quan để tránh deadlock.
+Checkout khóa theo thứ tự ổn định: cart → catalog variants (ID tăng dần) → coupon nếu chiến lược yêu cầu. Inventory cập nhật quantity trên chính các variant đã khóa và ghi movement trong cùng transaction. Nếu nhóm đổi thứ tự khóa, phải cập nhật tất cả luồng ghi liên quan để tránh deadlock.
 
 Phải gọi phương thức transactional qua Spring bean proxy; gọi `this.otherMethod()` không tạo transaction mới chỉ vì có annotation.
 

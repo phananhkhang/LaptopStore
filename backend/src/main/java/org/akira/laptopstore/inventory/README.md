@@ -4,40 +4,40 @@
 
 ## Trách nhiệm
 
-Inventory là **nguồn sự thật duy nhất về số lượng tồn**. Module sở hữu cả stock hiện tại và ledger biến động; catalog không được ghi stock.
+Inventory là **use-case owner duy nhất của thay đổi số lượng tồn**. Theo ERD, stock hiện tại nằm ở `product_variants.quantity`; lịch sử biến động nằm ở `stock_movements`.
 
 ## Cần viết gì
 
 | Thành phần | Class định hướng |
 |---|---|
-| Entity | InventoryStock, StockMovement |
-| Repository | InventoryStockRepository, StockMovementRepository |
+| Entity | StockMovement |
+| Repository | StockMovementRepository |
 | Service | InventoryService, InventoryQueryService |
 | Controller | InventoryController/AdminInventoryController |
 | Request | AdjustStockRequest |
-| Response/contract | InventoryStockResponse, StockMovementResponse, StockChangeResult |
+| Response/contract | InventoryQuantityResponse, StockMovementResponse, StockChangeResult |
 
 ## Dữ liệu và phụ thuộc
 
-**Dữ liệu sở hữu:** inventory_stocks, stock_movements.
+**Dữ liệu sở hữu:** quyền ghi nghiệp vụ lên `product_variants.quantity` và bảng `stock_movements`.
 
-`inventory_stocks.variant_id` có FK DB sang `product_variants.id`, nhưng Java chỉ giữ `Long variantId`; không `@ManyToOne ProductVariant`.
+`stock_movements.variant_id` có FK DB sang `product_variants.id`, nhưng Java chỉ giữ `Long variantId`; không `@ManyToOne ProductVariant`.
 
-**Được gọi:** catalog query contract nếu cần xác minh variant/SKU. Không import `ProductVariantRepository`, không gọi order/procurement và không dùng entity module khác.
+**Được gọi:** catalog contract để khóa variant, đọc/cập nhật `quantity` và xác minh SKU. Không import `ProductVariantRepository`, không gọi order/procurement và không dùng entity module khác.
 
 ## Bất biến và ràng buộc
 
-- `InventoryStock.quantity >= 0`; một variant có tối đa một stock row trong mô hình một kho MVP. Missing row = 0; lệnh đầu tiên lazy-create bằng upsert an toàn rồi khóa row.
+- `product_variants.quantity` không được âm; ERD không có bảng `inventory_stocks`.
 - Mọi biến động sau khởi tạo đi qua InventoryService; checkout giảm, cancel restore tăng, purchase receipt tăng.
 - Cập nhật stock và append StockMovement trong cùng transaction; ledger lỗi phải rollback stock.
-- Mỗi lệnh có `operationKey`; unique `(operation_key, variant_id)` để retry không cộng/trừ hai lần.
-- Lệnh nhiều dòng gộp theo variant rồi khóa `InventoryStock` theo variant ID tăng dần.
+- Mỗi StockMovement có `operationKey` UQ toàn cục để retry không cộng/trừ hai lần. Lệnh nhiều dòng phải tạo key riêng ổn định cho từng movement, ví dụ ghép key nghiệp vụ với variant ID.
+- Lệnh nhiều dòng gộp theo variant rồi khóa ProductVariant theo ID tăng dần.
 - SALE delta âm; CANCEL_RESTORE/PURCHASE_RECEIPT delta dương; ADJUSTMENT bắt buộc reason + actor.
 - Movement append-only; lưu before/delta/after/reference. DELIVERED không giảm stock lần nữa.
 
 ## Luồng triển khai điển hình
 
-Nhận lệnh nghiệp vụ → deduplicate → khóa stock rows → kiểm tra đủ quantity → cập nhật quantity/version → append movement → commit cùng transaction caller.
+Nhận lệnh nghiệp vụ → deduplicate → khóa ProductVariant → kiểm tra đủ quantity → cập nhật `product_variants.quantity` → append movement → commit cùng transaction caller.
 
 ## Bàn giao và kiểm tra
 

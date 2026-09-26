@@ -30,7 +30,7 @@ Coupon, điều kiện áp dụng và lượt sử dụng. Không tự tính l�
 - Chuẩn hóa code; kiểm tra active, khoảng thời gian, minimum spend, tổng lượt và giới hạn mỗi user.
 - Một coupon trên một order ở MVP. discount không âm và không vượt subtotal; làm tròn theo quy ước tiền.
 - Preview không giữ lượt. Checkout khóa coupon, kiểm tra lại và ghi CouponUsage trong cùng transaction order.
-- Unique(coupon_id, order_id); reserve/release idempotent. Chính sách MVP: hủy hợp lệ trả lượt đúng một lần.
+- `coupon_usages.order_id` là UQ nên mỗi order có tối đa một coupon usage; ERD không khai báo unique ghép `(coupon_id, order_id)`. Reserve/release phải idempotent; hủy hợp lệ trả lượt đúng một lần.
 - Không tin subtotal client gửi để chốt đơn; preview chỉ mang tính tham khảo.
 
 ## Luồng triển khai điển hình
@@ -44,4 +44,3 @@ Các ca cần chứng minh: hết hạn; giới hạn lượt cuối bị tranh 
 ## Quy tắc các tầng và liên kết kiến trúc
 
 Quy tắc và ràng buộc chi tiết cho từng tầng (`controller`, `service`, `repository`, `entity`, `dto`, `mapper`) tuân thủ theo [luật tầng](../../../../../../../docs/architecture/02-structure-and-layers.md) và [luồng nghiệp vụ](../../../../../../../docs/architecture/06-business-flows.md).
-

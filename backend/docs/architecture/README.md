@@ -14,7 +14,8 @@
 | [08 Bảo mật](08-security.md) | Role, ownership, token, thông tin nhạy cảm |
 | [09 Kiểm thử và vận hành](09-testing-and-operation.md) | Cách chạy, ca kiểm tra và khoảng trống công cụ |
 | [10 Hoàn tất và triển khai](10-delivery-checklist.md) | Các mốc, checklist PR, rủi ro và việc cần chốt |
-| [11 Entity model](11-entity-model.md) | Baseline entity/schema trước khi viết Flyway |
+| [11 Entity model](11-entity-model.md) | Ánh xạ chính xác 25 thực thể ERD sang tên field Java |
+| [12 ERD LaptopStore](12-ERD-LaptopStore.md) | Từng bảng, thuộc tính, PK/FK/UQ và toàn bộ quan hệ |
 
 ## Cách áp dụng
 
@@ -23,4 +24,3 @@
 - Khi nhóm nhận task, chốt phương án thiết kế đề xuất liên quan trước khi triển khai và ghi trạng thái code riêng. Không tự đổi trạng thái chỉ vì đã có folder.
 - README con cụ thể hóa quy tắc tầng/module, không tự cho phép phá quy tắc cha. Có xung đột thì cập nhật quyết định và các nơi tham chiếu trong cùng PR.
 - Giữ bộ tài liệu tại đường dẫn chuẩn `backend/docs/architecture/`.
-

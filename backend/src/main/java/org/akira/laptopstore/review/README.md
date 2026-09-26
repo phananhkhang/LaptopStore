@@ -30,7 +30,7 @@
 - Một review trên order_item_id; người đánh giá phải là chủ đơn đã DELIVERED.
 - Rating 1..5 được kiểm tra ở request, service và CHECK DB.
 - userId, productId/variantId xác định từ principal và order item; không tin trường client để chứng minh đã mua.
-- USER chỉ sửa review của mình. STAFF/ADMIN được ẩn nội dung kèm lý do; không đổi rating thay khách.
+- USER chỉ sửa review của mình. STAFF/ADMIN được đổi cờ `visible`; ERD không có cột lưu lý do/người ẩn, nên muốn audit moderation phải mở rộng ERD trước. Không đổi rating thay khách.
 - Chỉ review hiển thị được dùng tính điểm trung bình. Không tạo quan hệ service ngược catalog → review; frontend gọi API review riêng.
 
 ## Luồng triển khai điển hình
@@ -44,4 +44,3 @@ Các ca cần chứng minh: chưa mua; đơn chưa giao; order item người kh�
 ## Quy tắc các tầng và liên kết kiến trúc
 
 Quy tắc và ràng buộc chi tiết cho từng tầng (`controller`, `service`, `repository`, `entity`, `dto`, `mapper`) tuân thủ theo [luật tầng](../../../../../../../docs/architecture/02-structure-and-layers.md) và [luồng nghiệp vụ](../../../../../../../docs/architecture/06-business-flows.md).
-

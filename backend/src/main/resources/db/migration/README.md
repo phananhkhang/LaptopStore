@@ -19,18 +19,19 @@ V9__create_review_schema.sql
 Giai đoạn bootstrap có thể dùng **một migration khởi tạo cho mỗi module/nhóm nghiệp vụ**. Sau khi file đã merge hoặc chạy ở DB dùng chung, **không sửa migration cũ**; mọi thay đổi tạo file mới, ví dụ:
 
 ```text
-V10__add_warranty_months_to_products.sql
-V11__add_order_status_index.sql
+V10__add_order_status_index.sql
+V11__add_payment_provider_reference_index.sql
 ```
 
 ## Luật nhóm
 
 - Trước khi tạo migration mới, pull/rebase `main` rồi lấy version kế tiếp.
 - Bảng cha tạo trước foreign key phụ thuộc.
+- Baseline phải tạo đúng 25 bảng và PK/FK/UQ trong ERD; CHECK/index bổ sung phải được ghi rõ là quyết định triển khai.
 - Constraint quan trọng phải nằm trong DB: FK, UNIQUE, CHECK, index.
 - Không dùng `ddl-auto=update` thay Flyway; cấu hình giữ `validate`.
 - Demo/seed data tách khỏi migration production hoặc có profile/strategy rõ.
 - Test cả DB trống và upgrade từ schema trước đó trước merge.
 - Không chia subfolder theo module nếu chưa cấu hình Flyway locations riêng; timeline phẳng dễ review dependency hơn.
 
-Đọc [Entity model](../../../../../docs/architecture/11-entity-model.md) và [Dữ liệu/nhất quán](../../../../../docs/architecture/05-data-and-consistency.md) trước khi viết SQL.
+Đọc [Entity model](../../../../../docs/architecture/11-entity-model.md), [ERD LaptopStore](../../../../../docs/architecture/12-ERD-LaptopStore.md) và [Dữ liệu/nhất quán](../../../../../docs/architecture/05-data-and-consistency.md) trước khi viết SQL.

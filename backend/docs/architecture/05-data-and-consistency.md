@@ -1,92 +1,89 @@
 # Dữ liệu và tính nhất quán
 
-## Quy ước chung đề xuất
+## Nguồn chuẩn
 
-Khóa chính dùng Long/BIGINT identity cho dữ liệu nghiệp vụ; mã public như orderCode tách khỏi PK. Tiền VND dùng BigDecimal/NUMERIC(19,0), không float/double. Chiết khấu phần trăm tính trung gian đủ precision, kết quả VND làm tròn HALF_UP. Thời gian Instant và TIMESTAMPTZ, lưu UTC; UI chuyển múi giờ. Enum lưu STRING và kiểm soát giá trị bằng migration.
+Baseline schema của dự án là [`database/LaptopStore_ERD.jpg`](../../../database/LaptopStore_ERD.jpg), gồm 25 thực thể. [11 Entity model](11-entity-model.md) ánh xạ tên cột sang field Java; [12 ERD LaptopStore](12-ERD-LaptopStore.md) liệt kê từng thuộc tính, PK/FK/UQ và mọi quan hệ.
 
-Các bảng thay đổi có created_at/updated_at; ledger/history append-only có created_at, actor và reference phù hợp. Không dùng BaseEntity máy móc để giả rằng bảng nào cũng được update.
+Các kiểu dữ liệu, CHECK constraint và index không được thể hiện trên ảnh ERD phải được xem là quyết định triển khai, không được ghi nhầm thành ràng buộc đã có trong ERD.
 
-## Mô hình dữ liệu tối thiểu
+## Quy ước triển khai đề xuất
 
-Đây là thiết kế logic; chưa có migration hoặc entity Java tương ứng. Chi tiết field xem [11 Entity model](11-entity-model.md).
+Khóa chính có thể dùng Long/BIGINT identity. Tiền VND nên dùng BigDecimal/NUMERIC(19,0), không dùng float/double. Thời gian nên dùng Instant/TIMESTAMPTZ và lưu UTC. Enum nên lưu STRING và kiểm soát tập giá trị ở migration.
 
-| Bảng hoặc nhóm | Trường/constraint quan trọng |
+Khi tạo migration, nên bổ sung CHECK hợp lý như giá/số lượng không âm và rating trong 1..5, nhưng phải ghi rõ đó là constraint triển khai thêm vì ảnh ERD chỉ mô tả PK/FK/UQ.
+
+## Các bảng và ràng buộc đúng theo ERD
+
+| Bảng hoặc nhóm | Cột/constraint trọng tâm |
 |---|---|
-| users, roles, user_roles | unique lower(email), role code unique; PK(user_id, role_id); `user_roles` là join table cho `User.roles`, không phải entity riêng khi không có field nghiệp vụ; password_hash không public |
-| addresses | FK user_id; truy vấn luôn kiểm tra chủ sở hữu |
-| refresh_tokens | token_hash unique, user_id, family_id, expires_at, used_at, revoked_at; khóa khi rotate |
-| brands, categories | slug unique, trạng thái active; parent category nếu có phải tránh vòng |
-| products | brand_id/category_id FK, slug unique, trạng thái; model chung, không chứa RAM/SSD/color theo variant |
-| product_variants | product_id FK, sku unique, price >= 0, ram_gb/storage_gb > 0, color, status, version; **không chứa stock** |
-| product_images | product_id FK; unique(product_id, sort_order) |
-| product_specifications | product_id FK unique; các thông số model như CPU/GPU/màn hình/pin/trọng lượng/OS |
-| inventory_stocks | variant_id FK unique, quantity >= 0, version; nguồn sự thật về tồn khả dụng |
-| stock_movements | variant_id FK, delta, before/after, type, reference_type/id, operation_key, actor; unique(operation_key, variant_id) |
-| carts, cart_items | unique user_id ở cart; unique(cart_id, variant_id), quantity > 0 |
-| orders | order_code unique, user_id FK, status, payment_method, payment_status projection, snapshot địa chỉ/tổng; unique(user_id, idempotency_key), request_hash |
-| order_items | order_id, product_id/variant_id tham chiếu; product_name/SKU/variant_name/unit_price snapshot, quantity > 0, line_total |
-| order_status_history | order_id, from/to status, actor, reason, created_at; append-only |
-| payments | order_id unique trong MVP, method, status, amount, currency, reconciliation_status |
-| payment_transactions | payment_id, provider, provider_transaction_id/reference, type/status/amount; unique provider transaction khi có mã |
-| coupons, coupon_usages | code unique; unique(coupon_id, order_id); usage ACTIVE/RELEASED, giới hạn lượt |
-| suppliers | mã unique, thông tin liên hệ, active |
-| purchase_orders, purchase_order_items | supplier_id FK, code unique, status; quantity > 0, unit_cost >= 0; unique(purchase_order_id, variant_id) |
-| reviews | order_item_id unique, user_id/product_id/variant_id; CHECK rating BETWEEN 1 AND 5; moderation status |
+| `users`, `roles`, `user_roles` | `users.email` UQ; `roles.name` UQ; PK ghép `user_roles(user_id, role_id)`, cả hai đồng thời là FK |
+| `addresses` | `user_id` FK; địa chỉ gồm `ward`, `district`, `city`, `street`, `postal_code` |
+| `refresh_tokens` | `user_id` FK; `token_hash` UQ; có `family_id`, `expires_at`, `used_at`, `revoked_at` |
+| `brands`, `categories` | `name` UQ; brand có `logo_url`; cả hai có `description`, `active` |
+| `products` | `brand_id`, `category_id` là FK; không có `slug` hay `warranty_months` |
+| `product_variants` | `product_id` FK; `sku` UQ; có `ram`, `storage`, `color`, `price`, `quantity`, `status` |
+| `product_images` | `product_id` FK; có `image_url`, `is_primary`; không có `alt_text`, `sort_order` |
+| `product_specifications` | `product_id` chỉ là FK, không phải UQ; có `cpu`, `gpu`, `screen_size`, `screen_resolution`, `refresh_rate`, `battery`, `weight`, `os` |
+| `stock_movements` | `variant_id`, `created_by_user_id` là FK; `operation_key` UQ; có before/after, delta, reference và note |
+| `carts`, `cart_items` | `carts.user_id` là FK + UQ; cart item có FK tới cart và variant; ERD không đánh UQ cặp cart/variant |
+| `orders` | `user_id` FK; `order_code` UQ; `idempotency_key` UQ; snapshot người nhận/địa chỉ/coupon và tổng tiền |
+| `order_items` | FK tới order, product, variant; snapshot `product_name`, `variant_name`, `sku`, `unit_price`; không có `line_total` |
+| `order_status_history` | FK tới order và user thay đổi; có `from_status`, `to_status`, `changed_at`; không có `reason` |
+| `payments` | `order_id` là FK + UQ; có `method`, `amount`, `status`, `expires_at` |
+| `payment_transactions` | `payment_id` FK; có provider, provider transaction/reference, amount, status; ERD không đánh UQ provider transaction |
+| `coupons`, `coupon_usages` | `coupons.code` UQ; usage có FK tới coupon/user/order; `coupon_usages.order_id` là UQ |
+| `suppliers` | Có `name`, `phone`, `email`, `address`, `status`; không có `code` hoặc `active` |
+| `purchase_orders`, `purchase_order_items` | PO có FK supplier/user; item có FK PO/variant và `quantity`, `received_quantity`, `unit_cost`; không có unique cặp PO/variant |
+| `reviews` | `order_item_id` là FK + UQ; có `rating`, `comment`, `visible`, timestamps |
 
-Foreign key xuyên module có thể tồn tại ở DB dù Java dùng ID. Index FK cần truy vấn thường xuyên được định nghĩa rõ trong migration. Ràng buộc UNIQUE/CHECK/FK bảo vệ dữ liệu, không thay quyền truy cập và điều kiện nghiệp vụ.
+Foreign key xuyên module có thể tồn tại ở DB dù Java chỉ giữ ID. Index cho FK hay cột truy vấn thường xuyên nên được định nghĩa trong migration, nhưng index không được suy diễn thành UQ.
 
 ## Product, Variant và Specification
 
-- `Product` đại diện **model chung**, ví dụ “MacBook Air M4 13 inch”.
-- `ProductVariant` đại diện **SKU thực sự bán**, ví dụ 16GB/512GB/Midnight. RAM, dung lượng và màu nằm ở variant nếu thay đổi theo SKU.
-- `ProductSpecification` là cấu hình kỹ thuật chung của model: CPU, GPU, màn hình, refresh rate, pin, trọng lượng, OS. Baseline dùng một dòng 1:1 với product thay vì key/value tự do để filter/query dễ hơn.
-- Nếu sau này có thuộc tính hiếm không đáng tạo cột, có thể thêm `extra_specs JSONB` hoặc bảng extension sau ADR; không đưa vào MVP trước khi cần.
+- `products` đại diện model/dòng laptop.
+- `product_variants` đại diện SKU bán thực tế và chứa RAM, storage, color, price, **quantity** và status.
+- `product_specifications` chứa thông số kỹ thuật. Theo khóa hiện có, một product có thể có nhiều specification vì `product_id` không được đánh UQ.
+- `product_images` chỉ có URL và cờ ảnh chính; thứ tự/alt text chưa thuộc baseline.
 
 ## Tồn khả dụng và ledger
 
-`InventoryStock.quantity` là số lượng **còn được bán**. Baseline chọn **lazy initialization**: variant mới chưa có stock row được hiểu là quantity = 0; lệnh inventory đầu tiên tạo row 0 bằng cơ chế upsert an toàn rồi khóa để cập nhật. Nhận hàng tăng, checkout giảm, hủy hợp lệ tăng lại. DELIVERED không giảm lần nữa.
+Nguồn tồn hiện tại là `product_variants.quantity`. ERD không có bảng `inventory_stocks`. Mỗi lần thay đổi tồn cần:
 
-Inventory sở hữu cả `inventory_stocks` và `stock_movements`. Một lần thay đổi gồm khóa stock row → kiểm tra bất biến → cập nhật quantity/version → append movement trong cùng transaction. Catalog không có API ghi stock và CRUD sản phẩm không được sửa số lượng tồn.
+1. khóa `product_variants` theo ID tăng dần;
+2. kiểm tra quantity không âm;
+3. cập nhật `product_variants.quantity`;
+4. append `stock_movements` với `delta`, `quantity_before`, `quantity_after`, reference, actor và `operation_key` trong cùng transaction.
 
-Movement lưu `quantity_before`, `delta`, `quantity_after`, `reference_type`, `reference_id`, `operation_key`; đảm bảo `quantity_after = quantity_before + delta` và không âm. Ledger đã ghi không update/delete; sửa sai bằng movement bù.
+`stock_movements.operation_key` là UQ toàn cục theo ERD, do đó một nghiệp vụ gồm nhiều variant cần cấp operation key riêng cho từng movement hoặc định nghĩa quy ước key có hậu tố variant. Ledger đã ghi không update/delete; sửa sai bằng movement bù.
+
+Catalog quản lý metadata/giá của variant, còn mọi use case đổi `quantity` phải đi qua inventory service để luôn ghi movement. Khi lưu entity variant, tránh thao tác cập nhật toàn bộ làm ghi đè quantity ngoài ý muốn.
 
 ## Snapshot đơn hàng
 
-Order không chỉ lưu `address_id`. Khi checkout, sao chép người nhận/điện thoại/địa chỉ và số tiền vào order để lịch sử không thay đổi nếu user sửa profile/address.
+Khi checkout, sao chép `recipient_name`, `recipient_phone` và địa chỉ đã ghép vào `orders.shipping_address`. Các tổng tiền và `coupon_code_snapshot` cũng được lưu trực tiếp trên order.
 
-OrderItem phải snapshot tối thiểu `product_name`, `sku`, `variant_name`, `unit_price`, `quantity`, `line_total`; vẫn có thể giữ `product_id`/`variant_id` để truy vết nhưng không dùng dữ liệu catalog hiện tại để dựng lại hóa đơn cũ.
+`order_items` snapshot `product_name`, `variant_name`, `sku`, `unit_price`, `quantity`; vẫn giữ `product_id` và `variant_id` để truy vết. Thành tiền dòng được tính từ `unit_price * quantity` vì ERD không có `line_total`.
+
+## Payment và trạng thái đơn
+
+Phương thức và trạng thái thanh toán nằm trong `payments`, không nằm trong `orders`. `payments.order_id` là FK + UQ nên mỗi order có tối đa một payment. Các lần tương tác provider được lưu ở `payment_transactions` theo quan hệ 1:N.
+
+Nếu API cần trả `paymentStatus`, service phải đọc/ghép từ `payments.status`; không ánh xạ thành cột không tồn tại trong `orders`.
 
 ## Ranh giới transaction và khóa
 
 | Use case | Những phần commit/rollback cùng nhau | Khóa/thứ tự |
 |---|---|---|
-| Checkout | order/items/history, stock/ledger, coupon usage, cart items | cart → catalog variants tăng dần → coupon nếu có → inventory stocks tăng dần |
-| Hủy đơn | order/history, hoàn coupon, stock/ledger | order → coupon nếu có → inventory stocks tăng dần |
-| Nhận phiếu | purchase status, stock/ledger | purchase order → inventory stocks tăng dần |
-| Callback | payment/transaction, order payment projection | payment → order; order tuyệt đối không khóa/gọi payment ngược |
-| COD thu tiền | payment/transaction, order projection | payment nếu tồn tại → order; ngăn trùng bằng idempotency/constraint |
+| Checkout | order/items/history, variant quantity/movement, coupon usage, cart items | cart → variants tăng dần → coupon nếu có |
+| Hủy đơn | order/history, coupon usage, variant quantity/movement | order → coupon nếu có → variants tăng dần |
+| Nhận phiếu | purchase order/items, variant quantity/movement | purchase order → variants tăng dần |
+| Callback | payment/transaction và kiểm tra trạng thái order | payment → order |
 | Sửa giỏ | cart/items | cart trước khi sửa items |
 
-Áp dụng một thứ tự khóa nhất quán giữa các use case. Không gọi network, gửi email hoặc provider khi đang giữ khóa DB.
-
-Checkout lấy và khóa catalog variants để chốt giá/trạng thái snapshot tại thời điểm đặt hàng, sau đó inventory chỉ chịu trách nhiệm quantity. Vì stock tách khỏi variant nên admin cập nhật metadata/giá không còn có nguy cơ ghi đè số lượng tồn.
+Áp dụng thứ tự khóa nhất quán giữa các use case. Không gọi network, gửi email hoặc gọi provider khi đang giữ khóa DB.
 
 ## Migration Flyway
 
-Migration là lịch sử tiến hóa schema, không phải file sinh lại từ entity. Giai đoạn bootstrap có thể dùng **một migration khởi tạo cho mỗi module/nhóm nghiệp vụ** theo thứ tự FK. Sau khi migration đã merge/chạy ở DB dùng chung, tuyệt đối không sửa file cũ; mỗi thay đổi schema tạo migration mới với version tiếp theo trên `main`.
+Migration là lịch sử tiến hóa schema. Migration khởi tạo phải tạo đủ 25 bảng, PK/FK/UQ đúng ERD và theo thứ tự thỏa mãn FK. Sau khi migration đã merge/chạy ở DB dùng chung, mỗi thay đổi tạo migration version mới; không sửa lịch sử đã áp dụng.
 
-Ví dụ baseline:
-
-```text
-V1__create_identity_schema.sql
-V2__create_catalog_schema.sql
-V3__create_cart_schema.sql
-V4__create_inventory_schema.sql
-V5__create_promotion_schema.sql
-V6__create_order_schema.sql
-V7__create_payment_schema.sql
-V8__create_procurement_schema.sql
-V9__create_review_schema.sql
-```
-
-Sau này: `V10__add_warranty_months_to_products.sql`, `V11__add_order_status_index.sql`, ... Không chia subfolder migration theo module nếu không cấu hình Flyway locations riêng; timeline phẳng giúp nhóm nhìn thứ tự toàn cục và tránh phụ thuộc FK mơ hồ.
+Mọi field/constraint thêm ngoài ERD phải được ghi rõ trong PR và cập nhật đồng thời ERD, tài liệu 11 và tài liệu 12 để ba nguồn không lệch nhau.
