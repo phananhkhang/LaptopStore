@@ -19,13 +19,14 @@ public class PaymentTransaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "payment_id", nullable = false)
-    private Long paymentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "payment_id", nullable = false)
+    private Payment payment;
 
     @Column(length = 50)
     private String provider;
 
-    @Column(name = "provider_transaction_id",  nullable = false)
+    @Column(name = "provider_transaction_id", nullable = false)
     private Long providerTransactionId;
 
     @Column(name = "provider_reference", length = 100)
