@@ -3,4 +3,5 @@ dist/
 coverage/
 .vite/
 *.log
+*.tsbuildinfo
 
