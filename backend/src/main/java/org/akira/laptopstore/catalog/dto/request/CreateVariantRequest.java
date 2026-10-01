@@ -1,4 +1,42 @@
 package org.akira.laptopstore.catalog.dto.request;
 
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateVariantRequest {
+
+        @NotNull(message = "ID của sản phẩm gốc (Product) không được để trống")
+        private Long productId;
+
+        @NotBlank(message = "SKU của phiên bản không được để trống")
+        @Pattern(regexp = "^[A-Z0-9-]+$", message = "SKU phiên bản chỉ được chứa chữ in hoa, số và dấu gạch ngang (-)")
+        private String sku;
+
+        @NotBlank(message = "Tên phiên bản (VD: RAM 16GB - SSD 512GB) không được để trống")
+        private String variantName;
+
+        @NotNull(message = "Giá của phiên bản không được để trống")
+        @Min(value = 1, message = "Giá phiên bản phải lớn hơn 0")
+        private BigDecimal price;
+
+        @NotBlank(message = "Màu sắc không được để trống")
+        private String color;
+
+        @NotBlank(message = "Dung lượng RAM không được để trống")
+        private String ram;
+
+        @NotBlank(message = "Dung lượng ổ cứng (Storage) không được để trống")
+        private String storage;
 }

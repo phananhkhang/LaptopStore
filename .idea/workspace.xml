@@ -4,67 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a654a07a-5cf2-4059-9c24-e1fd51e2a97c" name="Changes" comment="">
-<<<<<<< Updated upstream
-      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/db/migration/V1__init_schema.sql" afterDir="false" />
+    <list default="true" id="1de233f3-2cff-452c-ac0a-90dba4f07dd8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/docs/architecture/05-data-and-consistency.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/docs/architecture/05-data-and-consistency.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/docs/architecture/11-entity-model.md" beforeDir="false" afterPath="$PROJECT_DIR$/backend/docs/architecture/11-entity-model.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
-=======
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/enums/ProductStatus.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductImageRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductSpecificationRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/impl/BrandServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/impl/CategoryServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/impl/ProductServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/common/BaseEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/BrandController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/BrandController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/CategoryController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/CategoryController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/LaptopStoreApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/LaptopStoreApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/AdminProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/AdminProductController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/Brand.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/Brand.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/Category.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/Category.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/Product.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/Product.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/ProductImage.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/ProductImage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/ProductSpecification.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/ProductSpecification.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/ProductVariant.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/entity/ProductVariant.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/BrandRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/BrandRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/CategoryRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/CategoryRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/CreateProductRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/CreateProductRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/CreateVariantRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/CreateVariantRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/UpdateProductRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/UpdateProductRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductVariantRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductVariantRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/BrandService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/BrandService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/CategoryService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/CategoryService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/ProductService.java" afterDir="false" />
->>>>>>> Stashed changes
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/impl/ProductServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/impl/ProductServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="CopilotPersistence">
-    <persistenceIdMap>
-      <entry key="_C:/Users/ADMIN/OneDrive/Desktop/j2ee/LaptopStore/backend" value="3JqZwpMHuNAZUPrAmQumznHJqZc" />
-    </persistenceIdMap>
-  </component>
-  <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="159" />
-  </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="Kotlin Enum" />
-<<<<<<< Updated upstream
-=======
-        <option value="Record" />
->>>>>>> Stashed changes
-        <option value="Enum" />
-        <option value="Interface" />
-        <option value="Class" />
-        <option value="Record" />
-      </list>
-    </option>
+  <component name="DatabaseLocalColorSettings">
+    <colors>
+      <entry key="a5257d89-24f0-4f48-a197-5406df0babdf" value="" />
+      <entry key="ac6cd850-e038-454b-a57c-cb821614faca" value="" />
+      <entry key="cd2e9443-cb52-4838-9c62-b18468209c2e" value="-" />
+    </colors>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -72,261 +36,141 @@
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
     &quot;state&quot;: &quot;OPEN&quot;,
-    &quot;assignee&quot;: &quot;phananhkhang&quot;
+    &quot;assignee&quot;: &quot;htk2k6-hash&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/phananhkhang/LaptopStore.git",
-    "accountId": "0cc3f9a9-5bef-49ad-934e-aa231c062e3d"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/phananhkhang/LaptopStore.git&quot;,
+    &quot;accountId&quot;: &quot;234b4178-0976-4836-9848-215fd3e41b90&quot;
   }
-}]]></component>
-  <component name="MavenImportPreferences">
-    <option name="generalSettings">
-      <MavenGeneralSettings>
-        <option name="mavenHomeTypeForPersistence" value="WRAPPER" />
-      </MavenGeneralSettings>
-    </option>
-  </component>
+}</component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-<<<<<<< Updated upstream
-      <entry key="MS100" value="1.0047463673265797" />
-      <entry key="MS500" value="1.4787543585568357" />
-      <entry key="S2" value="2.9751347520330476" />
-      <entry key="S5" value="3.9985416550921036" />
-      <entry key="S10" value="4.8800801728457905" />
-      <entry key="S30" value="8.649121973442448" />
-      <entry key="S60" value="12.683064278947764" />
-      <entry key="M2" value="16.831632728249303" />
-      <entry key="M5" value="26.789583688326392" />
-      <entry key="M10" value="43.687694751168266" />
-      <entry key="M15" value="59.64619878145638" />
-      <entry key="M30" value="101.5285288678478" />
-      <entry key="H1" value="165.05758300597432" />
-      <entry key="H2" value="244.7246439638676" />
-      <entry key="H4" value="318.9015388726504" />
-      <entry key="D1" value="415.928068813927" />
-      <entry key="W1" value="437.2779196105415" />
-    </decayedCancelled>
-    <decayedSelected>
-      <entry key="MS100" value="2.1657520016899323E-127" />
-      <entry key="MS500" value="4.646455104927647E-26" />
-      <entry key="S2" value="4.667974946501402E-7" />
-      <entry key="S5" value="0.003342550402374562" />
-      <entry key="S10" value="0.08031708760742201" />
-      <entry key="S30" value="0.8380262369522521" />
-      <entry key="S60" value="1.5732326693144694" />
-      <entry key="M2" value="2.316728644575338" />
-      <entry key="M5" value="5.061544763720641" />
-      <entry key="M10" value="10.508462378164992" />
-      <entry key="M15" value="15.322828304879527" />
-      <entry key="M30" value="26.473839001201465" />
-      <entry key="H1" value="43.17099679756419" />
-      <entry key="H2" value="65.65863479581024" />
-      <entry key="H4" value="87.63702651757312" />
-      <entry key="D1" value="117.24244021000854" />
-      <entry key="W1" value="123.84607246582743" />
-    </decayedSelected>
-    <decayedShown>
-      <entry key="MS100" value="0.026303688682127853" />
-      <entry key="MS500" value="0.8445300287692148" />
-      <entry key="S2" value="2.575048801321263" />
-      <entry key="S5" value="3.7260032626763135" />
-      <entry key="S10" value="4.709759048574018" />
-      <entry key="S30" value="9.186208532724626" />
-      <entry key="S60" value="14.000337220208683" />
-      <entry key="M2" value="18.970423562729604" />
-      <entry key="M5" value="31.734844583442076" />
-      <entry key="M10" value="54.101126069916695" />
-      <entry key="M15" value="74.88461793433248" />
-      <entry key="M30" value="127.93562773128299" />
-      <entry key="H1" value="208.17776560246563" />
-      <entry key="H2" value="310.34697511083175" />
-      <entry key="H4" value="406.51529512443136" />
-      <entry key="D1" value="533.1655047371565" />
-      <entry key="W1" value="561.1232416042639" />
-=======
       <entry key="MS100" value="1.0" />
       <entry key="MS500" value="1.0" />
       <entry key="S2" value="1.0" />
       <entry key="S5" value="1.0" />
       <entry key="S10" value="1.0" />
-      <entry key="S30" value="1.0000000000006197" />
-      <entry key="S60" value="1.0000007871998782" />
-      <entry key="M2" value="1.000887252498113" />
-      <entry key="M5" value="1.0617812032283167" />
-      <entry key="M10" value="1.3376713068500459" />
-      <entry key="M15" value="1.7798307592872968" />
-      <entry key="M30" value="4.674256160513158" />
-      <entry key="H1" value="23.50449934842282" />
-      <entry key="H2" value="85.59838129848801" />
-      <entry key="H4" value="183.99106633475816" />
-      <entry key="D1" value="369.79600194050727" />
-      <entry key="W1" value="419.0995905171961" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.0000000004146121" />
+      <entry key="M2" value="1.0000352665886911" />
+      <entry key="M5" value="1.0320047016683955" />
+      <entry key="M10" value="1.3098609122424802" />
+      <entry key="M15" value="1.6604168127161487" />
+      <entry key="M30" value="2.4075687212094308" />
+      <entry key="H1" value="3.0549223277358104" />
+      <entry key="H2" value="3.4828948509073423" />
+      <entry key="H4" value="3.729227822968643" />
+      <entry key="D1" value="3.9530740940715967" />
+      <entry key="W1" value="3.99325091944153" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
       <entry key="MS500" value="0.0" />
       <entry key="S2" value="0.0" />
       <entry key="S5" value="0.0" />
-      <entry key="S10" value="1.6036390395968869E-226" />
-      <entry key="S30" value="5.4329478973127244E-76" />
-      <entry key="S60" value="2.330869340616018E-38" />
-      <entry key="M2" value="1.5276428670089211E-19" />
-      <entry key="M5" value="3.131807142524362E-8" />
-      <entry key="M10" value="2.3340600346682987E-4" />
-      <entry key="M15" value="0.006578289855818666" />
-      <entry key="M30" value="0.39514222436175134" />
-      <entry key="H1" value="4.883367028587553" />
-      <entry key="H2" value="21.441092356728387" />
-      <entry key="H4" value="49.010125009800916" />
-      <entry key="D1" value="102.85346180060122" />
-      <entry key="W1" value="117.37143794854725" />
+      <entry key="S10" value="0.0" />
+      <entry key="S30" value="0.0" />
+      <entry key="S60" value="0.0" />
+      <entry key="M2" value="0.0" />
+      <entry key="M5" value="0.0" />
+      <entry key="M10" value="0.0" />
+      <entry key="M15" value="0.0" />
+      <entry key="M30" value="0.0" />
+      <entry key="H1" value="0.0" />
+      <entry key="H2" value="0.0" />
+      <entry key="H4" value="0.0" />
+      <entry key="D1" value="0.0" />
+      <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8950250709279725" />
-      <entry key="MS500" value="0.9780634734473393" />
-      <entry key="S2" value="0.9944701686732144" />
-      <entry key="S5" value="0.9977843871238888" />
-      <entry key="S10" value="0.9988915792636801" />
-      <entry key="S30" value="0.9996303898269968" />
-      <entry key="S60" value="0.9998159649152359" />
-      <entry key="M2" value="1.0007947704545475" />
-      <entry key="M5" value="1.0617377793123137" />
-      <entry key="M10" value="1.3377487921040945" />
-      <entry key="M15" value="1.786006911623761" />
-      <entry key="M30" value="5.067679640806254" />
-      <entry key="H1" value="28.381578297841504" />
-      <entry key="H2" value="107.02751686498998" />
-      <entry key="H4" value="232.98828809540532" />
-      <entry key="D1" value="472.6451371466829" />
-      <entry key="W1" value="536.4703278492516" />
->>>>>>> Stashed changes
+      <entry key="MS100" value="0.2871745887492588" />
+      <entry key="MS500" value="0.7791645796604998" />
+      <entry key="S2" value="0.9395227492140118" />
+      <entry key="S5" value="0.9753554615276419" />
+      <entry key="S10" value="0.9876008614453725" />
+      <entry key="S30" value="0.9958497530944581" />
+      <entry key="S60" value="0.9979227194104744" />
+      <entry key="M2" value="0.9989959488833141" />
+      <entry key="M5" value="1.0315387115024992" />
+      <entry key="M10" value="1.3094094464330082" />
+      <entry key="M15" value="1.6599318661022413" />
+      <entry key="M30" value="2.407130042549713" />
+      <entry key="H1" value="3.054617941784127" />
+      <entry key="H2" value="3.4827145371385173" />
+      <entry key="H4" value="3.7291295719872086" />
+      <entry key="D1" value="3.953056492925624" />
+      <entry key="W1" value="3.993248373555695" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 3,
-  &quot;fromUser&quot;: false
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 4
 }</component>
-  <component name="ProjectId" id="3JdAu95kbm84tECcsdRaZ2Kn1vC" />
-  <component name="ProjectLevelVcsManager">
-    <ConfirmationsSetting value="2" id="Add" />
-  </component>
-  <component name="ProjectSessionTemplates">
-    <option name="inlineTemplate">
-      <template>
-        <option name="modeId" value="Agent" />
-        <option name="model">
-          <model>
-            <option name="modelType" value="builtin_family" />
-            <option name="modelValue" value="auto" />
-          </model>
-        </option>
-        <option name="targetType" value="BACKGROUND" />
-        <option name="worktreeMode" value="WORKSPACE" />
-      </template>
-    </option>
-  </component>
+  <component name="ProjectId" id="3K5oXT71LRXb6iWP0KtemO0NO3A" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-<<<<<<< Updated upstream
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
-    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
-    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
-    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;Spring Boot.LaptopStoreApplication.executor&quot;: &quot;Run&quot;,
-    &quot;codeWithMe.voiceChat.enabledByDefault&quot;: &quot;false&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;copilot.chat.legacySessionMetadata.migrated&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/ADMIN/OneDrive/Desktop/j2ee/LaptopStore&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;python.packages.toolwindow.project.migrated.to.right.top.v2&quot;: &quot;true&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
-=======
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "KEY_CHAT_IN_TOOLWINDOW": "false",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.LaptopStoreApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
-    "junie.onboarding.icon.badge.shown": "true",
+    "git-widget-placeholder": "kiet-Catalog-Inventory-Procurement",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/ADMIN/OneDrive/Desktop/j2ee/LaptopStore",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
->>>>>>> Stashed changes
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true"
   }
 }]]></component>
   <component name="RunManager">
-    <configuration name="LaptopStoreApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
-      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UpdateClassesAndResources" />
+    <configuration name="LaptopStoreApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UnknownPolicyInFreeMode" />
       <module name="LaptopStore" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="org.akira.laptopstore.LaptopStoreApplication" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.akira.laptopstore.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Spring Boot.LaptopStoreApplication" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-30f59d01ecdd-37e91769500f-intellij.indexing.shared.core-IU-261.27258.48" />
-        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-IU-261.27258.48" />
+        <option value="bundled-jdk-30f59d01ecdd-a203e0a19954-intellij.indexing.shared.core-IU-262.10968.63" />
+        <option value="bundled-js-predefined-d6986cc7102b-4abd2a77f808-JavaScript-IU-262.10968.63" />
       </set>
     </attachedChunks>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="a654a07a-5cf2-4059-9c24-e1fd51e2a97c" name="Changes" comment="" />
-      <created>1789980791613</created>
+      <changelist id="1de233f3-2cff-452c-ac0a-90dba4f07dd8" name="Changes" comment="" />
+      <created>1790847565023</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1789980791613</updated>
-      <workItem from="1789980793063" duration="1154000" />
-      <workItem from="1790125948009" duration="42000" />
-      <workItem from="1790126025955" duration="277000" />
-      <workItem from="1790168787516" duration="87000" />
-      <workItem from="1790254131013" duration="14934000" />
-      <workItem from="1790413422422" duration="936000" />
+      <updated>1790847565023</updated>
     </task>
     <servers />
   </component>
@@ -343,9 +187,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
   </component>
 </project>

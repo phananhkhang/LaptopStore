@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    // Tạm thời để trống, JPA đã lo hết các hàm save(), findById(), findAll(), deleteById().
+    // Hàm siêu việt của JPA, trả về true nếu SKU đã có trong DB
+    boolean existsBySku(String sku);
 }
