@@ -3,32 +3,22 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
+  <component name="BackgroundAgentGlobalSettings">
+    <option name="selectedModelId" value="auto" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="1de233f3-2cff-452c-ac0a-90dba4f07dd8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/LaptopStoreApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/LaptopStoreApplication.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/AdminProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/AdminProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/ProductController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/controller/ProductController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/CreateProductRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/CreateProductRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/CreateVariantRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/CreateVariantRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/UpdateProductRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/dto/request/UpdateProductRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductVariantRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/repository/ProductVariantRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/ProductService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/ProductService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/impl/ProductServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/org/akira/laptopstore/catalog/service/impl/ProductServiceImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DatabaseLocalColorSettings">
-    <colors>
-      <entry key="a5257d89-24f0-4f48-a197-5406df0babdf" value="" />
-      <entry key="ac6cd850-e038-454b-a57c-cb821614faca" value="" />
-      <entry key="cd2e9443-cb52-4838-9c62-b18468209c2e" value="-" />
-    </colors>
+  <component name="CopilotPersistence">
+    <persistenceIdMap>
+      <entry key="_C:/Users/ACER/Downloads/LaptopStore" value="3K67W74GZbwtFWEX3SdKTb38aVy" />
+    </persistenceIdMap>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -125,6 +115,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "Spring Boot.LaptopStoreApplication.executor": "Run",
     "codeWithMe.voiceChat.enabledByDefault": "false",
+    "copilot.chat.legacySessionMetadata.migrated": "true",
     "git-widget-placeholder": "kiet-Catalog-Inventory-Procurement",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
@@ -187,5 +178,9 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat(catalog): implement product management APIs and validation" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(catalog): implement product management APIs and validation" />
   </component>
 </project>
