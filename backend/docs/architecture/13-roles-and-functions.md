@@ -6,6 +6,8 @@
 
 Các danh sách chức năng, ma trận quyền và state machine dưới đây là **thiết kế use case**; không phải xác nhận mọi endpoint/service đã triển khai. ERD xác định nơi lưu dữ liệu và quan hệ, nhưng không quy định tập giá trị trạng thái hoặc quyền gọi API. Chức năng có đủ bảng để lưu dữ liệu vẫn cần service, transaction, ownership và kiểm quyền.
 
+[V1 init](../../src/main/resources/db/migration/V1__init_schema.sql) đã khởi tạo đầy đủ 25 bảng trên database kiểm thử mới; ánh xạ actor lịch sử đơn đã sửa thành changedByUserId. Việc có schema không chuyển các chức năng/state machine đề xuất bên dưới thành use case đã triển khai.
+
 ### Chức năng gắn với dữ liệu nào
 
 | Nhóm chức năng | Bảng / trường trọng tâm | Giới hạn theo ERD |

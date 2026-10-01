@@ -23,7 +23,7 @@ public class OrderStatusHistory {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(name = "from_status", nullable = false)
+    @Column(name = "from_status")
     @Enumerated(EnumType.STRING)
     private OrderStatus fromStatus;
 
@@ -34,6 +34,6 @@ public class OrderStatusHistory {
     @Column(name = "changed_at", nullable = false)
     private Instant changedAt;
 
-    @Column(name = "changed_by", nullable = false)
-    private Integer userId;
+    @Column(name = "changed_by_user_id")
+    private Long changedByUserId;
 }

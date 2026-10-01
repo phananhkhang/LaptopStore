@@ -472,7 +472,7 @@ users 1 ───< user_roles >─── 1 roles
 
 `products` mô tả model/dòng laptop, còn `product_variants` mô tả biến thể bán hàng cụ thể như RAM, storage, color, price, quantity và SKU. `product_specifications` chứa CPU, GPU, màn hình, pin, cân nặng và OS.
 
-Theo baseline ERD, `product_specifications.product_id` chỉ là **FK**, nên schema thiết kế cho phép quan hệ 1:N. Nếu nghiệp vụ muốn tối đa một bộ thông số cho mỗi product thì cần bổ sung `UQ` cho `product_id`. Code hiện dùng `@OneToOne` + `unique = true`; đây là khác biệt triển khai được ghi ở tài liệu 11, chưa được thể hiện trong ảnh hoặc migration catalog.
+Theo baseline ERD, `product_specifications.product_id` chỉ là **FK**, nên schema thiết kế và V1 mới cho phép quan hệ 1:N. Nếu nghiệp vụ muốn tối đa một bộ thông số cho mỗi product thì cần bổ sung `UQ` cho `product_id`. Code hiện dùng `@OneToOne` + `unique = true`; đây là khác biệt triển khai được ghi ở tài liệu 11, chưa được thể hiện trong ảnh hoặc V1.
 
 ### Order và dữ liệu snapshot
 
@@ -545,13 +545,13 @@ Trong source, CartItem đã khai báo UQ ghép và ProductSpecification đã kha
 | Review | reviews.order_item_id, order_items, orders | Rating 1..5; actor là chủ đơn; đơn đủ điều kiện DELIVERED trước khi review. |
 | Default/primary | addresses.is_default, product_images.is_primary | Tối đa một địa chỉ mặc định/ảnh chính theo parent nếu nghiệp vụ yêu cầu; kiểm trong service hoặc thêm constraint được duyệt. |
 
-Đây là các bất biến thiết kế, không phải xác nhận đã được tất cả service hoặc database enforce. Reason khi adjustment có thể lưu trong `stock_movements.note`; ERD không có cột `reason` riêng ở stock movement hoặc order-status history.
+V1 mới đã bổ sung CHECK cho quantity/giá/tiền, total_amount, ledger delta, received_quantity và rating; CHECK/default/index là lựa chọn triển khai được ghi tại [README migration](../../src/main/resources/db/migration/README.md). Kiểm ownership, variant thuộc product, coupon usage và default/primary vẫn thuộc use case hoặc quyết định constraint tiếp theo. Reason khi adjustment lưu được trong stock_movements.note; ERD không có cột reason riêng ở stock movement hoặc order-status history.
 
 ### Phạm vi schema đã có migration
 
-[V1 identity](../../src/main/resources/db/migration/V1__create_identity_schema.sql) hiện tạo 5 bảng identity/access và 4 FK (`user_roles` có hai FK). 20 bảng còn lại và 26 FK còn lại trong ERD chưa có migration trong repository. Cấu hình `ddl-auto=validate` kiểm schema, không tạo bảng. Chưa đối chiếu database runtime, vì vậy không kết luận các annotation JPA tương đương schema đã triển khai.
+[V1 init](../../src/main/resources/db/migration/V1__init_schema.sql) khởi tạo đủ 25 bảng/192 cột/30 FK/14 UQ trên database trống và seed ROLE_USER/ROLE_STAFF/ROLE_ADMIN. Đã kiểm Flyway migrate, Hibernate ddl-auto=validate và fixture SQL trên PostgreSQL 17.10; không thêm UQ ngoài ERD cho specification hoặc cặp cart/variant.
 
-Các kiểu SQL/default/ON DELETE hiện biết từ V1 chỉ áp dụng cho 5 bảng đó. Với thay đổi schema, thêm migration version mới và cập nhật ERD/11/12 tương ứng; giữ nguyên migration đã chạy.
+Database dự án đã ghi nhận V1 identity cũ thành công và chưa được áp dụng V1 mới. V1 mới là yêu cầu gộp bootstrap cho database mới; database giữ dữ liệu cũ cần đúng V1 đã áp dụng và V2 nâng cấp riêng. Không repair checksum hoặc xóa history thay cho upgrade. Các kiểu/default/CHECK/index/delete policy của V1 mới được mô tả ở README migration; thay đổi sau bootstrap dùng version mới.
 
 ## Kết luận
 

@@ -10,6 +10,8 @@ Các kiểu dữ liệu, CHECK constraint và index không được thể hiện
 
 Khóa chính có thể dùng Long/BIGINT identity. Tiền VND nên dùng BigDecimal/NUMERIC(19,0), không dùng float/double. Thời gian nên dùng Instant/TIMESTAMPTZ và lưu UTC. Enum nên lưu STRING và kiểm soát tập giá trị ở migration.
 
+Bootstrap [V1 init](../../src/main/resources/db/migration/V1__init_schema.sql) hiện chọn NUMERIC(19,2) để giữ scale 2 của source; TIMESTAMPTZ cho Instant và TIMESTAMP cho LocalDateTime. Đây là quyết định triển khai để tương thích entity hiện có; đề xuất VND scale 0 và thống nhất Instant/UTC ở trên chưa được áp dụng toàn bộ. V1 bổ sung CHECK/index như mô tả trong [README migration](../../src/main/resources/db/migration/README.md).
+
 Khi tạo migration, nên bổ sung CHECK hợp lý như giá/số lượng không âm và rating trong 1..5, nhưng phải ghi rõ đó là constraint triển khai thêm vì ảnh ERD chỉ mô tả PK/FK/UQ.
 
 ## Các bảng và ràng buộc đúng theo ERD
