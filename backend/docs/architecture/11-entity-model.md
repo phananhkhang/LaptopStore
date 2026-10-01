@@ -1,6 +1,10 @@
 # Entity model theo ERD
 
-Tài liệu này ánh xạ trực tiếp từ [`database/LaptopStore_ERD.jpg`](../../../database/LaptopStore_ERD.jpg). Tên bên trái là tên cột trong ERD; tên trong ngoặc là tên field Java khuyến nghị. Không tự thêm cột, khóa hoặc quan hệ chưa xuất hiện trong ERD. Danh sách đầy đủ theo dạng bảng và toàn bộ bội số quan hệ nằm tại [12 ERD LaptopStore](12-ERD-LaptopStore.md).
+Tài liệu này ánh xạ trực tiếp từ [`database/LaptopStore_ERD.png`](../../../database/LaptopStore_ERD.png). Tên bên trái là tên cột trong ERD; tên trong ngoặc là tên field Java khuyến nghị. Không tự thêm cột, khóa hoặc quan hệ chưa xuất hiện trong ERD. Danh sách đầy đủ theo dạng bảng và toàn bộ bội số quan hệ nằm tại [12 ERD LaptopStore](12-ERD-LaptopStore.md).
+
+**Rà soát:** 2026-10-01. ERD gồm **25 bảng, 192 cột, 30 FK và 14 ràng buộc UQ ngoài PK**. Có 24 bảng dùng PK `id`; `user_roles` dùng PK ghép `(user_id, role_id)`.
+
+Các mục 1–9 mô tả **baseline ERD**. Kiểu dữ liệu, ánh xạ JPA hiện có và các điểm lệch được tách riêng ở mục 10–12. [13 Phân quyền và chức năng](13-roles-and-functions.md) mô tả use case/quyền; danh sách chức năng không tự bổ sung bảng hoặc cột vào mô hình này.
 
 ## 1. Identity & Access
 
@@ -20,6 +24,8 @@ Tài liệu này ánh xạ trực tiếp từ [`database/LaptopStore_ERD.jpg`](.
 `user_roles`: `user_id` (`userId`), `role_id` (`roleId`); cả hai cột cùng là PK ghép và đồng thời là FK.
 
 `users` và `roles` là quan hệ N:N qua `user_roles`. Có thể ánh xạ bảng nối bằng `@ManyToMany` nếu không cần entity trung gian, nhưng schema vẫn phải giữ PK ghép `(user_id, role_id)`.
+
+Code hiện dùng `User.roles: Set<Role>` với `@ManyToMany`/`@JoinTable`; không có class `UserRole` riêng. Migration V1 seed `ROLE_USER`, `ROLE_STAFF`, `ROLE_ADMIN`; đây là dữ liệu triển khai, không phải tập giá trị được ghi trên ảnh ERD.
 
 ### Address
 
@@ -214,3 +220,67 @@ Tài liệu này ánh xạ trực tiếp từ [`database/LaptopStore_ERD.jpg`](.
 - Quan hệ JPA chỉ nên được dùng trong cùng module. Với FK xuyên module, entity giữ ID và module giao tiếp qua service/DTO contract.
 - Không suy diễn UQ từ nghiệp vụ. Chỉ các cột được đánh UQ trong ERD mới được mô tả là unique trong baseline.
 - Nếu cần thêm field/constraint ngoài ERD, phải cập nhật ERD và tài liệu 12 trước hoặc cùng thay đổi schema.
+
+## 10. Kiểu dữ liệu và tên field Java
+
+Ảnh ERD không ghi kiểu SQL, độ dài, precision/scale, nullability hoặc default. Bảng dưới phân biệt kiểu đang có trong source/migration với hướng thống nhất; không coi các kiểu này là thông tin đọc được từ ảnh.
+
+| Nhóm cột ERD | Kiểu Java / triển khai hiện có | Diễn giải |
+|---|---|---|
+| `id` của 24 bảng; các FK ID nội bộ | `Long`; V1 dùng `BIGSERIAL`/`BIGINT` | FK cùng module có thể được biểu diễn bằng object JPA, xem mục 11. Riêng actor trong `OrderStatusHistory` đang sai kiểu/tên cột, xem mục 12. |
+| `users.token_version` | `Integer`; V1 `INT NOT NULL DEFAULT 0` | Phiên bản xác thực, không phải số lượng token. |
+| `product_variants.quantity`, `cart_items.quantity`, `order_items.quantity`, `purchase_order_items.quantity`, `received_quantity` | `Integer` | Lần lượt là tồn hiện tại, số lượng trong giỏ/đơn, số lượng đặt nhập và số lượng nhận lũy kế. |
+| `stock_movements.delta`, `quantity_before`, `quantity_after` | `Integer` | `delta` có thể âm; quan hệ nghiệp vụ là `quantity_after = quantity_before + delta`. |
+| `coupons.usage_limit`, `usage_per_user`; `reviews.rating` | `Integer` | Giới hạn lượt dùng và điểm review; ảnh không cung cấp CHECK hay ý nghĩa của giá trị null. |
+| `product_variants.price`, `orders.subtotal/discount_amount/shipping_fee/total_amount`, `order_items.unit_price`, `payments.amount`, `payment_transactions.amount`, `coupons.discount_value/max_discount/min_order_amount`, `coupon_usages.discount_amount`, `purchase_order_items.unit_cost` | `BigDecimal` | Payment/promotion hiện khai báo `precision = 15, scale = 2`; các nhóm còn lại chưa khai báo precision/scale trong annotation. Quy ước VND `NUMERIC(19,0)` trong [05 Dữ liệu](05-data-and-consistency.md) vẫn là đề xuất, chưa thống nhất toàn bộ code/schema. |
+| `brands.active`, `categories.active`, `coupons.active`, `addresses.is_default`, `product_images.is_primary`, `reviews.visible` | `Boolean`; V1 dùng `BOOLEAN` cho `is_default` | Không ánh xạ các cờ này thành chuỗi `ACTIVE/INACTIVE`. Field Java tương ứng gồm `isDefault`, `isPrimary`. |
+| `refresh_tokens.family_id` | `UUID`; V1 `UUID NOT NULL` | Định danh family phục vụ refresh-token rotation. |
+| `created_at`, `updated_at`, `expires_at`, `used_at`, `revoked_at`, `starts_at`, `ends_at`, `changed_at`, `received_at` | `Instant` trong user/auth/cart/order/payment/promotion/review; `LocalDateTime` trong catalog/inventory/procurement | V1 dùng `TIMESTAMPTZ`. Hướng thống nhất là `Instant` và UTC; source hiện chưa đồng nhất. |
+| `orders.status`, `order_status_history.from_status/to_status` | `OrderStatus`, lưu `EnumType.STRING` | Enum hiện có: `PENDING`, `CONFIRMED`, `PROCESSING`, `SHIPPING`, `DELIVERED`, `CANCELLED`, `RETURNED`; phân biệt với state machine đề xuất trong tài liệu 13. |
+| Các cột `status` còn lại, `method`, `type`, `reference_type`, `discount_type` | `String` | Tập giá trị thuộc contract nghiệp vụ, không suy ra từ tên cột. |
+| `stock_movements.reference_id` | Hiện là `String referenceId` | Tham chiếu nghiệp vụ đa hình; chưa có kiểu SQL được migration xác nhận. Nếu dùng ID số nội bộ cần chốt lại contract trước khi đổi kiểu. |
+| `payment_transactions.provider_transaction_id` | Hiện là `Long providerTransactionId` | Là mã bên ngoài, không phải FK/PK nội bộ. Chỉ dùng `Long` khi contract provider bảo đảm mã số; mã chứa ký tự cần `String`. |
+| Các cột còn lại: email, hash, tên, số điện thoại, địa chỉ, URL, mô tả, mã/SKU, snapshot, note/comment, RAM/storage/color, CPU/GPU/màn hình/pin/weight/OS | `String` | Điện thoại, postal code và mã nghiệp vụ không chuyển sang số. Thông số kỹ thuật hiện là chuỗi, kể cả `screenSize`, `refreshRate`, `weight`. |
+
+`user_roles` chỉ có hai field khóa kiểu `Long` nếu chọn entity trung gian. Collection như `User.roles`, `Product.variants/images`, `Cart.items`, `PurchaseOrder.items` là thuộc tính điều hướng Java, không phải cột mới trong ERD.
+
+## 11. Ánh xạ FK đang có trong source
+
+Tên `productId`, `cartId`, ... ở phần baseline là tên scalar khuyến nghị khi giữ ID. Trong cùng module, code có thể dùng field object với `@JoinColumn` tương ứng. Bảng này mô tả source tại ngày rà soát, không khẳng định FK đã tồn tại trên database đang chạy.
+
+| Bảng / FK trong ERD | Field Java hiện có | Cách ánh xạ |
+|---|---|---|
+| `user_roles.user_id`, `role_id` | `User.roles: Set<Role>` | `@ManyToMany`, `@JoinTable`; PK ghép được V1 tạo. |
+| `addresses.user_id` | `Address.userId: Long` | Scalar; V1 tạo FK tới users. |
+| `refresh_tokens.user_id` | `RefreshToken.userId: Long` | Scalar xuyên auth → user; V1 tạo FK. |
+| `products.brand_id`, `category_id` | `Product.brand: Brand`, `category: Category` | Hai `@ManyToOne` trong catalog. |
+| `product_variants.product_id`, `product_images.product_id` | `ProductVariant.product`, `ProductImage.product` | `@ManyToOne`; phía Product có collection variants/images. |
+| `product_specifications.product_id` | `ProductSpecification.product`; `Product.specification` | Hiện `@OneToOne` + UQ, lệch baseline 1:N. |
+| `carts.user_id` | `Cart.userId: Long` | Scalar xuyên module, UQ. |
+| `cart_items.cart_id`, `variant_id` | `CartItem.cart: Cart`, `variantId: Long` | `@ManyToOne` trong cart; variant giữ ID xuyên module. |
+| `orders.user_id` | `Order.userId: Long` | Scalar xuyên module. |
+| `order_items.order_id`, `product_id`, `variant_id` | `OrderItem.order: Order`, `productId: Long`, `variantId: Long` | Order là `@ManyToOne`; catalog giữ ID. |
+| `order_status_history.order_id`, `changed_by_user_id` | `OrderStatusHistory.order: Order`; hiện `userId: Integer` trỏ cột `changed_by` | Quan hệ order đúng; field actor lệch ERD. |
+| `payments.order_id` | `Payment.orderId: Long` | Scalar xuyên module, UQ. |
+| `payment_transactions.payment_id` | `PaymentTransaction.payment: Payment` | `@ManyToOne` trong payment. |
+| `coupon_usages.coupon_id`, `user_id`, `order_id` | `CouponUsage.coupon: Coupon`, `userId: Long`, `orderId: Long` | Coupon là `@ManyToOne`; user/order giữ ID, orderId UQ. |
+| `stock_movements.variant_id`, `created_by_user_id` | `StockMovement.variant: ProductVariant`, `createdByUserId: Long` | Variant hiện là JPA xuyên module, cần chuyển sang ID theo kiến trúc; actor đã giữ ID. |
+| `purchase_orders.supplier_id`, `created_by_user_id` | `PurchaseOrder.supplier: Supplier`, `createdByUserId: Long` | Supplier là `@ManyToOne` trong procurement; actor giữ ID. |
+| `purchase_order_items.purchase_order_id`, `variant_id` | `PurchaseOrderItem.purchaseOrder: PurchaseOrder`, `variant: ProductVariant` | Quan hệ PO cùng module; variant hiện là JPA xuyên module, cần chuyển sang ID. |
+| `reviews.order_item_id` | `Review.orderItemId: Long` | Scalar xuyên module, UQ. Owner/product được truy qua order item, không thêm userId/productId vào review. |
+
+## 12. Kết quả đối chiếu và các điểm chưa đồng bộ
+
+Danh sách bảng/cột ở mục 1–9 khớp ảnh ERD hiện có; **không có bảng/cột mới từ ảnh cần bổ sung**. Source có **24 class `@Entity`** cho 24 bảng chính và bảng nối `user_roles` qua `@JoinTable`, tương ứng 25 bảng. `InventoryStock` chỉ là class rỗng, không có `@Entity`/`@Table` và không tạo bảng `inventory_stocks`.
+
+| Vị trí | ERD / kiến trúc chuẩn | Hiện có trong source | Việc cần đồng bộ khi sửa code/schema |
+|---|---|---|---|
+| [ProductSpecification](../../src/main/java/org/akira/laptopstore/catalog/entity/ProductSpecification.java), [Product](../../src/main/java/org/akira/laptopstore/catalog/entity/Product.java) | `product_id` chỉ FK; Product 1:N Specification | `@OneToOne`, `unique = true`; `Product.specification` đơn | Theo ERD thì dùng `@ManyToOne`/collection. Nếu chọn 1:1, cập nhật ERD và migration thêm UQ như quyết định thiết kế mới. |
+| [CartItem](../../src/main/java/org/akira/laptopstore/cart/entity/CartItem.java) | ERD không có UQ `(cart_id, variant_id)` | Có `uk_cart_items_cart_variant` | Đây là ràng buộc bổ sung trong JPA; cần quyết định thiết kế và migration/ERD tương ứng trước khi gọi là baseline DB. |
+| [OrderStatusHistory](../../src/main/java/org/akira/laptopstore/order/entity/OrderStatusHistory.java) | Cột `changed_by_user_id` FK tới `users.id` | `@Column(name = "changed_by") Integer userId` | Dùng tên cột `changed_by_user_id`, field `Long changedByUserId` phù hợp ID của User và contract service. |
+| [StockMovement](../../src/main/java/org/akira/laptopstore/inventory/entity/StockMovement.java), [PurchaseOrderItem](../../src/main/java/org/akira/laptopstore/procurement/entity/PurchaseOrderItem.java) | FK DB xuyên module; Java giữ `Long variantId` | Import `catalog.entity.ProductVariant` và dùng `@ManyToOne` | Chuyển quan hệ Java sang ID, đọc/ghi catalog qua service/DTO contract; FK DB vẫn được giữ. |
+| Timestamps, tiền, mã provider/reference | ERD không quy định kiểu | Có cả Instant/LocalDateTime, precision/scale khác nhau, mã provider Long và referenceId String | Chốt các contract/kiểu ở mục 10; không ghi quyết định kiểu thành thông tin có trên ảnh. |
+| [OrderStatus](../../src/main/java/org/akira/laptopstore/order/entity/enums/OrderStatus.java) | ERD chỉ có các cột trạng thái | Enum hiện khác state machine đề xuất ở tài liệu 13 | Đồng bộ enum, service, DTO và ràng buộc DB khi triển khai use case; không coi trạng thái đề xuất là đã chạy. |
+| [V1 identity](../../src/main/resources/db/migration/V1__create_identity_schema.sql) | Baseline gồm 25 bảng, 30 FK | Chỉ có migration cho users, roles, user_roles, addresses, refresh_tokens | 20 bảng còn lại chưa có migration trong repository. `ddl-auto=validate` không tự tạo bảng; thêm migration mới, không sửa V1 đã áp dụng. |
+
+Phạm vi lần rà soát này là tài liệu. Các khác biệt source được ghi để theo dõi, chưa được chuyển thành thay đổi entity/migration hoặc xác nhận schema runtime.

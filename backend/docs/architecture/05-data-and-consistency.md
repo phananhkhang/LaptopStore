@@ -2,7 +2,7 @@
 
 ## Nguồn chuẩn
 
-Baseline schema của dự án là [`database/LaptopStore_ERD.jpg`](../../../database/LaptopStore_ERD.jpg), gồm 25 thực thể. [11 Entity model](11-entity-model.md) ánh xạ tên cột sang field Java; [12 ERD LaptopStore](12-ERD-LaptopStore.md) liệt kê từng thuộc tính, PK/FK/UQ và mọi quan hệ.
+Baseline schema của dự án là [`database/LaptopStore_ERD.png`](../../../database/LaptopStore_ERD.png), gồm 25 thực thể. [11 Entity model](11-entity-model.md) ánh xạ tên cột sang field Java; [12 ERD LaptopStore](12-ERD-LaptopStore.md) liệt kê từng thuộc tính, PK/FK/UQ và mọi quan hệ.
 
 Các kiểu dữ liệu, CHECK constraint và index không được thể hiện trên ảnh ERD phải được xem là quyết định triển khai, không được ghi nhầm thành ràng buộc đã có trong ERD.
 
