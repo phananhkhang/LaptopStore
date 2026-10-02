@@ -8,7 +8,9 @@ import org.akira.laptopstore.catalog.entity.Product;
 import org.akira.laptopstore.catalog.repository.BrandRepository;
 import org.akira.laptopstore.catalog.repository.CategoryRepository;
 import org.akira.laptopstore.catalog.repository.ProductRepository;
+import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
 import org.akira.laptopstore.catalog.service.ProductService;
+import org.akira.laptopstore.exception.BusinessException;
 import org.akira.laptopstore.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +25,21 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final BrandRepository brandRepository;
 
+    // Thêm dòng này để "tiêm" ProductVariantRepository vào
+    private final ProductVariantRepository productVariantRepository;
+
     @Override
     @Transactional
     public Product createProduct(CreateProductRequest request) {
+        // Đổi hàm kiểm tra sang repository của Variant
+        if (productVariantRepository.existsBySku(request.getSku())) {
+            throw new BusinessException(
+                org.springframework.http.HttpStatus.BAD_REQUEST, 
+                "SKU_ALREADY_EXISTS", 
+                "Mã SKU '" + request.getSku() + "' đã tồn tại trong hệ thống. Vui lòng nhập mã khác!"
+            );
+        }
+
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Category với ID: " + request.getCategoryId()));
 

@@ -6,6 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    // Hàm siêu việt của JPA, trả về true nếu SKU đã có trong DB
-    boolean existsBySku(String sku);
+    boolean existsByName(String name);
 }
