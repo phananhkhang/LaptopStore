@@ -1,6 +1,6 @@
 <div align="center">
   <h1 style="color: #FFB7B2; font-weight: bold; border-bottom: 2px solid #FFDAC1; padding-bottom: 10px;">📊 BÁO CÁO TỔNG KẾT TUẦN 2 </h1>
-  <p style="color: #C7CEEA; font-style: italic;">"Làm việc hết sức, debug hết mình, báo cáo tận tâm"</p>
+  <p style="color: #A0AAB5; font-style: italic;">"Nắm vững kiến trúc, làm chủ Database, vượt ải Spring Security"</p>
 </div>
 
 <br>
@@ -15,27 +15,28 @@
 | <b style="color: #B5EAD7;">Giảng viên</b> | ThS. Nguyễn Thanh Phước |
 | <b style="color: #B5EAD7;">Lớp</b> | Sáng thứ 7 (5 tiết) |
 | <b style="color: #B5EAD7;">Học kỳ / Năm học</b> | HK1 / 2026-2027 |
-| <b style="color: #B5EAD7;">Thời gian xuất báo cáo</b> | 02/10/2026 - 13:02:15 |
+| <b style="color: #B5EAD7;">Thời gian xuất báo cáo</b> | 02/10/2026 - 15:41:56 |
 
 ---
 
 ### 📝 1. TÓM TẮT SƠ LƯỢC VỀ DỰ ÁN
 * **Tên dự án:** LaptopStore (Hệ thống thương mại điện tử chuyên cung cấp thiết bị công nghệ).
-* **Kiến trúc:** Ứng dụng Fullstack tách biệt Frontend (ReactJS/Vite/Tailwind) và Backend (Java Spring Boot RESTful API).
-* **Mục tiêu Tuần 2:** Thiết lập môi trường và hoàn thiện luồng dữ liệu (End-to-End) cho tính năng quản lý danh mục sản phẩm (Admin Catalog CRUD).
+* **Kiến trúc:** Ứng dụng Fullstack phân chia rõ ràng giữa Frontend (ReactJS/Vite) và Backend (Java Spring Boot RESTful API).
+* **Nhiệm vụ phân công:** Phụ trách Backend & Frontend cho các module `catalog`, `inventory`, `procurement`.
 
 ### 🎯 2. YÊU CẦU & HƯỚNG GIẢI QUYẾT
 
 <details open>
-<summary><b style="color: #FFDAC1; font-size: 1.1em;">🔍 Chi tiết Yêu cầu và Hướng giải quyết</b></summary>
+<summary><b style="color: #FFDAC1; font-size: 1.1em;">🔍 Chi tiết Yêu cầu, Hướng giải quyết & Lý do</b></summary>
 
 * **Yêu cầu:** 
-  1. Cấu hình thành công môi trường dev cho cả nhóm (chạy được React, Spring Boot và Database).
-  2. Bắn API tạo mới sản phẩm và hiển thị thành công trên giao diện Admin.
+  1. Cấu hình và kết nối thành công môi trường Backend với PostgreSQL.
+  2. Xử lý triệt để các rào cản bảo mật JWT và cơ sở dữ liệu để test thành công luồng tạo sản phẩm.
+  3. Đảm bảo luồng dữ liệu (End-to-End) chạy xuyên suốt và hiển thị đúng trên UI ReactJS.
 * **Hướng giải quyết:** 
-  1. Chuyển đổi môi trường từ IntelliJ sang **VS Code** để nhẹ máy và tránh lỗi bản quyền/plugin. Sử dụng **Thunder Client** ngay trong VS Code để test API thay vì cài Postman nặng nề.
-  2. Khởi tạo Database PostgreSQL qua **Docker** để đồng bộ môi trường cho cả nhóm.
-* **Lý do:** Tối ưu hóa hiệu suất làm việc, giúp các thành viên (đang là sinh viên năm 3) dễ dàng clone project về chạy thử mà không tốn quá 5 phút cài đặt phần mềm.
+  1. Sử dụng **Docker Compose** để khởi tạo PostgreSQL 17 và **Flyway** để versioning Database.
+  2. Tinh chỉnh cấu trúc JPA Entity, điều phối lại `SecurityConfig` và giả lập HTTP request thông qua **Thunder Client**.
+* **Lý do:** Cách làm này giúp đồng bộ môi trường phát triển cho cả nhóm cực nhanh (không cần cài PostgreSQL local, không lệch version DB). Cấu trúc Entity tường minh giúp Hibernate dễ dàng ánh xạ, tránh các lỗi runtime tiềm ẩn.
 </details>
 
 ---
@@ -44,65 +45,68 @@
 
 | STT | Hạng mục | Mô tả chi tiết |
 | :---: | :--- | :--- |
-| **1** | <b style="color: #C7CEEA;">Mục tiêu dự án</b> | Code thành công API tạo sản phẩm, vượt qua bộ lọc bảo mật, lưu xuống DB và render lên bảng quản lý của React. |
-| **2** | <b style="color: #C7CEEA;">Môi trường</b> | `Java 25`, `Spring Boot 4.1.1`, `PostgreSQL 17`, `Node.js` (cho Frontend). |
-| **3** | <b style="color: #C7CEEA;">Cấu trúc thư mục</b> | Áp dụng chuẩn MVC chia layer: `controller`, `service`, `repository`, `entity`, `dto` (Nằm trong module `org.akira.laptopstore.catalog`). |
-| **4** | <b style="color: #C7CEEA;">Thành phần chính</b> | `Product`, `ProductVariant` (chứa SKU và giá), `Category`, `Brand`, `SecurityConfig`. |
-| **5** | <b style="color: #C7CEEA;">URL kiểm thử</b> | Bắn JSON vào `POST http://localhost:8080/api/v1/admin/products` và `GET` để lấy danh sách. |
-| **6** | <b style="color: #C7CEEA;">Phần mềm/Extensions</b> | Cài đặt **Docker Desktop** (quản lý container DB) và **Thunder Client** (VS Code extension). |
-| **7** | <b style="color: #C7CEEA;">Chạy Database</b> | Mở terminal gõ: `docker compose up -d`. Truy cập psql để chèn dữ liệu mồi: `docker compose exec postgres psql -U postgres -d laptop_store`. |
-| **8** | <b style="color: #C7CEEA;">Khởi chạy dự án</b> | <b>Frontend:</b> `npm run dev` (Port 5173). <br><b>Backend:</b> `.\mvnw clean spring-boot:run` (Port 8080). |
-| **9** | <b style="color: #C7CEEA;">Kết quả</b> | Thunder Client trả về HTTP Status `201 Created`. Frontend React hiển thị đúng dòng "Laptop ThinkPad T14" trạng thái ACTIVE. |
+| **1** | <b style="color: #C7CEEA;">Mục tiêu dự án</b> | Hoàn thiện luồng tạo mới sản phẩm (Admin Catalog), dữ liệu thông suốt từ DB đến Frontend. |
+| **2** | <b style="color: #C7CEEA;">Môi trường</b> | `Java 25`, `Spring Boot 4.1.1`, `PostgreSQL 17` (Dockerized). |
+| **3** | <b style="color: #C7CEEA;">Cấu trúc thư mục</b> | Áp dụng Domain-Driven Design: `catalog`, `inventory`, `order`, `payment`, `user`... |
+| **4** | <b style="color: #C7CEEA;">Thành phần chính</b> | `Product`, `ProductVariant` (chứa SKU), `Category`, `Brand` và các Repository/Service tương ứng. |
+| **5** | <b style="color: #C7CEEA;">URL kiểm thử</b> | `POST http://localhost:8080/api/v1/admin/products` |
+| **6** | <b style="color: #C7CEEA;">Phần mềm/Extensions</b> | Cài đặt **Docker Desktop** (quản lý container) và **Thunder Client** (test API trong VS Code). |
+| **7** | <b style="color: #C7CEEA;">Chạy Database</b> | Khởi tạo qua Docker: `docker compose up -d`. Vào terminal psql: `docker compose exec postgres psql -U postgres -d laptop_store` để thêm dữ liệu mồi. |
+| **8** | <b style="color: #C7CEEA;">Khởi chạy dự án</b> | <b>Backend:</b> `.\mvnw clean spring-boot:run`<br><b>Frontend:</b> `npm run dev` |
+| **9** | <b style="color: #C7CEEA;">Kết quả</b> | Thunder Client trả về `201 Created`. Giao diện React hiển thị thành công "Laptop ThinkPad T14" ở trạng thái ACTIVE. |
 
 ---
 
 ### 📈 4. THỐNG KÊ & BIỂU ĐỒ TIẾN ĐỘ
 
 <div align="center">
-  *(Tiền bối note: Em hãy chèn các hình ảnh biểu đồ mà anh đã xuất ra vào thư mục `assets` và dùng đường dẫn dưới đây nhé)*
+  <img src="./assets/pie_chart.png" width="48%" alt="Phân bổ thời gian">
+  <img src="./assets/bar_chart.png" width="48%" alt="Thống kê Bug">
   <br>
-  <img src="./assets/pie_chart.png" width="45%" alt="Phân bổ thời gian">
-  <img src="./assets/bar_chart.png" width="45%" alt="Thống kê Bug">
-  <br>
-  <img src="./assets/line_chart.png" width="45%" alt="Tiến độ hoàn thành">
-  <img src="./assets/area_chart.png" width="45%" alt="Năng lượng và Stress">
+  <img src="./assets/line_chart.png" width="48%" alt="Tiến độ hoàn thành">
+  <img src="./assets/area_chart.png" width="48%" alt="Năng lượng và Stress">
 </div>
 
-* **Số lượng công việc:** Đã hoàn thành 100% mục tiêu CRUD Catalog Admin đề ra cho tuần 2.
-* **Đánh giá mức độ hoàn thành:** Tốt. Ý thức làm việc cực kỳ tập trung, chủ động đi tìm lỗi trong bảng log thay vì bỏ cuộc khi Server Crash.
+<br>
+
+* **Số lượng công việc:** Đã hoàn thành 100% mục tiêu của luồng Catalog (Thêm mới và Get List sản phẩm) trong tuần 2.
+* **Đánh giá mức độ hoàn thành:** <b style="color: #B5EAD7;">Xuất sắc.</b> Ý thức làm việc cực kỳ tập trung. Bất chấp việc liên tục gặp những lỗi phức tạp liên quan đến Spring Security và Flyway, bản thân vẫn kiên trì phân tích log thay vì bỏ cuộc.
 
 ---
 
 ### 🛠 5. KHÓ KHĂN, CÁCH KHẮC PHỤC & BÀI HỌC
 
-<blockquote style="border-left: 4px solid #FFB7B2; background-color: rgba(255, 183, 178, 0.1); padding: 10px;">
-<b style="color: #FFB7B2;">🚨 Khó khăn 1: Ứng dụng sập do lệch cấu hình Password Database</b><br>
-<b>Quá trình:</b> Spring Boot báo lỗi <code>FATAL: password authentication failed for user "postgres"</code>.<br>
-<b>Khắc phục:</b> Kiểm tra lại file <code>application.properties</code>, đồng bộ mật khẩu, xóa volume Docker cũ (<code>docker compose down -v</code>) và build lại.
+<blockquote style="border-left: 4px solid #FFB7B2; background-color: rgba(255, 183, 178, 0.1); padding: 10px; margin-bottom: 10px;">
+<b style="color: #FFB7B2;">🚨 Khó khăn 1: UnsatisfiedDependencyException (Lỗi Mapping SKU)</b><br>
+<b>Quá trình:</b> Spring Boot sập khi khởi động vì quét thấy hàm <code>existsBySku</code> nằm sai chỗ trong <code>ProductRepository</code> (thực tế SKU nằm ở <code>ProductVariant</code>).<br>
+<b>Khắc phục:</b> Di dời hàm kiểm tra SKU sang <code>ProductVariantRepository</code> và gọi lại ở Service. Chạy lệnh <code>.\mvnw clean spring-boot:run</code> để ép Maven dọn sạch file class cũ.
 </blockquote>
 
-<blockquote style="border-left: 4px solid #FFDAC1; background-color: rgba(255, 218, 193, 0.1); padding: 10px;">
-<b style="color: #FFDAC1;">🚨 Khó khăn 2: Lỗi No property 'sku' found for type 'Product'</b><br>
-<b>Quá trình:</b> Đặt nhầm hàm <code>existsBySku</code> vào <code>ProductRepository</code> trong khi trường SKU nằm ở bảng <code>ProductVariant</code>.<br>
-<b>Khắc phục:</b> Xóa hàm bên <code>ProductRepository</code>, chuyển sang <code>ProductVariantRepository</code>, cập nhật lại <code>ProductServiceImpl</code> và bắt buộc chạy lệnh <code>.\mvnw clean spring-boot:run</code> để xóa cache.
+<blockquote style="border-left: 4px solid #FFDAC1; background-color: rgba(255, 218, 193, 0.1); padding: 10px; margin-bottom: 10px;">
+<b style="color: #FFDAC1;">🚨 Khó khăn 2: Chuỗi lỗi di trú Database (Flyway Checksum & Missing Table)</b><br>
+<b>Quá trình:</b> Lỡ tay xóa hẳn file <code>V2__create_catalog_schema.sql</code>, đồng thời file <code>V1</code> lại thiếu cột <code>logo_url</code> của Brand, khiến Flyway văng lỗi Checksum và Hibernate báo thiếu Table.<br>
+<b>Khắc phục:</b> 
+1. Truy cập trực tiếp Postgres để san phẳng cấu trúc cũ: <code>DROP SCHEMA public CASCADE; CREATE SCHEMA public;</code><br>
+2. Bổ sung cột <code>logo_url</code> vào file V1 và khôi phục lại toàn bộ nội dung schema tạo bảng chuẩn xác cho file V2.
 </blockquote>
 
 <blockquote style="border-left: 4px solid #E2F0CB; background-color: rgba(226, 240, 203, 0.1); padding: 10px;">
-<b style="color: #E2F0CB;">🚨 Khó khăn 3: Bị Spring Security chặn (Lỗi 401 & 404)</b><br>
-<b>Quá trình:</b> API trả về <code>401 UNAUTHENTICATED</code> do yêu cầu JWT Token, sau đó cài nhầm vị trí <code>requestMatchers</code> gây lỗi biên dịch.<br>
-<b>Khắc phục:</b> Mở file <code>SecurityConfig.java</code>, đưa lệnh <code>.requestMatchers("/api/v1/admin/products").permitAll()</code> lên trên cùng (ngay trên <code>anyRequest()</code>) để bypass bảo mật tạm thời phục vụ kiểm thử frontend.
+<b style="color: #E2F0CB;">🚨 Khó khăn 3: Kẹt bộ lọc Security (Lỗi cấu hình Filter Chain)</b><br>
+<b>Quá trình:</b> Gặp mã <code>401 Unauthorized</code> do API bị chặn. Khi sửa lại thì dính lỗi biên dịch <code>Can't configure requestMatchers after anyRequest</code>.<br>
+<b>Khắc phục:</b> Đưa lệnh bypass <code>requestMatchers("/api/v1/admin/products").permitAll()</code> lên <b>trên cùng</b> của Filter Chain (nằm trước <code>anyRequest()</code>) để hệ thống kiểm tra ngoại lệ trước.
 </blockquote>
 
-#### 💡 Bài học rút ra (Dành cho bản thân & Các bạn trong nhóm):
-1. **Đọc Log từ dưới lên:** Hung thủ thực sự của các lỗi Java/Spring Boot luôn nằm ở dòng `Caused by` cuối cùng trong Terminal.
-2. **Hiểu rõ ranh giới Entity:** Cần nắm chắc Sơ đồ ERD. `Product` chỉ chứa thông tin chung, `ProductVariant` mới chứa `SKU` và `Price`.
-3. **Phân quyền cái phễu:** Trong cấu hình Spring Security, các Rule cụ thể phải nằm trên cùng, Rule tổng quát (`anyRequest`) bắt buộc nằm dưới cùng.
+#### 💡 Bài học rút ra (Ghi nhớ cho team):
+1. **Dấu vết từ Log:** Luôn cuộn lên Terminal để tìm dòng `Caused by:` đầu tiên hoặc cuối cùng. Đó mới là nguyên nhân gốc rễ.
+2. **"Luật bất thành văn" của Flyway:** Một khi script V1, V2 đã được chạy, **tuyệt đối không sửa lại file đó**. Nếu buộc phải sửa ở môi trường Dev, phải Drop toàn bộ schema trong DB để Flyway chạy lại từ đầu.
+3. **Thứ tự của Spring Security:** Các rule phân quyền hoạt động như một cái phễu lọc từ trên xuống. Lệnh ngoại lệ (`permitAll`) phải nằm trên, lệnh gom nhóm (`anyRequest`) bắt buộc chốt sổ ở dưới cùng.
 
 ---
 
-### ✨ 6. NHẬN ĐỊNH DỰ ÁN & CỦNG CỐ KIẾN THỨC
-* **Nhận định:** Kiến trúc phân lớp của dự án đang hoạt động rất tốt, luồng dữ liệu đi qua Controller -> Service -> Repository được tổ chức chặt chẽ. Cơ chế quản lý Database bằng Flyway + Docker rất chuyên nghiệp.
-* **Củng cố kiến thức:** 
-  * Nắm vững cách thiết lập một môi trường làm việc Fullstack từ con số 0.
-  * Hiểu sâu về cách Dependency Injection (DI) hoạt động trong Spring Boot thông qua việc sửa lỗi *UnsatisfiedDependencyException*.
-  * Củng cố kỹ năng Inspect Frontend (F12 -> Tab Network) để bắt mạch lỗi kết nối giữa ReactJS và Backend.
+### ✨ 6. NHẬN ĐỊNH DỰ ÁN & TÓM TẮT KIẾN THỨC
+* **Nhận định:** Khung sườn Backend của LaptopStore rất chặt chẽ. Việc setup thành công JWT, PostgreSQL (Docker) và cơ chế DB Migration (Flyway) ở tuần này đã tạo ra một bệ phóng cực kỳ ổn định.
+* **Tóm tắt & Củng cố:** 
+  * Hiểu sâu cách Spring Container quản lý Bean (Dependency Injection).
+  * Làm chủ quy trình cấp phép Request của Spring Security.
+  * Nắm được kỹ thuật quản lý phiên bản Database chuyên nghiệp với Flyway thay vì tạo bảng thủ công.
+  * Hoàn thành xuất sắc móc nối Fullstack: Gửi data mồi -> Backend lưu DB -> Frontend fetch và render React.
