@@ -7,8 +7,16 @@
     <option name="selectedModelId" value="auto" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1de233f3-2cff-452c-ac0a-90dba4f07dd8" name="Changes" comment="">
+    <list default="true" id="1de233f3-2cff-452c-ac0a-90dba4f07dd8" name="Changes" comment="cập nhật lại dữ liệu vốn dĩ ban đầu của file application.properties">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/admin/AdminProductPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/admin/AdminProductPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/user/ProductDetailPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/user/ProductDetailPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/user/ProductListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/user/ProductListPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/modules/catalog/routes/CatalogRoutes.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/modules/catalog/routes/CatalogRoutes.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +27,21 @@
     <persistenceIdMap>
       <entry key="_C:/Users/ACER/Downloads/LaptopStore" value="3K67W74GZbwtFWEX3SdKTb38aVy" />
     </persistenceIdMap>
+  </component>
+  <component name="DatabaseLocalColorSettings">
+    <colors>
+      <entry key="d17c400f-fd65-4ff5-9129-d566e77f0791" value="-" />
+    </colors>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Swagger" />
+        <option value="HTTP Request" />
+        <option value="HTTP Private Environment File" />
+        <option value="HTTP Public Environment File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -35,67 +58,74 @@
     &quot;accountId&quot;: &quot;234b4178-0976-4836-9848-215fd3e41b90&quot;
   }
 }</component>
+  <component name="HttpClientOnboardingState"><![CDATA[{
+  "isOnboardingCommentShown": true
+}]]></component>
+  <component name="HttpClientSelectedEnvironments">
+    <file url="file://$USER_HOME$/AppData/Local/Temp/whats-new-dir/whats-new.http" environment="test" />
+    <file url="jar://$APPLICATION_HOME_DIR$/plugins/restClient/lib/restClient.jar!/com/intellij/ws/rest/client/requests/collection/post-requests.http" environment="test" />
+  </component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0" />
-      <entry key="S30" value="1.0" />
-      <entry key="S60" value="1.0000000004146121" />
-      <entry key="M2" value="1.0000352665886911" />
-      <entry key="M5" value="1.0320047016683955" />
-      <entry key="M10" value="1.3098609122424802" />
-      <entry key="M15" value="1.6604168127161487" />
-      <entry key="M30" value="2.4075687212094308" />
-      <entry key="H1" value="3.0549223277358104" />
-      <entry key="H2" value="3.4828948509073423" />
-      <entry key="H4" value="3.729227822968643" />
-      <entry key="D1" value="3.9530740940715967" />
-      <entry key="W1" value="3.99325091944153" />
+      <entry key="MS100" value="1.4567687375449256" />
+      <entry key="MS500" value="3.3552334084343416" />
+      <entry key="S2" value="4.482240186577828" />
+      <entry key="S5" value="4.78227936113156" />
+      <entry key="S10" value="4.889276376050709" />
+      <entry key="S30" value="4.962756388065238" />
+      <entry key="S60" value="5.006182184042235" />
+      <entry key="M2" value="5.445972720384257" />
+      <entry key="M5" value="8.598990362391273" />
+      <entry key="M10" value="15.36211673120313" />
+      <entry key="M15" value="21.94382420108197" />
+      <entry key="M30" value="37.227311458908545" />
+      <entry key="H1" value="55.220005785060636" />
+      <entry key="H2" value="71.62083774168057" />
+      <entry key="H4" value="83.4346944435466" />
+      <entry key="D1" value="96.08423866085616" />
+      <entry key="W1" value="98.57462288912203" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
-      <entry key="MS500" value="0.0" />
-      <entry key="S2" value="0.0" />
-      <entry key="S5" value="0.0" />
-      <entry key="S10" value="0.0" />
-      <entry key="S30" value="0.0" />
-      <entry key="S60" value="0.0" />
-      <entry key="M2" value="0.0" />
-      <entry key="M5" value="0.0" />
-      <entry key="M10" value="0.0" />
-      <entry key="M15" value="0.0" />
-      <entry key="M30" value="0.0" />
-      <entry key="H1" value="0.0" />
-      <entry key="H2" value="0.0" />
-      <entry key="H4" value="0.0" />
-      <entry key="D1" value="0.0" />
-      <entry key="W1" value="0.0" />
+      <entry key="MS500" value="1.9679807196876587E-296" />
+      <entry key="S2" value="1.1844185752964114E-74" />
+      <entry key="S5" value="2.6878317759892742E-30" />
+      <entry key="S10" value="1.639460818680777E-15" />
+      <entry key="S30" value="1.179181656159478E-5" />
+      <entry key="S60" value="0.0034531542258960032" />
+      <entry key="M2" value="0.06299162893594652" />
+      <entry key="M5" value="0.4390648713341771" />
+      <entry key="M10" value="0.9700496218339649" />
+      <entry key="M15" value="1.360581777588943" />
+      <entry key="M30" value="2.2058542562014987" />
+      <entry key="H1" value="3.264431775570963" />
+      <entry key="H2" value="4.27883957531029" />
+      <entry key="H4" value="5.020783748468613" />
+      <entry key="D1" value="5.816804859013741" />
+      <entry key="W1" value="5.973285512533862" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.2871745887492588" />
-      <entry key="MS500" value="0.7791645796604998" />
-      <entry key="S2" value="0.9395227492140118" />
-      <entry key="S5" value="0.9753554615276419" />
-      <entry key="S10" value="0.9876008614453725" />
-      <entry key="S30" value="0.9958497530944581" />
-      <entry key="S60" value="0.9979227194104744" />
-      <entry key="M2" value="0.9989959488833141" />
-      <entry key="M5" value="1.0315387115024992" />
-      <entry key="M10" value="1.3094094464330082" />
-      <entry key="M15" value="1.6599318661022413" />
-      <entry key="M30" value="2.407130042549713" />
-      <entry key="H1" value="3.054617941784127" />
-      <entry key="H2" value="3.4827145371385173" />
-      <entry key="H4" value="3.7291295719872086" />
-      <entry key="D1" value="3.953056492925624" />
-      <entry key="W1" value="3.993248373555695" />
+      <entry key="MS100" value="1.4088840113458454" />
+      <entry key="MS500" value="3.3269494622615516" />
+      <entry key="S2" value="4.472197986103445" />
+      <entry key="S5" value="4.7779399568502745" />
+      <entry key="S10" value="4.887048906268758" />
+      <entry key="S30" value="4.962012273339062" />
+      <entry key="S60" value="5.00922886774992" />
+      <entry key="M2" value="5.508521573243047" />
+      <entry key="M5" value="9.036951928413455" />
+      <entry key="M10" value="16.329135036433186" />
+      <entry key="M15" value="23.299989884513877" />
+      <entry key="M30" value="39.42792094799255" />
+      <entry key="H1" value="58.48019664471189" />
+      <entry key="H2" value="75.89690593467655" />
+      <entry key="H4" value="88.4538749087332" />
+      <entry key="D1" value="101.90073918504329" />
+      <entry key="W1" value="104.54786390373151" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -119,11 +149,20 @@
     "git-widget-placeholder": "kiet-Catalog-Inventory-Procurement",
     "kotlin-language-version-configured": "true",
     "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.jshint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.jshint": "",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true"
+    "python.packages.toolwindow.project.migrated.to.right.top.v2": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "ts.external.directory.path": "C:\\Users\\ACER\\Downloads\\LaptopStore\\frontend\\node_modules\\typescript\\lib"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "HTTP Request"
+    ]
   }
 }]]></component>
   <component name="RunManager">
@@ -181,6 +220,11 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat(catalog): implement product management APIs and validation" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(catalog): implement product management APIs and validation" />
+    <MESSAGE value="cập nhật lại dữ liệu vốn dĩ ban đầu của file application.properties" />
+    <option name="LAST_COMMIT_MESSAGE" value="cập nhật lại dữ liệu vốn dĩ ban đầu của file application.properties" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>
