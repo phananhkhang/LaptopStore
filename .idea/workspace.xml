@@ -7,17 +7,7 @@
     <option name="selectedModelId" value="auto" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1de233f3-2cff-452c-ac0a-90dba4f07dd8" name="Changes" comment="cập nhật lại dữ liệu vốn dĩ ban đầu của file application.properties">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/admin/AdminProductPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/admin/AdminProductPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/user/ProductDetailPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/user/ProductDetailPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/user/ProductListPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/modules/catalog/pages/user/ProductListPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/modules/catalog/routes/CatalogRoutes.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/modules/catalog/routes/CatalogRoutes.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vite.config.ts" afterDir="false" />
-    </list>
+    <list default="true" id="1de233f3-2cff-452c-ac0a-90dba4f07dd8" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -221,7 +211,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="feat(catalog): implement product management APIs and validation" />
     <MESSAGE value="cập nhật lại dữ liệu vốn dĩ ban đầu của file application.properties" />
-    <option name="LAST_COMMIT_MESSAGE" value="cập nhật lại dữ liệu vốn dĩ ban đầu của file application.properties" />
+    <MESSAGE value="Hoàn thành thiết lập khung DTO cho Product và Variant với Jakarta Validation.&#10;Bổ sung ràng buộc chặt chẽ để kiểm tra định dạng SKU bằng Regex và ép buộc giá sản phẩm lớn hơn không.&#10;Cập nhật các Repository nhằm hỗ trợ truy vấn kiểm tra nhanh sự tồn tại của mã SKU trong cơ sở dữ liệu.&#10;Triển khai logic tầng Service để tạo mới sản phẩm và kích hoạt BusinessException khi phát hiện trùng lặp mã.&#10;Xây dựng AdminProductController với các endpoint chuẩn RESTful phục vụ tính năng thêm mới và cập nhật trạng thái.&#10;Khắc phục triệt để lỗi lệch pha interface và dọn dẹp ProductController phân quyền cho người dùng cuối.&#10;Thiết lập thành công hệ thống định tuyến React Router để điều hướng chính xác các luồng thao tác của Catalog.&#10;Khởi tạo AdminProductPage có khả năng fetch dữ liệu API, đồng thời tạo các trang skeleton cho phía User.&#10;Cấu hình Vite proxy chuyển tiếp thành công các request từ cổng 5173 sang cổng 8080 để vượt qua rào cản CORS.&#10;Tích hợp nhanh Tailwind CSS qua CDN nhằm hoàn thiện giao diện bảng quản trị, khép lại trọn vẹn luồng end-to-end tuần 2." />
+    <option name="LAST_COMMIT_MESSAGE" value="Hoàn thành thiết lập khung DTO cho Product và Variant với Jakarta Validation.&#10;Bổ sung ràng buộc chặt chẽ để kiểm tra định dạng SKU bằng Regex và ép buộc giá sản phẩm lớn hơn không.&#10;Cập nhật các Repository nhằm hỗ trợ truy vấn kiểm tra nhanh sự tồn tại của mã SKU trong cơ sở dữ liệu.&#10;Triển khai logic tầng Service để tạo mới sản phẩm và kích hoạt BusinessException khi phát hiện trùng lặp mã.&#10;Xây dựng AdminProductController với các endpoint chuẩn RESTful phục vụ tính năng thêm mới và cập nhật trạng thái.&#10;Khắc phục triệt để lỗi lệch pha interface và dọn dẹp ProductController phân quyền cho người dùng cuối.&#10;Thiết lập thành công hệ thống định tuyến React Router để điều hướng chính xác các luồng thao tác của Catalog.&#10;Khởi tạo AdminProductPage có khả năng fetch dữ liệu API, đồng thời tạo các trang skeleton cho phía User.&#10;Cấu hình Vite proxy chuyển tiếp thành công các request từ cổng 5173 sang cổng 8080 để vượt qua rào cản CORS.&#10;Tích hợp nhanh Tailwind CSS qua CDN nhằm hoàn thiện giao diện bảng quản trị, khép lại trọn vẹn luồng end-to-end tuần 2." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
