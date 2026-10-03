@@ -2,6 +2,8 @@ package org.akira.laptopstore.promotion.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.akira.laptopstore.promotion.enums.CouponStatus;
+import org.akira.laptopstore.promotion.enums.DiscountType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -14,7 +16,7 @@ public class CouponResponse {
 
     private String code;
 
-    private String discountType;
+    private DiscountType discountType;
 
     private BigDecimal discountValue;
 
@@ -30,5 +32,5 @@ public class CouponResponse {
 
     private Instant endsAt;
 
-    private Boolean active;
+    private CouponStatus status;
 }

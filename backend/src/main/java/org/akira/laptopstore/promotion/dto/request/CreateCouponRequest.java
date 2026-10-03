@@ -2,6 +2,7 @@ package org.akira.laptopstore.promotion.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.akira.laptopstore.promotion.enums.DiscountType;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -12,7 +13,7 @@ public class CreateCouponRequest {
 
     private String code;
 
-    private String discountType;
+    private DiscountType discountType;
 
     private BigDecimal discountValue;
 
