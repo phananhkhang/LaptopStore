@@ -1,6 +1,6 @@
 # Module cart — Giỏ hàng
 
-**Owner đề xuất:** C theo [bảng ownership](../../../../../../../docs/architecture/03-ownership.md). Chưa gán thành viên thật. **Trạng thái:** skeleton hướng dẫn; các class dưới đây chưa triển khai. Thiết kế chi tiết cần được nhóm chốt khi nhận task.
+**Owner đề xuất:** C theo [bảng ownership](../../../../../../../docs/architecture/03-ownership.md). Chưa gán thành viên thật. **Trạng thái:** đã triển khai CRUD backend và contract giỏ cho checkout; order/frontend chưa được triển khai trong phần này.
 
 ## Trách nhiệm
 
@@ -19,11 +19,38 @@ Giỏ tạm của từng USER, thêm/xóa/sửa số lượng và cung cấp sna
 
 Đây là danh sách gợi ý theo use case, không bắt buộc tạo đủ class trước khi có nhu cầu.
 
+## API đã triển khai
+
+Tất cả endpoint lấy userId từ principal và yêu cầu đăng nhập.
+
+| Method/path | Request | Kết quả |
+|---|---|---|
+| GET `/api/v1/me/cart` | Không | 200 CartResponse; user chưa có cart nhận giỏ rỗng với id null |
+| POST `/api/v1/me/cart/items` | `{ "productVariantId": 7, "quantity": 2 }` | 201 CartResponse; gộp quantity khi đã có variant |
+| PATCH `/api/v1/me/cart/items/{cartItemId}` | `{ "quantity": 3 }` | 200 CartResponse; thay quantity |
+| DELETE `/api/v1/me/cart/items/{cartItemId}` | Không | 204; item không thuộc giỏ: 404 |
+| DELETE `/api/v1/me/cart/items/clear` | Không | 204, kể cả user chưa có giỏ hoặc giỏ đã rỗng |
+
+Tạm thời mỗi item trả `cartItemId`, `variantId`, `quantity`; PATCH/DELETE dùng **cartItemId**, không dùng variantId. Các trường `productName`, `sku`, `variantName`, `unitPrice`, `lineTotal` đang null vì cart chưa có contract đọc variant từ catalog. `totalItems` là tổng quantity; `totalAmount` tạm thời null. Order phải lấy lại tên, giá và tổng tiền từ catalog khi checkout.
+
+Thêm item yêu cầu cả product và variant ACTIVE. Variant đã inactive vẫn được đọc/sửa quantity/xóa trong giỏ; checkout phải xác minh lại khả năng mua và tồn. Cart không thay đổi tồn kho.
+
+## Dữ liệu sản phẩm
+
+Cart hiện chỉ lưu `variantId` và `quantity`. CartRepository chỉ dùng JPA cho các entity thuộc cart; không đọc trực tiếp bảng hoặc repository của catalog. Khi dev catalog cung cấp contract đọc variant, order/checkout có thể lấy tên, SKU và giá qua service/DTO đó.
+
+## Contract checkout đã triển khai
+
+- `lockAndGetCheckoutCart(userId)` trả `CartSnapshot(cartId, userId, items)` bất biến; mỗi item chứa cartItemId, variantId và quantity. Giỏ không tồn tại: 404; giỏ rỗng: 400.
+- `clearPurchasedItems(userId, cartItemIds)` xác minh toàn bộ ID thuộc giỏ trước khi xóa, chỉ xóa các mục được truyền vào. ID sai/thuộc giỏ khác: 404, không xóa một phần.
+- Cả hai dùng `Propagation.MANDATORY`: order phải mở transaction bao trùm snapshot và cleanup. Gọi ngoài transaction bị từ chối. Mọi thao tác ghi khóa hàng cart trước khi tải collection items; không dùng fetch join collection khi khóa.
+- CartItem không khai báo UQ ngoài migration V1; khóa cart và gộp variant bảo vệ thao tác ghi qua service. Không sửa migration đã có.
+
 ## Dữ liệu và phụ thuộc
 
 **Dữ liệu sở hữu:** carts, cart_items.
 
-**Được gọi:** catalog.service để kiểm tra variant và lấy dữ liệu hiển thị. Không gọi order. Không gọi repository/entity module khác. Xem [allowlist và contract](../../../../../../../docs/architecture/04-dependencies.md).
+**Được gọi:** Chưa gọi module khác trong CRUD hiện tại. Không gọi order hoặc repository/entity module khác. Xem [allowlist và contract](../../../../../../../docs/architecture/04-dependencies.md).
 
 ## Bất biến và ràng buộc
 
@@ -35,7 +62,7 @@ Giỏ tạm của từng USER, thêm/xóa/sửa số lượng và cung cấp sna
 
 ## Luồng triển khai điển hình
 
-Khóa cart thuộc actor → kiểm tra variant qua catalog → thêm/gộp quantity → trả giỏ.
+Khóa cart thuộc actor → thêm/gộp `variantId` và quantity → trả giỏ tạm thời.
 
 ## Bàn giao và kiểm tra
 

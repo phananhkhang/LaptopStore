@@ -31,7 +31,6 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     Optional<Cart> findByUserIdWithItems(@Param("userId") Long userId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @EntityGraph(attributePaths = "items")
     @Query("select c from Cart c where c.userId = :userId")
-    Optional<Cart> findByUserIdWithItemsForUpdate(@Param("userId") Long userId);
+    Optional<Cart> findByUserIdForUpdate(@Param("userId") Long userId);
 }

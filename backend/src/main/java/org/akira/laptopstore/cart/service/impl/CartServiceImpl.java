@@ -4,24 +4,27 @@ import lombok.RequiredArgsConstructor;
 import org.akira.laptopstore.cart.dto.request.AddCartItemRequest;
 import org.akira.laptopstore.cart.dto.request.UpdateCartItemRequest;
 import org.akira.laptopstore.cart.dto.response.CartResponse;
+import org.akira.laptopstore.cart.dto.response.CartSnapshot;
 import org.akira.laptopstore.cart.entity.Cart;
 import org.akira.laptopstore.cart.entity.CartItem;
 import org.akira.laptopstore.cart.mapper.CartMapper;
 import org.akira.laptopstore.cart.repository.CartRepository;
 import org.akira.laptopstore.cart.service.CartService;
-import org.akira.laptopstore.catalog.entity.ProductVariant;
-import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
 import org.akira.laptopstore.exception.ResourceNotFoundException;
 import org.akira.laptopstore.exception.UnauthenticatedException;
 import org.akira.laptopstore.exception.ValidationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
+
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
-    private final ProductVariantRepository productVariantRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -29,7 +32,7 @@ public class CartServiceImpl implements CartService {
         requireUserId(userId);
         Cart cart = cartRepository.findByUserIdWithItems(userId)
                 .orElseGet(() -> Cart.builder().userId(userId).build());
-        return CartMapper.toResponse(cart);
+        return toResponse(cart);
     }
 
     @Override
@@ -37,19 +40,12 @@ public class CartServiceImpl implements CartService {
     public CartResponse addItemToCart(Long userId, AddCartItemRequest request) {
         requireUserId(userId);
         if (request == null || request.productVariantId() == null || request.productVariantId() <= 0) {
-            throw new ValidationException("productVariantId phai lon hon 0");
+            throw new ValidationException("productVariantId must be greater than 0");
         }
         int quantity = requirePositiveQuantity(request.quantity());
 
-        ProductVariant variant = productVariantRepository.findById(request.productVariantId())
-                .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + request.productVariantId()));
-        if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())) {
-            throw new ValidationException("Product variant is not available for purchase");
-        }
-
-        cartRepository.createCartIfAbsent(userId);
+        cartRepository.createCartIfAbsent(userId); // Tạo giỏ hàng cho người mới, nếu chưa có
         Cart cart = lockedCart(userId);
-
         CartItem existingItem = cart.getItems().stream()
                 .filter(item -> request.productVariantId().equals(item.getVariantId()))
                 .findFirst()
@@ -68,7 +64,8 @@ public class CartServiceImpl implements CartService {
                 throw new ValidationException("quantity is too large");
             }
         }
-        return CartMapper.toResponse(cartRepository.save(cart));
+        cart.setUpdatedAt(Instant.now());
+        return toResponse(cartRepository.saveAndFlush(cart));
     }
 
     @Override
@@ -82,7 +79,8 @@ public class CartServiceImpl implements CartService {
         CartItem cartItem = findItem(cart, cartItemId);
         cartItem.setQuantity(quantity);
 
-        return CartMapper.toResponse(cartRepository.save(cart));
+        cart.setUpdatedAt(Instant.now());
+        return toResponse(cartRepository.saveAndFlush(cart)); // bắt buộc dùng saveAndFlush để đảm bảo dữ liệu được ghi vào DB ngay lập tức, tránh lỗi khi checkout
     }
 
     @Override
@@ -94,6 +92,7 @@ public class CartServiceImpl implements CartService {
         Cart cart = lockedCart(userId);
         CartItem cartItem = findItem(cart, cartItemId);
         cart.getItems().remove(cartItem);
+        cart.setUpdatedAt(Instant.now());
     }
 
     @Override
@@ -101,8 +100,41 @@ public class CartServiceImpl implements CartService {
     public void clearCart(Long userId) {
         requireUserId(userId);
 
+       Cart cart = lockedCart(userId);
+       cart.getItems().clear();
+       cart.setUpdatedAt(Instant.now());
+    }
+
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public CartSnapshot lockAndGetCheckoutCart(Long userId) {
+        requireUserId(userId);
         Cart cart = lockedCart(userId);
-        cart.getItems().clear();
+        if (cart.getItems().isEmpty()) {
+            throw new ValidationException("Cart is empty");
+        }
+        return new CartSnapshot(cart.getId(), userId, cart.getItems().stream()
+                .map(item -> new CartSnapshot.Item(item.getId(), item.getVariantId(), item.getQuantity()))
+                .toList());
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void clearPurchasedItems(Long userId, Collection<Long> cartItemIds) {
+        requireUserId(userId);
+        if (cartItemIds == null || cartItemIds.stream().anyMatch(id -> id == null || id <= 0)) {
+            throw new ValidationException("cartItemIds must contain positive IDs");
+        }
+        if (cartItemIds.isEmpty()) {
+            return;
+        }
+        Cart cart = lockedCart(userId);
+        Set<Long> purchasedIds = Set.copyOf(cartItemIds);
+        // Validate all IDs before changing the cart; an item from another user is never removed.
+        purchasedIds.forEach(id -> findItem(cart, id)); // Kiem tra cac item thuoc cart hien tai, khong cho xoa bua
+        cart.getItems().removeIf(item -> purchasedIds.contains(item.getId()));
+        cart.setUpdatedAt(Instant.now());
     }
 
     // ------------------- Private Helper Methods -------------------
@@ -115,8 +147,12 @@ public class CartServiceImpl implements CartService {
     }
 
     private Cart lockedCart(Long userId) {
-        return cartRepository.findByUserIdWithItemsForUpdate(userId)
+        return cartRepository.findByUserIdForUpdate(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
+    }
+
+    private CartResponse toResponse(Cart cart) {
+        return CartMapper.toResponse(cart);
     }
 
     private void requireUserId(Long userId) {

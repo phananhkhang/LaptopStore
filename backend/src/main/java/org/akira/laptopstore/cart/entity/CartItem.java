@@ -8,13 +8,7 @@ import java.time.Instant;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(
-        name = "cart_items",
-        uniqueConstraints = @UniqueConstraint(
-                name = "uk_cart_items_cart_variant",
-                columnNames = {"cart_id", "variant_id"}
-        )
-)
+@Table(name = "cart_items")
 @Setter
 @Builder
 @AllArgsConstructor
