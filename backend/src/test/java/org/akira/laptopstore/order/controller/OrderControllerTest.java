@@ -1,0 +1,94 @@
+package org.akira.laptopstore.order.controller;
+
+import org.akira.laptopstore.order.dto.response.OrderResponse;
+import org.akira.laptopstore.order.dto.response.OrderSummaryResponse;
+import org.akira.laptopstore.order.entity.enums.OrderStatus;
+import org.akira.laptopstore.order.service.OrderService;
+import org.akira.laptopstore.security.CustomAccessDeniedHandler;
+import org.akira.laptopstore.security.JwtAuthenticationEntryPoint;
+import org.akira.laptopstore.security.SecurityConfig;
+import org.akira.laptopstore.security.filter.JwtAuthenticationFilter;
+import org.akira.laptopstore.security.jwt.JwtTokenProvider;
+import org.akira.laptopstore.security.principal.CustomUserDetails;
+import org.akira.laptopstore.security.principal.CustomUserDetailsService;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(OrderController.class)
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class,
+        JwtAuthenticationEntryPoint.class, CustomAccessDeniedHandler.class})
+class OrderControllerTest {
+
+    @Autowired private MockMvc mockMvc;
+    @MockitoBean private OrderService orderService;
+    @MockitoBean private JwtTokenProvider jwtTokenProvider;
+    @MockitoBean private CustomUserDetailsService userDetailsService;
+
+    @Test
+    void userCanReadOnlyTheirOrderEndpoints() throws Exception {
+        CustomUserDetails principal = principal(42L, "ROLE_USER");
+        OrderSummaryResponse summary = new OrderSummaryResponse(10L, "ORD-10", OrderStatus.PENDING,
+                2, new BigDecimal("25000000"), "Nguyen Van A", Instant.parse("2026-10-01T10:00:00Z"));
+        OrderResponse detail = new OrderResponse(10L, 42L, "ORD-10", OrderStatus.PENDING,
+                new BigDecimal("25000000"), BigDecimal.ZERO, BigDecimal.ZERO, new BigDecimal("25000000"),
+                "Nguyen Van A", "0900000000", "Ho Chi Minh City", null,
+                List.of(), List.of(), Instant.parse("2026-10-01T10:00:00Z"), Instant.parse("2026-10-01T10:00:00Z"));
+        when(orderService.getOwnOrders(eq(42L), any())).thenReturn(new PageImpl<>(List.of(summary)));
+        when(orderService.getOwnOrder(42L, 10L)).thenReturn(detail);
+
+        mockMvc.perform(get("/api/v1/me/orders").with(user(principal)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].orderCode").value("ORD-10"));
+        mockMvc.perform(get("/api/v1/me/orders/10").with(user(principal)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(42L));
+
+        verify(orderService).getOwnOrders(eq(42L), any());
+        verify(orderService).getOwnOrder(42L, 10L);
+    }
+
+    @Test
+    void staffListRequiresStaffOrAdmin() throws Exception {
+        when(orderService.getAllOrders(any())).thenReturn(new PageImpl<>(List.of()));
+
+        mockMvc.perform(get("/api/v1/staff/orders").with(user(principal(42L, "ROLE_USER"))))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/v1/staff/orders").with(user(principal(84L, "ROLE_STAFF"))))
+                .andExpect(status().isOk());
+
+        verify(orderService).getAllOrders(any());
+    }
+
+    @Test
+    void myOrderEndpointsRequireAuthentication() throws Exception {
+        mockMvc.perform(get("/api/v1/me/orders"))
+                .andExpect(status().isUnauthorized());
+
+        verifyNoInteractions(orderService);
+    }
+
+    private CustomUserDetails principal(Long id, String role) {
+        return new CustomUserDetails(id, "user" + id + "@example.com", "unused", 0,
+                "ACTIVE", List.of(new SimpleGrantedAuthority(role)));
+    }
+}

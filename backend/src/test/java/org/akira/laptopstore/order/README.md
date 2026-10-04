@@ -1,6 +1,6 @@
 # Test module order
 
-**Owner:** C. Đọc [quy tắc module](../../../../../../main/java/org/akira/laptopstore/order/README.md). Thư mục mới chỉ có kế hoạch kiểm tra, chưa có test nghiệp vụ.
+**Owner:** C. Đọc [quy tắc module](../../../../../../main/java/org/akira/laptopstore/order/README.md). Query foundation có unit test cho ownership, mapping snapshot và tổng số lượng; checkout workflow còn cần test liên module khi contract sẵn sàng.
 
 ## Hành vi cần chứng minh
 

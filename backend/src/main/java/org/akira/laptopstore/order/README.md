@@ -1,6 +1,6 @@
 # Module order — Đơn hàng
 
-**Owner đề xuất:** C theo [bảng ownership](../../../../../../../docs/architecture/03-ownership.md). Chưa gán thành viên thật. **Trạng thái:** skeleton hướng dẫn; các class dưới đây chưa triển khai. Thiết kế chi tiết cần được nhóm chốt khi nhận task.
+**Owner đề xuất:** C theo [bảng ownership](../../../../../../../docs/architecture/03-ownership.md). Chưa gán thành viên thật. **Trạng thái:** đã có query foundation cho lịch sử và chi tiết đơn; checkout và workflow ghi đơn còn chờ contract liên module.
 
 ## Trách nhiệm
 
@@ -24,6 +24,18 @@
 **Dữ liệu sở hữu:** orders, order_items, order_status_history.
 
 **Được gọi:** user.service, cart.service, catalog.service, inventory.service, promotion.service. Không gọi payment để tránh vòng phụ thuộc. Không gọi repository/entity module khác. Xem [allowlist và contract](../../../../../../../docs/architecture/04-dependencies.md).
+
+## API hiện có
+
+- `GET /api/v1/me/orders`: danh sách đơn của người đang đăng nhập.
+- `GET /api/v1/me/orders/{orderId}`: chi tiết đơn thuộc người đang đăng nhập; đơn của người khác trả 404.
+- `GET /api/v1/staff/orders`: danh sách đơn cho STAFF/ADMIN.
+
+Hai endpoint danh sách nhận `page`, `size`, `sort` của Spring Data và trả `content`, `totalElements`, `totalPages`, `number`, `size`.
+
+Mapper chỉ chuyển dữ liệu do module order sở hữu. `lineTotal` được tính từ snapshot `unitPrice × quantity`; tổng tiền order vẫn đọc từ snapshot đã lưu.
+
+Chưa mở endpoint tạo đơn, hủy đơn hay đổi trạng thái. Các thao tác này phải được triển khai cùng contract cart/catalog/inventory/promotion và transaction checkout ở luồng bên dưới.
 
 ## Bất biến và ràng buộc
 
