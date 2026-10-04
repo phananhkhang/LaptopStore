@@ -23,7 +23,6 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +49,10 @@ public class CartServiceImpl implements CartService {
         int quantity = requirePositiveQuantity(request.quantity());
         ProductVariant variant = productVariantRepository.findById(request.productVariantId())
                         .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + request.productVariantId()));
+        Integer stock = variant.getQuantity();
+        if (stock == null || quantity > stock) {
+            throw new ValidationException("Not enough stock for product variant: " + request.productVariantId());
+        }
         if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())
                 || variant.getProduct() == null
                 || !"ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus())) {
@@ -70,7 +73,11 @@ public class CartServiceImpl implements CartService {
             cart.getItems().add(cartItem);
         } else {
             try {
-                existingItem.setQuantity(Math.addExact(existingItem.getQuantity(), quantity));
+                int newQuantity = Math.addExact(existingItem.getQuantity(), quantity);
+                if (newQuantity > stock) {
+                    throw new ValidationException("Not enough stock for product variant: " + request.productVariantId());
+                }
+                existingItem.setQuantity(newQuantity);
             } catch (ArithmeticException exception) {
                 throw new ValidationException("quantity is too large");
             }
@@ -85,9 +92,19 @@ public class CartServiceImpl implements CartService {
         requireUserId(userId);
         requireItemId(cartItemId);
         int quantity = requirePositiveQuantity(request == null ? null : request.quantity());
-
         Cart cart = lockedCart(userId);
         CartItem cartItem = findItem(cart, cartItemId);
+        ProductVariant variant = productVariantRepository.findById(cartItem.getVariantId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + cartItem.getVariantId()));
+        if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())
+                || variant.getProduct() == null
+                || !"ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus())) {
+            throw new ValidationException("Product variant is not available: " + cartItem.getVariantId());
+        }
+        Integer stock = variant.getQuantity();
+        if (stock == null || quantity > stock) {
+            throw new ValidationException("Not enough stock for product variant: " + cartItem.getVariantId());
+        }
         cartItem.setQuantity(quantity);
 
         cart.setUpdatedAt(Instant.now());
