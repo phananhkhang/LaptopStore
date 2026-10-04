@@ -9,6 +9,8 @@ import org.akira.laptopstore.cart.entity.CartItem;
 import org.akira.laptopstore.cart.mapper.CartMapper;
 import org.akira.laptopstore.cart.repository.CartRepository;
 import org.akira.laptopstore.cart.service.CartService;
+import org.akira.laptopstore.catalog.entity.ProductVariant;
+import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
 import org.akira.laptopstore.exception.ResourceNotFoundException;
 import org.akira.laptopstore.exception.UnauthenticatedException;
 import org.akira.laptopstore.exception.ValidationException;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
+    private final ProductVariantRepository productVariantRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,6 +40,12 @@ public class CartServiceImpl implements CartService {
             throw new ValidationException("productVariantId phai lon hon 0");
         }
         int quantity = requirePositiveQuantity(request.quantity());
+
+        ProductVariant variant = productVariantRepository.findById(request.productVariantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + request.productVariantId()));
+        if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())) {
+            throw new ValidationException("Product variant is not available for purchase");
+        }
 
         cartRepository.createCartIfAbsent(userId);
         Cart cart = lockedCart(userId);
@@ -85,8 +94,15 @@ public class CartServiceImpl implements CartService {
         Cart cart = lockedCart(userId);
         CartItem cartItem = findItem(cart, cartItemId);
         cart.getItems().remove(cartItem);
-        cartItem.setCart(null);
-        cartRepository.save(cart);
+    }
+
+    @Override
+    @Transactional
+    public void clearCart(Long userId) {
+        requireUserId(userId);
+
+        Cart cart = lockedCart(userId);
+        cart.getItems().clear();
     }
 
     // ------------------- Private Helper Methods -------------------
