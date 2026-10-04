@@ -6,6 +6,8 @@ import org.akira.laptopstore.cart.service.CartService;
 import org.akira.laptopstore.cart.entity.Cart;
 import org.akira.laptopstore.cart.repository.CartRepository;
 import org.akira.laptopstore.cart.service.impl.CartServiceImpl;
+import org.akira.laptopstore.catalog.entity.ProductVariant;
+import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -42,8 +44,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class CartPersistenceTest {
     @Configuration(proxyBeanMethods = false)
     @EnableAutoConfiguration
-    @EntityScan(basePackageClasses = Cart.class)
-    @EnableJpaRepositories(basePackageClasses = CartRepository.class)
+    @EntityScan(basePackageClasses = {Cart.class, ProductVariant.class})
+    @EnableJpaRepositories(basePackageClasses = {CartRepository.class, ProductVariantRepository.class})
     @Import(CartServiceImpl.class)
     static class TestApplication {
     }
@@ -80,12 +82,14 @@ class CartPersistenceTest {
         var added = cartService.addItemToCart(userId, new AddCartItemRequest(variantId, 2));
         Long itemId = added.items().getFirst().cartItemId();
         assertNotNull(itemId);
-        assertNull(added.totalAmount());
+        assertEquals(new BigDecimal("201.00"), added.totalAmount());
+        assertEquals("Laptop", added.items().getFirst().productName());
+        assertEquals("Laptop (16GB - 512GB - Silver)", added.items().getFirst().variantName());
 
         var updated = cartService.updateCartItem(userId, itemId, new UpdateCartItemRequest(3));
-        assertNull(updated.totalAmount());
+        assertEquals(new BigDecimal("301.50"), updated.totalAmount());
         jdbc.update("update product_variants set price = 200 where id = ?", variantId);
-        assertNull(cartService.getCart(userId).totalAmount());
+        assertEquals(new BigDecimal("600.00"), cartService.getCart(userId).totalAmount());
         cartService.removeCartItem(userId, itemId);
         assertEquals(0, jdbc.queryForObject("select count(*) from cart_items where id = ?", Integer.class, itemId));
         assertTrue(cartService.getCart(userId).items().isEmpty());

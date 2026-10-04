@@ -3,9 +3,7 @@ import { Link } from 'react-router-dom';
 import { cartApi } from '../api/cartApi';
 import { Cart } from '../types';
 
-const money = (amount: number | null) => amount === null
-  ? 'Sẽ xác định khi checkout'
-  : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+const money = (amount: number) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
 
 export const CartPage = () => {
   const [cart, setCart] = useState<Cart | null>(null);
@@ -49,8 +47,8 @@ export const CartPage = () => {
       {cart?.items.length === 0 && <p>Giỏ hàng đang trống.</p>}
       {cart?.items.map((item) => (
         <article key={item.cartItemId} style={{ borderBottom: '1px solid #ddd', padding: '1rem 0' }}>
-          <h2 style={{ fontSize: '1.1rem', margin: 0 }}>{item.productName ?? `Sản phẩm #${item.variantId}`}</h2>
-          <p>{item.variantName ?? `Biến thể #${item.variantId}`}</p>
+          <h2 style={{ fontSize: '1.1rem', margin: 0 }}>{item.productName}</h2>
+          <p>{item.variantName} · SKU: {item.sku}</p>
           <label>
             Số lượng{' '}
             <input
