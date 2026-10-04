@@ -48,7 +48,13 @@ public class CartServiceImpl implements CartService {
             throw new ValidationException("productVariantId must be greater than 0");
         }
         int quantity = requirePositiveQuantity(request.quantity());
-
+        ProductVariant variant = productVariantRepository.findById(request.productVariantId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + request.productVariantId()));
+        if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())
+                || variant.getProduct() == null
+                || !"ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus())) {
+            throw new ValidationException("Product variant is not available: " + request.productVariantId());
+        }
         cartRepository.createCartIfAbsent(userId); // Tạo giỏ hàng cho người mới, nếu chưa có
         Cart cart = lockedCart(userId);
         CartItem existingItem = cart.getItems().stream()

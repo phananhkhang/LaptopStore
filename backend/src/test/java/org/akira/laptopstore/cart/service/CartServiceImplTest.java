@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +53,8 @@ class CartServiceImplTest {
             });
             return found;
         });
+        lenient().when(productVariants.findById(anyLong())).thenAnswer(invocation ->
+                Optional.ofNullable(catalogVariants.get(invocation.getArgument(0))));
     }
 
     @Test
@@ -123,13 +126,26 @@ class CartServiceImplTest {
         assertThrows(ValidationException.class, () -> service.lockAndGetCheckoutCart(42L));
     }
 
+    @Test
+    void inactiveProductOrVariantCannotBeAdded() {
+        catalogVariants.put(7L, variant(7L, "INACTIVE", "ACTIVE"));
+        assertThrows(ValidationException.class, () -> service.addItemToCart(42L, new AddCartItemRequest(7L, 1)));
+
+        catalogVariants.put(7L, variant(7L, "ACTIVE", "INACTIVE"));
+        assertThrows(ValidationException.class, () -> service.addItemToCart(42L, new AddCartItemRequest(7L, 1)));
+    }
+
     private void addLine(Long id, Long variantId, int quantity) {
         cart.getItems().add(CartItem.builder().id(id).cart(cart).variantId(variantId).quantity(quantity).build());
     }
 
     private ProductVariant variant(Long id) {
-        return ProductVariant.builder().id(id).product(Product.builder().name("Laptop").build())
+        return variant(id, "ACTIVE", "ACTIVE");
+    }
+
+    private ProductVariant variant(Long id, String variantStatus, String productStatus) {
+        return ProductVariant.builder().id(id).product(Product.builder().name("Laptop").status(productStatus).build())
                 .ram("16GB").storage("512GB").color("Silver").sku("SKU-" + id)
-                .price(new BigDecimal("12500000")).quantity(10).status("ACTIVE").build();
+                .price(new BigDecimal("12500000")).quantity(10).status(variantStatus).build();
     }
 }
