@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -20,40 +21,40 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PaymentController {
 
-    private final PaymentService paymentService;
+        private final PaymentService paymentService;
 
-    @PostMapping
-    public ResponseEntity<PaymentResponse> startPayment(
-            @RequestBody StartPaymentRequest request) {
+        @PostMapping
+        public ResponseEntity<PaymentResponse> startPayment(
+                        @Valid @RequestBody StartPaymentRequest request) {
 
-        PaymentResponse response = paymentService.startPayment(request);
+                PaymentResponse response = paymentService.startPayment(request);
 
-        return ResponseEntity
-                .status(201)
-                .body(response);
-    }
+                return ResponseEntity
+                                .status(201)
+                                .body(response);
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<PaymentResponse> getById(
-            @PathVariable Long id) {
+        @GetMapping("/{id}")
+        public ResponseEntity<PaymentResponse> getById(
+                        @PathVariable Long id) {
 
-        return ResponseEntity.ok(
-                paymentService.getById(id));
-    }
+                return ResponseEntity.ok(
+                                paymentService.getById(id));
+        }
 
-    @GetMapping("/order/{orderId}")
-    public ResponseEntity<PaymentResponse> getByOrder(
-            @PathVariable Long orderId) {
+        @GetMapping("/order/{orderId}")
+        public ResponseEntity<PaymentResponse> getByOrder(
+                        @PathVariable Long orderId) {
 
-        return ResponseEntity.ok(
-                paymentService.getByOrderId(orderId));
-    }
+                return ResponseEntity.ok(
+                                paymentService.getByOrderId(orderId));
+        }
 
-    @PutMapping("/cod")
-    public ResponseEntity<PaymentResponse> recordCod(
-            @RequestBody RecordCodPaymentRequest request) {
+        @PutMapping("/cod")
+        public ResponseEntity<PaymentResponse> recordCod(
+                        @Valid @RequestBody RecordCodPaymentRequest request) {
 
-        return ResponseEntity.ok(
-                paymentService.recordCodPayment(request));
-    }
+                return ResponseEntity.ok(
+                                paymentService.recordCodPayment(request));
+        }
 }
