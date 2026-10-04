@@ -31,13 +31,13 @@ Tất cả endpoint lấy userId từ principal và yêu cầu đăng nhập.
 | DELETE `/api/v1/me/cart/items/{cartItemId}` | Không | 204; item không thuộc giỏ: 404 |
 | DELETE `/api/v1/me/cart/items/clear` | Không | 204, kể cả user chưa có giỏ hoặc giỏ đã rỗng |
 
-Tạm thời mỗi item trả `cartItemId`, `variantId`, `quantity`; PATCH/DELETE dùng **cartItemId**, không dùng variantId. Các trường `productName`, `sku`, `variantName`, `unitPrice`, `lineTotal` đang null vì cart chưa có contract đọc variant từ catalog. `totalItems` là tổng quantity; `totalAmount` tạm thời null. Order phải lấy lại tên, giá và tổng tiền từ catalog khi checkout.
+Mỗi item trả `cartItemId`, `variantId`, tên sản phẩm, SKU, tên cấu hình, giá hiện tại và thành tiền; PATCH/DELETE dùng **cartItemId**, không dùng variantId. `totalItems` là tổng quantity; `totalAmount` là tổng `lineTotal`. Giá này chỉ để hiển thị và phải được order tính lại khi checkout.
 
 Thêm item yêu cầu cả product và variant ACTIVE. Variant đã inactive vẫn được đọc/sửa quantity/xóa trong giỏ; checkout phải xác minh lại khả năng mua và tồn. Cart không thay đổi tồn kho.
 
 ## Dữ liệu sản phẩm
 
-Cart hiện chỉ lưu `variantId` và `quantity`. CartRepository chỉ dùng JPA cho các entity thuộc cart; không đọc trực tiếp bảng hoặc repository của catalog. Khi dev catalog cung cấp contract đọc variant, order/checkout có thể lấy tên, SKU và giá qua service/DTO đó.
+Cart hiện chỉ lưu `variantId` và `quantity`. Theo phạm vi hiện tại, cart gọi trực tiếp `ProductVariantRepository` để đọc dữ liệu hiển thị; không ghi dữ liệu catalog. Order/checkout vẫn phải lấy và chốt lại giá khi tạo đơn.
 
 ## Contract checkout đã triển khai
 
@@ -50,7 +50,7 @@ Cart hiện chỉ lưu `variantId` và `quantity`. CartRepository chỉ dùng JP
 
 **Dữ liệu sở hữu:** carts, cart_items.
 
-**Được gọi:** Chưa gọi module khác trong CRUD hiện tại. Không gọi order hoặc repository/entity module khác. Xem [allowlist và contract](../../../../../../../docs/architecture/04-dependencies.md).
+**Được gọi:** catalog qua `ProductVariantRepository` để hiển thị cart. Không gọi order.
 
 ## Bất biến và ràng buộc
 

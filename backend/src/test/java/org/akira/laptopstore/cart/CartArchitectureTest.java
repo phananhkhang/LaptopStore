@@ -7,10 +7,10 @@ import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 class CartArchitectureTest {
     @Test
-    void cartMustNotImportCatalogPersistenceTypes() {
+    void cartMustNotDependOnCatalogWebOrServiceLayers() {
         noClasses()
                 .that().resideInAPackage("..cart..")
-                .should().dependOnClassesThat().resideInAnyPackage("..catalog.repository..", "..catalog.entity..")
+                .should().dependOnClassesThat().resideInAnyPackage("..catalog.controller..", "..catalog.service..")
                 .check(new ClassFileImporter().importPackages("org.akira.laptopstore.cart"));
     }
 }

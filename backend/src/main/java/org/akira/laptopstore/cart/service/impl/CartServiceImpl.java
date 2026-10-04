@@ -10,6 +10,8 @@ import org.akira.laptopstore.cart.entity.CartItem;
 import org.akira.laptopstore.cart.mapper.CartMapper;
 import org.akira.laptopstore.cart.repository.CartRepository;
 import org.akira.laptopstore.cart.service.CartService;
+import org.akira.laptopstore.catalog.entity.ProductVariant;
+import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
 import org.akira.laptopstore.exception.ResourceNotFoundException;
 import org.akira.laptopstore.exception.UnauthenticatedException;
 import org.akira.laptopstore.exception.ValidationException;
@@ -19,13 +21,16 @@ import org.springframework.transaction.annotation.Propagation;
 
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
-
+    private final ProductVariantRepository productVariantRepository;
     @Override
     @Transactional(readOnly = true)
     public CartResponse getCart(Long userId) {
@@ -43,7 +48,13 @@ public class CartServiceImpl implements CartService {
             throw new ValidationException("productVariantId must be greater than 0");
         }
         int quantity = requirePositiveQuantity(request.quantity());
-
+        ProductVariant variant = productVariantRepository.findById(request.productVariantId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + request.productVariantId()));
+        if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())
+                || variant.getProduct() == null
+                || !"ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus())) {
+            throw new ValidationException("Product variant is not available: " + request.productVariantId());
+        }
         cartRepository.createCartIfAbsent(userId); // Tạo giỏ hàng cho người mới, nếu chưa có
         Cart cart = lockedCart(userId);
         CartItem existingItem = cart.getItems().stream()
@@ -152,7 +163,12 @@ public class CartServiceImpl implements CartService {
     }
 
     private CartResponse toResponse(Cart cart) {
-        return CartMapper.toResponse(cart);
+        Set<Long> variantIds = cart.getItems().stream()
+                .map(CartItem::getVariantId)
+                .collect(Collectors.toSet());
+        Map<Long, ProductVariant> variantsById = productVariantRepository.findAllById(variantIds).stream()
+                .collect(Collectors.toMap(ProductVariant::getId, variant -> variant));
+        return CartMapper.toResponse(cart, variantsById);
     }
 
     private void requireUserId(Long userId) {

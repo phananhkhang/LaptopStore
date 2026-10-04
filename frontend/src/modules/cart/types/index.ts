@@ -1,17 +1,17 @@
 export interface CartItem {
   cartItemId: number;
   variantId: number;
-  productName: string | null;
-  sku: string | null;
-  variantName: string | null;
+  productName: string;
+  sku: string;
+  variantName: string;
   quantity: number;
-  unitPrice: number | null;
-  lineTotal: number | null;
+  unitPrice: number;
+  lineTotal: number;
 }
 
 export interface Cart {
   id: number | null;
   items: CartItem[];
   totalItems: number;
-  totalAmount: number | null;
+  totalAmount: number;
 }
