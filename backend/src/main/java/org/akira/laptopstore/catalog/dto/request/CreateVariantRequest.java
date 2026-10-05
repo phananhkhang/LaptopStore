@@ -31,6 +31,13 @@ public class CreateVariantRequest {
         @Min(value = 1, message = "Giá phiên bản phải lớn hơn 0")
         private BigDecimal price;
 
+        @NotNull(message = "Số lượng tồn kho không được để trống")
+        @Min(value = 0, message = "Số lượng tồn kho không được nhỏ hơn 0")
+        private Integer quantity;
+
+        @NotBlank(message = "Trạng thái biến thể không được để trống")
+        private String status;
+
         @NotBlank(message = "Màu sắc không được để trống")
         private String color;
 

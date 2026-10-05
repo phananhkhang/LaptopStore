@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'; // Thêm Navigate vào đây
 import { CatalogRoutes } from './modules/catalog/routes/CatalogRoutes';
 
 function App() {
@@ -7,10 +7,9 @@ function App() {
         <BrowserRouter>
             <div className="min-h-screen bg-gray-100">
                 <Routes>
-                    {/* Giữ lại dòng chữ lúc nãy ở trang chủ cho đỡ trống */}
-                    <Route path="/" element={<h1 className="p-4 text-2xl font-bold">Trang chủ LaptopStore</h1>} />
+                    {/* Sửa lại chỗ này: Khi vào "/" sẽ tự động điều hướng sang "/products" */}
+                    <Route path="/" element={<Navigate to="/products" replace />} />
 
-                    {/* Kích hoạt toàn bộ các đường dẫn của module Catalog */}
                     <Route path="/*" element={<CatalogRoutes />} />
                 </Routes>
             </div>

@@ -46,7 +46,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(csrf -> csrf.disable()) // Tắt CSRF vì dùng JWT
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
@@ -56,13 +56,13 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers("/api/v1/auth/**", "/api/v1/ai/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**", "/api/v1/brands/**", "/api/v1/categories/**", "/api/v1/reviews/**").permitAll()
-                        .requestMatchers("/api/v1/admin/products").permitAll()
                         // Staff endpoints
                         .requestMatchers("/api/v1/staff/**").hasAnyRole("STAFF", "ADMIN")
                         // Admin endpoints
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         // Authenticated endpoints
                         .requestMatchers("/api/v1/me/**").authenticated()
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()                
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
