@@ -16,6 +16,8 @@
 | [10 Hoàn tất và triển khai](10-delivery-checklist.md) | Các mốc, checklist PR, rủi ro và việc cần chốt |
 | [11 Entity model](11-entity-model.md) | Ánh xạ chính xác 25 thực thể ERD sang tên field Java |
 | [12 ERD LaptopStore](12-ERD-LaptopStore.md) | Từng bảng, thuộc tính, PK/FK/UQ và toàn bộ quan hệ |
+| [SD-05 Sequence Đăng ký](SD-05-sequence-dang-ky.md) | Biểu đồ tuần tự quy trình đăng ký tài khoản và mã hóa mật khẩu |
+| [SD-06 Sequence Đăng nhập + JWT/RBAC](SD-06-sequence-dang-nhap-jwt-rbac.md) | Biểu đồ tuần tự đăng nhập, cấp phát JWT và phân quyền đa vai trò |
 
 ## Cách áp dụng
 
