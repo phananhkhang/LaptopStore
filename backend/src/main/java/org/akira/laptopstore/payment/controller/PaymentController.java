@@ -5,6 +5,7 @@ import org.akira.laptopstore.payment.dto.request.StartPaymentRequest;
 import org.akira.laptopstore.payment.dto.response.PaymentResponse;
 import org.akira.laptopstore.payment.service.PaymentService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/api/v1/payments")
 @RequiredArgsConstructor
 public class PaymentController {
 
@@ -51,6 +52,7 @@ public class PaymentController {
         }
 
         @PutMapping("/cod")
+        @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
         public ResponseEntity<PaymentResponse> recordCod(
                         @Valid @RequestBody RecordCodPaymentRequest request) {
 

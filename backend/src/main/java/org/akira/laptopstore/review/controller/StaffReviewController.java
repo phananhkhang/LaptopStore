@@ -6,10 +6,12 @@ import org.akira.laptopstore.review.dto.request.UpdateReviewVisibilityRequest;
 import org.akira.laptopstore.review.dto.response.ReviewResponse;
 import org.akira.laptopstore.review.service.ReviewService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/staff/reviews")
+@RequestMapping("/api/v1/staff/reviews")
+@PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
 @RequiredArgsConstructor
 public class StaffReviewController {
 
