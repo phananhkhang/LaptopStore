@@ -3,6 +3,11 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleBasedRoute } from './RoleBasedRoute';
 import { ROLES } from '@/constants/roles';
+import { CartPage } from '@/modules/cart/pages/CartPage';
+import { CheckoutPage } from '@/modules/order/pages/checkout/CheckoutPage';
+import { StaffOrderListPage } from '@/modules/order/pages/admin/StaffOrderListPage';
+import { OrderDetailPage } from '@/modules/order/pages/user/OrderDetailPage';
+import { OrderHistoryPage } from '@/modules/order/pages/user/OrderHistoryPage';
 
 const HomePage = () => <div style={{ padding: '2rem' }}><h1>Trang chủ LaptopStore</h1></div>;
 const LoginPage = () => <div style={{ padding: '2rem' }}><h1>Trang Đăng Nhập</h1></div>;
@@ -25,9 +30,14 @@ export const AppRouter: React.FC = () => {
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/me/addresses" element={<ProfilePage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders" element={<OrderHistoryPage />} />
+          <Route path="/orders/:orderId" element={<OrderDetailPage />} />
         </Route>
 
         <Route element={<RoleBasedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]} />}>
+          <Route path="/staff/orders" element={<StaffOrderListPage />} />
           <Route path="/staff/*" element={<StaffDashboard />} />
         </Route>
 

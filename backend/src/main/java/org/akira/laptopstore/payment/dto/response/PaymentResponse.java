@@ -6,6 +6,9 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import org.akira.laptopstore.payment.enums.PaymentMethod;
+import org.akira.laptopstore.payment.enums.PaymentStatus;
+
 @Getter
 @Builder
 public class PaymentResponse {
@@ -14,11 +17,11 @@ public class PaymentResponse {
 
     private Long orderId;
 
-    private String method;
+    private PaymentMethod method;
 
     private BigDecimal amount;
 
-    private String status;
+    private PaymentStatus status;
 
     private Instant createdAt;
 

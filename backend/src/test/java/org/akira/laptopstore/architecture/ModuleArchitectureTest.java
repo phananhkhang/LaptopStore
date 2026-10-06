@@ -54,6 +54,17 @@ class ModuleArchitectureTest {
     }
 
     @Test
+    void cartSecurityDependenciesMustStayInControllers() {
+        noClasses()
+                .that().resideInAPackage("..cart..")
+                .and().resideOutsideOfPackage("..controller..")
+                .should().dependOnClassesThat().resideInAPackage("..security..")
+                .allowEmptyShould(true)
+                .because("cart controllers resolve the principal and pass the user ID to services")
+                .check(classes);
+    }
+
+    @Test
     void modulesMustNotImportPersistenceTypesFromOtherModules() {
         for (String source : BUSINESS_MODULES) {
             for (String target : BUSINESS_MODULES) {

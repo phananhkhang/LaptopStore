@@ -2,6 +2,7 @@ package org.akira.laptopstore.promotion.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.akira.laptopstore.promotion.enums.CouponUsageStatus;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -32,8 +33,9 @@ public class CouponUsage {
     @Column(name = "discount_amount", nullable = false, precision = 15, scale = 2)
     private BigDecimal discountAmount;
 
-    @Column(nullable = false, length = 30)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CouponUsageStatus status;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -43,10 +45,15 @@ public class CouponUsage {
 
     @PrePersist
     public void prePersist() {
+
         Instant now = Instant.now();
 
         createdAt = now;
         updatedAt = now;
+
+        if (status == null) {
+            status = CouponUsageStatus.ACTIVE;
+        }
     }
 
     @PreUpdate

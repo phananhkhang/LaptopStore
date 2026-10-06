@@ -26,8 +26,8 @@ public class PaymentTransaction {
     @Column(length = 50)
     private String provider;
 
-    @Column(name = "provider_transaction_id", nullable = false)
-    private Long providerTransactionId;
+    @Column(name = "provider_transaction_id", length = 100, unique = true)
+    private String providerTransactionId;
 
     @Column(name = "provider_reference", length = 100)
     private String providerReference;
