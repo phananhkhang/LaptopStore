@@ -1,16 +1,61 @@
 // src/modules/catalog/types/index.ts
 
-export interface Category {
+export interface ProductImageDto {
     id: number;
-    name: string;
-    description?: string;
-    active: boolean;
+    imageUrl: string;
+    isPrimary: boolean;
 }
 
-export interface Product {
+export interface ProductSpecificationDto {
+    cpu: string;
+    gpu: string;
+    screenSize: string;
+    screenResolution: string;
+    refreshRate: string;
+    battery: string;
+    weight: string;
+    os: string;
+}
+
+export interface VariantSnapshot {
+    id: number;
+    sku: string;
+    ram: string;
+    storage: string;
+    color: string;
+    price: number;
+    quantity: number;
+    status: string;
+}
+
+export interface ProductSummaryResponse {
     id: number;
     name: string;
-    description?: string;
+    brandName: string;
+    categoryName: string;
     status: string;
-    // Tạm thời khai báo các trường cơ bản, tuần sau nối API sẽ bổ sung thêm
+    thumbnailImage: string | null;
+}
+
+export interface ProductResponse {
+    id: number;
+    name: string;
+    description: string;
+    status: string;
+    brandName: string;
+    categoryName: string;
+    specification: ProductSpecificationDto;
+    images: ProductImageDto[];
+    variants: VariantSnapshot[];
+}
+
+// Interface dùng chung để bọc dữ liệu phân trang của Spring Data
+export interface PageResponse<T> {
+    content: T[];
+    totalElements: number;
+    totalPages: number;
+    size: number;
+    number: number;
+    first: boolean;
+    last: boolean;
 }

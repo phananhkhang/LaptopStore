@@ -12,11 +12,13 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
+### IntelliJ IDEA, VSCode, Eclipse ###
 .idea
+.vscode/
 *.iws
 *.iml
 *.ipr
+*.workspace.xml
 
 ### NetBeans ###
 /nbproject/private/
@@ -30,6 +32,11 @@ target/
 .env
 .env.local
 .env.*.local
+
+# Build folders
+target/
+out/
+build/
 
 ### OS specific ###
 .DS_Store

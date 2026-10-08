@@ -8,6 +8,11 @@ import java.util.Optional;
 
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
-    // Anh viết sẵn cho em một hàm tìm kiếm bằng tên, sau này kiểu gì cũng dùng tới!
     Optional<Category> findByName(String name);
+
+    // Radar 1 (Dùng cho Create): Quét xem tên danh mục đã có ai xài chưa
+    boolean existsByName(String name);
+
+    // Radar 2 (Dùng cho Update): Quét xem tên danh mục có bị trùng với một danh mục KHÁC (khác ID) không
+    boolean existsByNameAndIdNot(String name, Long id);
 }
