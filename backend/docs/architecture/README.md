@@ -14,8 +14,9 @@
 | [08 Bảo mật](08-security.md) | Role, ownership, token, thông tin nhạy cảm |
 | [09 Kiểm thử và vận hành](09-testing-and-operation.md) | Cách chạy, ca kiểm tra và khoảng trống công cụ |
 | [10 Hoàn tất và triển khai](10-delivery-checklist.md) | Các mốc, checklist PR, rủi ro và việc cần chốt |
-| [11 Entity model](11-entity-model.md) | Ánh xạ chính xác 25 thực thể ERD sang tên field Java |
+| [11 Entity model](11-entity-model.md) | 25 bảng ERD, field/kiểu Java, ánh xạ JPA và khác biệt triển khai |
 | [12 ERD LaptopStore](12-ERD-LaptopStore.md) | Từng bảng, thuộc tính, PK/FK/UQ và toàn bộ quan hệ |
+| [13 Phân quyền và chức năng](13-roles-and-functions.md) | Chức năng USER/STAFF/ADMIN, dữ liệu liên quan và hiện trạng kiểm quyền |
 
 ## Cách áp dụng
 

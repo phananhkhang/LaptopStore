@@ -23,6 +23,7 @@ Không có cạnh `catalog → inventory`, `order → payment`, `cart → order`
 
 - `security → user.service` để nạp principal/role/trạng thái; không gọi auth. `auth → security` chỉ cho JwtService/PasswordEncoder, nên không tạo vòng.
 - Controller các module có thể dùng principal/annotation từ security. Service nhận actorId/actor context rõ, không nhận `HttpServletRequest`.
+- `cart.controller → security.principal.CustomUserDetails`: các API `/api/v1/me/cart` lấy `userDetails.getId()` qua `@AuthenticationPrincipal` và truyền ID cho `CartService`; các tầng khác của cart không phụ thuộc security.
 - Module được dùng common và exception cơ sở. Common không import module/exception/config/security. Exception không gọi service/repository.
 - Config chỉ wiring/cấu hình; không điều phối use case. Không inject module service vào config chỉ để chạy nghiệp vụ khi startup.
 - Security filter dùng EntryPoint/AccessDeniedHandler cho lỗi trước MVC; GlobalExceptionHandler không bao trùm mọi lỗi filter.
