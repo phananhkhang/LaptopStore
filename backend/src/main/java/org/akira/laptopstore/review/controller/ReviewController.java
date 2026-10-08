@@ -2,6 +2,9 @@ package org.akira.laptopstore.review.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.akira.laptopstore.review.dto.request.CreateReviewRequest;
 import org.akira.laptopstore.review.dto.request.UpdateReviewRequest;
 import org.akira.laptopstore.review.dto.response.ReviewResponse;
@@ -47,5 +50,12 @@ public class ReviewController {
 
         return ResponseEntity.ok(
                 reviewService.get(reviewId));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReviewResponse>> getAll() {
+
+        return ResponseEntity.ok(
+                reviewService.getVisibleReviews());
     }
 }
