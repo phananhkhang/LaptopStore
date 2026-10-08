@@ -1,15 +1,18 @@
 package org.akira.laptopstore.payment.service.Impl;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import org.akira.laptopstore.payment.dto.request.RecordCodPaymentRequest;
 import org.akira.laptopstore.payment.dto.request.StartPaymentRequest;
 import org.akira.laptopstore.payment.dto.response.PaymentResponse;
 import org.akira.laptopstore.payment.entity.Payment;
 import org.akira.laptopstore.payment.enums.PaymentMethod;
+import org.akira.laptopstore.payment.enums.PaymentProvider;
 import org.akira.laptopstore.payment.enums.PaymentStatus;
 import org.akira.laptopstore.payment.repository.PaymentRepository;
 import org.akira.laptopstore.payment.service.PaymentService;
+import org.akira.laptopstore.payment.service.PaymentTransactionService;
 import org.springframework.stereotype.Service;
 import org.akira.laptopstore.order.service.OrderQueryService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ public class PaymentImpl implements PaymentService {
 
         private final PaymentRepository paymentRepository;
         private final OrderQueryService orderQueryService;
+        private final PaymentTransactionService paymentTransactionService;
 
         @Override
         public PaymentResponse startPayment(StartPaymentRequest request) {
@@ -45,6 +49,12 @@ public class PaymentImpl implements PaymentService {
                                 .build();
 
                 Payment saved = paymentRepository.save(payment);
+                //
+                if (saved.getMethod() == PaymentMethod.VNPAY) {
+
+                        paymentTransactionService.createPendingTransaction(saved.getId(), PaymentProvider.VNPAY, null,
+                                        null);
+                }
 
                 return toResponse(saved);
         }
@@ -90,8 +100,8 @@ public class PaymentImpl implements PaymentService {
                                         "Only PENDING payment can be marked as paid");
                 }
 
-                payment.setStatus(
-                                PaymentStatus.PAID);
+                payment.setStatus(PaymentStatus.PAID);
+                payment.setUpdatedAt(Instant.now());
 
                 Payment saved = paymentRepository.save(payment);
 

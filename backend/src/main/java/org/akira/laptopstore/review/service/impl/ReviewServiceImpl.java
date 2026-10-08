@@ -1,14 +1,18 @@
 package org.akira.laptopstore.review.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
+import org.akira.laptopstore.order.dto.response.OrderItemReviewInfo;
+import org.akira.laptopstore.order.entity.enums.OrderStatus;
+import org.akira.laptopstore.order.service.OrderQueryService;
 import org.akira.laptopstore.review.dto.request.CreateReviewRequest;
 import org.akira.laptopstore.review.dto.request.UpdateReviewRequest;
 import org.akira.laptopstore.review.dto.response.ReviewResponse;
 import org.akira.laptopstore.review.entity.Review;
 import org.akira.laptopstore.review.repository.ReviewRepository;
 import org.akira.laptopstore.review.service.ReviewService;
-import org.akira.laptopstore.review.fakeOrder.FakeOrderService;
-import org.akira.laptopstore.review.fakeOrder.OrderItemReviewInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,14 +24,14 @@ public class ReviewServiceImpl
 
     private final ReviewRepository repository;
 
-    private final FakeOrderService fakeOrderService;
+    private final OrderQueryService orderQueryService;
 
     @Override
     public ReviewResponse create(Long userId, CreateReviewRequest request) {
 
         validateRating(request.getRating());
 
-        OrderItemReviewInfo orderItem = fakeOrderService.getOrderItem(request.getOrderItemId());
+        OrderItemReviewInfo orderItem = orderQueryService.getOrderItemForReview(request.getOrderItemId());
 
         validateOwner(userId, orderItem);
 
@@ -55,7 +59,7 @@ public class ReviewServiceImpl
 
         Review review = repository.findById(reviewId).orElseThrow(() -> new RuntimeException("Review not found"));
 
-        OrderItemReviewInfo orderItem = fakeOrderService.getOrderItem(review.getOrderItemId());
+        OrderItemReviewInfo orderItem = orderQueryService.getOrderItemForReview(review.getOrderItemId());
 
         validateOwner(userId, orderItem);
 
@@ -100,6 +104,17 @@ public class ReviewServiceImpl
         return toResponse(review);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ReviewResponse> getVisibleReviews() {
+
+        return repository
+                .findByVisibleTrueOrderByCreatedAtDesc()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     private void validateRating(Integer rating) {
 
         if (rating == null) {
@@ -124,9 +139,7 @@ public class ReviewServiceImpl
 
     private void validateDelivered(OrderItemReviewInfo orderItem) {
 
-        if (!"DELIVERED".equals(
-                orderItem.getOrderStatus())) {
-
+        if (orderItem.getOrderStatus() != OrderStatus.DELIVERED) {
             throw new RuntimeException(
                     "Order must be delivered before review");
         }

@@ -29,7 +29,7 @@ public class Payment {
     @Column(nullable = false, length = 30)
     private PaymentMethod method;
 
-    @Column(nullable = false, precision = 15, scale = 2)
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
