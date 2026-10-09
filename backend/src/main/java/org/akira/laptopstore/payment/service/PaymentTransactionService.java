@@ -8,9 +8,9 @@ import org.akira.laptopstore.payment.enums.PaymentProvider;
 
 public interface PaymentTransactionService {
 
-    PaymentTransactionResponse getById(Long id);
+    PaymentTransactionResponse getById(Long userId, Long id);
 
-    List<PaymentTransactionResponse> getByPaymentId(Long paymentId);
+    List<PaymentTransactionResponse> getByPaymentId(Long userId, Long paymentId);
 
     PaymentTransactionResponse markSuccess(Long transactionId);
 

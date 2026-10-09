@@ -9,4 +9,6 @@ public interface OrderQueryService {
     BigDecimal getOrderTotalAmount(Long orderId);
 
     OrderItemReviewInfo getOrderItemForReview(Long orderItemId);
+
+    void validateOrderOwner(Long orderId, Long userId);
 }
