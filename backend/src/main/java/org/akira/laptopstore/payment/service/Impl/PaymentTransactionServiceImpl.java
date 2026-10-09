@@ -3,6 +3,7 @@ package org.akira.laptopstore.payment.service.Impl;
 import java.time.Instant;
 import java.util.List;
 
+import org.akira.laptopstore.order.service.OrderQueryService;
 import org.akira.laptopstore.payment.dto.response.PaymentTransactionResponse;
 import org.akira.laptopstore.payment.entity.Payment;
 import org.akira.laptopstore.payment.entity.PaymentTransaction;
@@ -24,21 +25,34 @@ public class PaymentTransactionServiceImpl
 
         private final PaymentTransactionRepository paymentTransactionRepository;
         private final PaymentRepository paymentRepository;
+        private final OrderQueryService orderQueryService;
 
         @Override
         @Transactional(readOnly = true)
-        public PaymentTransactionResponse getById(Long id) {
+        public PaymentTransactionResponse getById(Long userId, Long id) {
 
                 PaymentTransaction transaction = paymentTransactionRepository.findById(id)
                                 .orElseThrow(() -> new RuntimeException(
                                                 "Payment transaction not found: " + id));
+
+                Long orderId = transaction.getPayment().getOrderId();
+
+                orderQueryService.validateOrderOwner(orderId, userId);
 
                 return toResponse(transaction);
         }
 
         @Override
         @Transactional(readOnly = true)
-        public List<PaymentTransactionResponse> getByPaymentId(Long paymentId) {
+        public List<PaymentTransactionResponse> getByPaymentId(Long userId, Long paymentId) {
+
+                Payment payment = paymentRepository.findById(paymentId)
+                                .orElseThrow(() -> new RuntimeException(
+                                                "Payment not found: " + paymentId));
+
+                orderQueryService.validateOrderOwner(
+                                payment.getOrderId(),
+                                userId);
 
                 return paymentTransactionRepository
                                 .findByPaymentId(paymentId)

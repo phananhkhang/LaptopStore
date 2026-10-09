@@ -14,6 +14,7 @@ import org.akira.laptopstore.payment.repository.PaymentRepository;
 import org.akira.laptopstore.payment.service.PaymentService;
 import org.akira.laptopstore.payment.service.PaymentTransactionService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.akira.laptopstore.order.service.OrderQueryService;
 import lombok.RequiredArgsConstructor;
 
@@ -31,7 +32,9 @@ public class PaymentImpl implements PaymentService {
         private final PaymentTransactionService paymentTransactionService;
 
         @Override
-        public PaymentResponse startPayment(StartPaymentRequest request) {
+        @Transactional
+        public PaymentResponse startPayment(Long userId, StartPaymentRequest request) {
+                orderQueryService.validateOrderOwner(request.getOrderId(), userId);
                 if (paymentRepository.existsByOrderId(request.getOrderId())) {
                         throw new PaymentAlreadyExistsException(
                                         "Payment already exists for this order");
@@ -60,16 +63,25 @@ public class PaymentImpl implements PaymentService {
         }
 
         @Override
-        public PaymentResponse getById(Long id) {
+        public PaymentResponse getById(Long userId, Long id) {
+
                 Payment payment = paymentRepository.findById(id)
                                 .orElseThrow(
                                                 () -> new PaymentNotFoundException(
                                                                 "Payment not found: " + id));
+
+                orderQueryService.validateOrderOwner(payment.getOrderId(), userId);
+
                 return toResponse(payment);
         }
 
         @Override
-        public PaymentResponse getByOrderId(Long orderId) {
+        public PaymentResponse getByOrderId(Long userId, Long orderId) {
+
+                orderQueryService.validateOrderOwner(
+                                orderId,
+                                userId);
+
                 Payment payment = paymentRepository.findByOrderId(orderId)
                                 .orElseThrow(
                                                 () -> new PaymentNotFoundException(
