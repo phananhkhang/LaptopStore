@@ -2,7 +2,6 @@ package org.akira.laptopstore.procurement.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.akira.laptopstore.catalog.entity.ProductVariant;
 
 import java.math.BigDecimal;
 
@@ -22,9 +21,8 @@ public class PurchaseOrderItem {
     @JoinColumn(name = "purchase_order_id", nullable = false)
     private PurchaseOrder purchaseOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variant_id", nullable = false)
-    private ProductVariant variant;
+    @Column(name = "variant_id", nullable = false)
+    private Long variantId;
 
     @Column(nullable = false)
     private Integer quantity;

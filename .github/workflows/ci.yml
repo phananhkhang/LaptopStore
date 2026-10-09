@@ -48,7 +48,19 @@ jobs:
           cache: maven
 
       - name: Run Maven verification
-        run: ./mvnw -B verify
+        run: >-
+          bash ./mvnw -B verify
+          -Dcart.test.jdbc-url=jdbc:postgresql://localhost:5432/laptop_store
+          -Dcart.test.username=postgres
+          -Dcart.test.password=postgres
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: backend/target/surefire-reports/
+          if-no-files-found: ignore
 
   frontend:
     name: Frontend (TypeScript)

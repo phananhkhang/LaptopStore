@@ -8,6 +8,7 @@ import org.akira.laptopstore.cart.repository.CartRepository;
 import org.akira.laptopstore.cart.service.impl.CartServiceImpl;
 import org.akira.laptopstore.catalog.entity.ProductVariant;
 import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
+import org.akira.laptopstore.catalog.service.impl.CatalogCartQueryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -46,7 +47,7 @@ class CartPersistenceTest {
     @EnableAutoConfiguration
     @EntityScan(basePackageClasses = {Cart.class, ProductVariant.class})
     @EnableJpaRepositories(basePackageClasses = {CartRepository.class, ProductVariantRepository.class})
-    @Import(CartServiceImpl.class)
+    @Import({CartServiceImpl.class, CatalogCartQueryServiceImpl.class})
     static class TestApplication {
     }
 
