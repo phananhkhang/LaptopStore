@@ -36,6 +36,7 @@ public class CatalogCheckoutServiceImpl implements CatalogCheckoutService {
 
         List<CheckoutVariantSnapshot> snapshots = new ArrayList<>(variants.size());
         for (ProductVariant variant : variants) {
+            // Kiểm tra xem biến thể có sẵn sàng để bán không
             if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())
                     || variant.getProduct() == null
                     || !"ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus())) {

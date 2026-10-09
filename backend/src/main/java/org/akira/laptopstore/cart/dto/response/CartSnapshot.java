@@ -3,8 +3,7 @@ package org.akira.laptopstore.cart.dto.response;
 import lombok.Value;
 
 import java.util.List;
-
-/** Internal checkout contract. The caller must hold the transaction until checkout completes. */
+// Checkout chỉ cần các thông tin này thôi
 @Value
 public class CartSnapshot {
     private final Long cartId;

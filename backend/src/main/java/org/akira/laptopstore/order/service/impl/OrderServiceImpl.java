@@ -21,6 +21,7 @@ import org.akira.laptopstore.order.repository.OrderItemRepository;
 import org.akira.laptopstore.order.repository.OrderRepository;
 import org.akira.laptopstore.order.repository.OrderStatusHistoryRepository;
 import org.akira.laptopstore.order.service.OrderService;
+import org.akira.laptopstore.order.util.OrderCodeGenerator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,10 +57,10 @@ public class OrderServiceImpl implements OrderService {
         requireCheckoutRequest(request);
 
         String idempotencyKey = normalize(request.getIdempotencyKey());
-        if (idempotencyKey != null) {
-            Order previous = orderRepository.findByIdempotencyKeyAndUserId(idempotencyKey, userId).orElse(null);
+        if (idempotencyKey != null) { // Chỉ kiem tra trung neu co idempotencyKey
+            Order previous = orderRepository.findByIdempotencyKeyAndUserId(idempotencyKey, userId).orElse(null); // Tim don cu cua user co cung idempotencyKey
             if (previous != null) {
-                if (!sameCheckoutPayload(previous, request)) {
+                if (!sameCheckoutPayload(previous, request)) { // Neu don cu khac voi payload hien tai, thi bao loi
                     throw new ValidationException("Idempotency-Key was already used with a different checkout payload");
                 }
                 return orderMapper.toResponse(previous, orderItemRepository.findByOrderId(previous.getId()),
@@ -69,23 +69,30 @@ public class OrderServiceImpl implements OrderService {
         }
 
         requireCheckoutDependencies();
+        // Khóa cart để dữ liệu checkout không bị thay đổi đồng thời.
         CartSnapshot cart = cartService.lockAndGetCheckoutCart(userId);
+        // Khóa variant, xác minh còn bán và lấy snapshot giá hiện tại.
         Map<Long, CheckoutVariantSnapshot> variants = catalogCheckoutService
-                .lockAndGetSellableVariants(cart.getItems().stream().map(CartSnapshot.Item::getVariantId).toList())
-                .stream().collect(Collectors.toMap(CheckoutVariantSnapshot::getVariantId, Function.identity()));
+                .lockAndGetSellableVariants(cart.getItems().stream()
+                                                    .map(CartSnapshot.Item::getVariantId)
+                                                    .toList())
+                .stream().collect(Collectors.toMap(CheckoutVariantSnapshot::getVariantId, variant -> variant));
 
+        // Tính lại tiền hàng ở server, không dùng giá do frontend gửi lên.
         BigDecimal subtotal = cart.getItems().stream()
                 .map(item -> requireVariant(variants, item.getVariantId()).getUnitPrice()
                         .multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal discount = BigDecimal.ZERO;
         BigDecimal shippingFee = BigDecimal.ZERO;
+        // Lưu order trước để có ID cho item, lịch sử trạng thái và lịch sử kho.
         Order order = orderRepository.saveAndFlush(Order.builder()
-                .userId(userId).orderCode("ORD-" + UUID.randomUUID()).status(OrderStatus.PENDING).subtotal(subtotal)
+                .userId(userId).orderCode(OrderCodeGenerator.generate()).status(OrderStatus.PENDING).subtotal(subtotal)
                 .discountAmount(discount).shippingFee(shippingFee).totalAmount(subtotal)
                 .recipientName(request.getRecipientName().trim()).recipientPhone(request.getRecipientPhone().trim())
                 .shippingAddress(request.getShippingAddress().trim()).couponCodeSnapshot(null)
                 .idempotencyKey(idempotencyKey).build());
+        // Lưu snapshot sản phẩm để dữ liệu đơn không đổi khi catalog được cập nhật.
         List<OrderItem> items = cart.getItems().stream().map(cartItem -> {
             CheckoutVariantSnapshot variant = requireVariant(variants, cartItem.getVariantId());
             return OrderItem.builder().order(order).productId(variant.getProductId()).variantId(variant.getVariantId())
@@ -93,10 +100,13 @@ public class OrderServiceImpl implements OrderService {
                     .unitPrice(variant.getUnitPrice()).quantity(cartItem.getQuantity()).build();
         }).toList();
         orderItemRepository.saveAll(items);
+        // Đơn mới luôn bắt đầu ở trạng thái PENDING.
         OrderStatusHistory history = orderStatusHistoryRepository.save(OrderStatusHistory.builder().order(order)
                 .toStatus(OrderStatus.PENDING).changedAt(Instant.now()).changedByUserId(userId).build());
+        // Trừ tồn và ghi stock movement; lỗi sẽ rollback toàn bộ checkout.
         inventoryService.deductForOrder(order.getId(), userId, cart.getItems().stream()
                 .map(item -> new OrderStockDeduction(item.getVariantId(), item.getQuantity())).toList());
+        // Chỉ xóa cart sau khi đã tạo order và trừ tồn thành công.
         cartService.clearPurchasedItems(userId, cart.getItems().stream().map(CartSnapshot.Item::getCartItemId).toList());
 
         return orderMapper.toResponse(order, items, List.of(history));
