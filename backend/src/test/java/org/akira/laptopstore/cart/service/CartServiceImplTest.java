@@ -62,24 +62,24 @@ class CartServiceImplTest {
         addLine(9L, 7L, 2);
         when(carts.findByUserIdWithItems(42L)).thenReturn(Optional.of(cart));
         var response = service.getCart(42L);
-        assertEquals(9L, response.items().getFirst().cartItemId());
-        assertEquals(7L, response.items().getFirst().variantId());
-        assertEquals(2, response.items().getFirst().quantity());
-        assertEquals("Laptop", response.items().getFirst().productName());
-        assertEquals("SKU-7", response.items().getFirst().sku());
-        assertEquals("Laptop (16GB - 512GB - Silver)", response.items().getFirst().variantName());
-        assertEquals(new BigDecimal("12500000"), response.items().getFirst().unitPrice());
-        assertEquals(new BigDecimal("25000000"), response.totalAmount());
-        assertEquals(2, response.totalItems());
+        assertEquals(9L, response.getItems().getFirst().getCartItemId());
+        assertEquals(7L, response.getItems().getFirst().getVariantId());
+        assertEquals(2, response.getItems().getFirst().getQuantity());
+        assertEquals("Laptop", response.getItems().getFirst().getProductName());
+        assertEquals("SKU-7", response.getItems().getFirst().getSku());
+        assertEquals("Laptop (16GB - 512GB - Silver)", response.getItems().getFirst().getVariantName());
+        assertEquals(new BigDecimal("12500000"), response.getItems().getFirst().getUnitPrice());
+        assertEquals(new BigDecimal("25000000"), response.getTotalAmount());
+        assertEquals(2, response.getTotalItems());
     }
 
     @Test
     void newUserCanReadAnEmptyCartWithoutCreatingIt() {
         when(carts.findByUserIdWithItems(42L)).thenReturn(Optional.empty());
         var response = service.getCart(42L);
-        assertTrue(response.items().isEmpty());
-        assertEquals(0, response.totalItems());
-        assertEquals(BigDecimal.ZERO, response.totalAmount());
+        assertTrue(response.getItems().isEmpty());
+        assertEquals(0, response.getTotalItems());
+        assertEquals(BigDecimal.ZERO, response.getTotalAmount());
         verify(carts, never()).createCartIfAbsent(any());
     }
 
@@ -89,8 +89,8 @@ class CartServiceImplTest {
         when(carts.findByUserIdForUpdate(42L)).thenReturn(Optional.of(cart));
         when(carts.saveAndFlush(cart)).thenReturn(cart);
         var response = service.addItemToCart(42L, new AddCartItemRequest(7L, 3));
-        assertEquals(1, response.items().size());
-        assertEquals(5, response.items().getFirst().quantity());
+        assertEquals(1, response.getItems().size());
+        assertEquals(5, response.getItems().getFirst().getQuantity());
         verify(carts).createCartIfAbsent(42L);
         verify(carts).findByUserIdForUpdate(42L);
     }
@@ -101,7 +101,7 @@ class CartServiceImplTest {
         when(carts.findByUserIdForUpdate(42L)).thenReturn(Optional.of(cart));
         when(carts.saveAndFlush(cart)).thenReturn(cart);
         var response = service.updateCartItem(42L, 9L, new UpdateCartItemRequest(4));
-        assertEquals(4, response.items().getFirst().quantity());
+        assertEquals(4, response.getItems().getFirst().getQuantity());
         assertThrows(ResourceNotFoundException.class, () -> service.removeCartItem(42L, 999L));
         assertEquals(1, cart.getItems().size());
     }
@@ -113,9 +113,9 @@ class CartServiceImplTest {
         when(carts.findByUserIdForUpdate(42L)).thenReturn(Optional.of(cart));
         var snapshot = service.lockAndGetCheckoutCart(42L);
         service.clearPurchasedItems(42L, List.of(9L));
-        assertEquals(2, snapshot.items().size());
+        assertEquals(2, snapshot.getItems().size());
         assertEquals(List.of(12L), cart.getItems().stream().map(CartItem::getId).toList());
-        assertThrows(UnsupportedOperationException.class, () -> snapshot.items().clear());
+        assertThrows(UnsupportedOperationException.class, () -> snapshot.getItems().clear());
     }
 
     @Test

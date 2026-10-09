@@ -19,6 +19,8 @@
 
 Đây là danh sách gợi ý theo use case, không bắt buộc tạo đủ class trước khi có nhu cầu.
 
+DTO request/response dùng class với getter theo chuẩn JavaBean (`getOrderCode()`, `getItems()`, ...), constructor rỗng và constructor đầy đủ. Các tên trường JSON và constraint validation được giữ nguyên.
+
 ## Dữ liệu và phụ thuộc
 
 **Dữ liệu sở hữu:** orders, order_items, order_status_history.

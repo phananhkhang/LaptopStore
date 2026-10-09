@@ -43,30 +43,30 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public CartResponse addItemToCart(Long userId, AddCartItemRequest request) {
         requireUserId(userId);
-        if (request == null || request.productVariantId() == null || request.productVariantId() <= 0) {
+        if (request == null || request.getProductVariantId() == null || request.getProductVariantId() <= 0) {
             throw new ValidationException("productVariantId must be greater than 0");
         }
-        int quantity = requirePositiveQuantity(request.quantity());
-        ProductVariant variant = productVariantRepository.findById(request.productVariantId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + request.productVariantId()));
+        int quantity = requirePositiveQuantity(request.getQuantity());
+        ProductVariant variant = productVariantRepository.findById(request.getProductVariantId())
+                        .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + request.getProductVariantId()));
         Integer stock = variant.getQuantity();
         if (stock == null || quantity > stock) {
-            throw new ValidationException("Not enough stock for product variant: " + request.productVariantId());
+            throw new ValidationException("Not enough stock for product variant: " + request.getProductVariantId());
         }
         if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())
                 || variant.getProduct() == null
                 || !"ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus())) {
-            throw new ValidationException("Product variant is not available: " + request.productVariantId());
+            throw new ValidationException("Product variant is not available: " + request.getProductVariantId());
         }
         cartRepository.createCartIfAbsent(userId); // Tạo giỏ hàng cho người mới, nếu chưa có
         Cart cart = lockedCart(userId);
         CartItem existingItem = cart.getItems().stream()
-                .filter(item -> request.productVariantId().equals(item.getVariantId()))
+                .filter(item -> request.getProductVariantId().equals(item.getVariantId()))
                 .findFirst()
                 .orElse(null);
         if (existingItem == null) {
             CartItem cartItem = CartItem.builder()
-                    .variantId(request.productVariantId())
+                    .variantId(request.getProductVariantId())
                     .quantity(quantity)
                     .build();
             cartItem.setCart(cart);
@@ -75,7 +75,7 @@ public class CartServiceImpl implements CartService {
             try {
                 int newQuantity = Math.addExact(existingItem.getQuantity(), quantity);
                 if (newQuantity > stock) {
-                    throw new ValidationException("Not enough stock for product variant: " + request.productVariantId());
+                    throw new ValidationException("Not enough stock for product variant: " + request.getProductVariantId());
                 }
                 existingItem.setQuantity(newQuantity);
             } catch (ArithmeticException exception) {
@@ -91,7 +91,7 @@ public class CartServiceImpl implements CartService {
     public CartResponse updateCartItem(Long userId, Long cartItemId, UpdateCartItemRequest request) {
         requireUserId(userId);
         requireItemId(cartItemId);
-        int quantity = requirePositiveQuantity(request == null ? null : request.quantity());
+        int quantity = requirePositiveQuantity(request == null ? null : request.getQuantity());
         Cart cart = lockedCart(userId);
         CartItem cartItem = findItem(cart, cartItemId);
         ProductVariant variant = productVariantRepository.findById(cartItem.getVariantId())
