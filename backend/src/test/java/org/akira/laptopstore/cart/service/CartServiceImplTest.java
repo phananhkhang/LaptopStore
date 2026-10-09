@@ -6,9 +6,8 @@ import org.akira.laptopstore.cart.entity.Cart;
 import org.akira.laptopstore.cart.entity.CartItem;
 import org.akira.laptopstore.cart.repository.CartRepository;
 import org.akira.laptopstore.cart.service.impl.CartServiceImpl;
-import org.akira.laptopstore.catalog.entity.Product;
-import org.akira.laptopstore.catalog.entity.ProductVariant;
-import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
+import org.akira.laptopstore.catalog.dto.response.CartVariantSnapshot;
+import org.akira.laptopstore.catalog.service.CatalogCartQueryService;
 import org.akira.laptopstore.exception.ResourceNotFoundException;
 import org.akira.laptopstore.exception.UnauthenticatedException;
 import org.akira.laptopstore.exception.ValidationException;
@@ -33,10 +32,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class CartServiceImplTest {
     @Mock private CartRepository carts;
-    @Mock private ProductVariantRepository productVariants;
+    @Mock private CatalogCartQueryService productVariants;
     private CartServiceImpl service;
     private Cart cart;
-    private final Map<Long, ProductVariant> catalogVariants = new HashMap<>();
+    private final Map<Long, CartVariantSnapshot> catalogVariants = new HashMap<>();
 
     @BeforeEach
     void setUp() {
@@ -44,17 +43,17 @@ class CartServiceImplTest {
         cart = Cart.builder().id(10L).userId(42L).build();
         catalogVariants.put(7L, variant(7L));
         catalogVariants.put(8L, variant(8L));
-        lenient().when(productVariants.findAllById(any())).thenAnswer(invocation -> {
+        lenient().when(productVariants.getVariants(any())).thenAnswer(invocation -> {
             Iterable<Long> ids = invocation.getArgument(0);
-            List<ProductVariant> found = new ArrayList<>();
+            List<CartVariantSnapshot> found = new ArrayList<>();
             ids.forEach(id -> {
-                ProductVariant variant = catalogVariants.get(id);
+                CartVariantSnapshot variant = catalogVariants.get(id);
                 if (variant != null) found.add(variant);
             });
             return found;
         });
-        lenient().when(productVariants.findById(anyLong())).thenAnswer(invocation ->
-                Optional.ofNullable(catalogVariants.get(invocation.getArgument(0))));
+        lenient().when(productVariants.getVariant(anyLong())).thenAnswer(invocation ->
+                catalogVariants.get(invocation.getArgument(0)));
     }
 
     @Test
@@ -139,13 +138,13 @@ class CartServiceImplTest {
         cart.getItems().add(CartItem.builder().id(id).cart(cart).variantId(variantId).quantity(quantity).build());
     }
 
-    private ProductVariant variant(Long id) {
+    private CartVariantSnapshot variant(Long id) {
         return variant(id, "ACTIVE", "ACTIVE");
     }
 
-    private ProductVariant variant(Long id, String variantStatus, String productStatus) {
-        return ProductVariant.builder().id(id).product(Product.builder().name("Laptop").status(productStatus).build())
-                .ram("16GB").storage("512GB").color("Silver").sku("SKU-" + id)
-                .price(new BigDecimal("12500000")).quantity(10).status(variantStatus).build();
+    private CartVariantSnapshot variant(Long id, String variantStatus, String productStatus) {
+        return new CartVariantSnapshot(id, "Laptop", "Laptop (16GB - 512GB - Silver)", "SKU-" + id,
+                new BigDecimal("12500000"), 10,
+                "ACTIVE".equals(variantStatus) && "ACTIVE".equals(productStatus));
     }
 }

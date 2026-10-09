@@ -39,7 +39,7 @@ Thêm item yêu cầu cả product và variant ACTIVE. Variant đã inactive v�
 
 ## Dữ liệu sản phẩm
 
-Cart hiện chỉ lưu `variantId` và `quantity`. Theo phạm vi hiện tại, cart gọi trực tiếp `ProductVariantRepository` để đọc dữ liệu hiển thị; không ghi dữ liệu catalog. Order/checkout vẫn phải lấy và chốt lại giá khi tạo đơn.
+Cart chỉ lưu `variantId` và `quantity`. Cart gọi `CatalogCartQueryService` để lấy `CartVariantSnapshot` cho hiển thị và kiểm tra khả năng mua; không import entity/repository catalog. Order/checkout vẫn phải lấy và chốt lại giá khi tạo đơn.
 
 ## Contract checkout đã triển khai
 
@@ -52,7 +52,7 @@ Cart hiện chỉ lưu `variantId` và `quantity`. Theo phạm vi hiện tại, 
 
 **Dữ liệu sở hữu:** carts, cart_items.
 
-**Được gọi:** catalog qua `ProductVariantRepository` để hiển thị cart. Không gọi order.
+**Được gọi:** catalog qua service/DTO contract để hiển thị và kiểm tra cart. Không gọi order.
 
 ## Bất biến và ràng buộc
 
