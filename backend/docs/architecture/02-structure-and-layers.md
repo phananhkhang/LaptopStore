@@ -27,7 +27,7 @@ Mỗi module có `README.md` tổng với trách nhiệm, nội dung cần viế
 | repository | JPA query/projection, khóa, persistence của module | Quyết định chuyển trạng thái hoặc gọi service/HTTP |
 | entity | Mapping bảng, enum/value rule cục bộ | Inject service/repository, dùng request/response, serialize ra API |
 | dto/request | Dữ liệu client được phép gửi, constraint hình dạng | Chứa role/price/owner do server quyết định ngoài endpoint đặc quyền đã duyệt |
-| dto/response | DTO HTTP; record snapshot nội bộ ghi rõ phạm vi | Lộ hash, raw token, entity/lazy collection |
+| dto/response | DTO HTTP; DTO snapshot nội bộ ghi rõ phạm vi | Lộ hash, raw token, entity/lazy collection |
 | mapper | Biến đổi thuần, whitelist trường | Gọi DB/HTTP, kiểm tra quyền, tự gán tồn/role/payment status |
 | integration | Adapter HTTP provider của module | Quyết định PAID, đổi order/stock hoặc lộ DTO provider ra API |
 

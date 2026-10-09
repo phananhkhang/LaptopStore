@@ -19,6 +19,8 @@ Giỏ tạm của từng USER, thêm/xóa/sửa số lượng và cung cấp sna
 
 Đây là danh sách gợi ý theo use case, không bắt buộc tạo đủ class trước khi có nhu cầu.
 
+DTO dùng class với getter theo chuẩn JavaBean (`getQuantity()`, `getItems()`, ...); request/response HTTP có constructor rỗng và constructor đầy đủ. `CartSnapshot` và `CartSnapshot.Item` là class bất biến; danh sách items được sao chép khi tạo snapshot.
+
 ## API đã triển khai
 
 Tất cả endpoint lấy userId từ principal và yêu cầu đăng nhập.
