@@ -39,10 +39,10 @@ public final class CartMapper {
                     );
                 }).toList();
         int totalItems = itemResponses.stream()
-                .mapToInt(CartItemResponse::quantity)
+                .mapToInt(CartItemResponse::getQuantity)
                 .sum();
         BigDecimal totalAmount = itemResponses.stream()
-                .map(CartItemResponse::lineTotal)
+                .map(CartItemResponse::getLineTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         return new CartResponse(
                 cart.getId(),
