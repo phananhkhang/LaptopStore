@@ -9,9 +9,14 @@ import org.springframework.data.repository.query.Param;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Lock;
 
+import java.util.Optional;
+import java.util.List;
+
 @Repository
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
     Optional<ProductVariant> findBySku(String sku);
+
+    // Nhờ có @SQLRestriction("active = true") ở Entity, hàm này sẽ tự động KHÔNG lấy các Variant đã bị Deactivate!
     List<ProductVariant> findByProductId(Long productId);
 
     boolean existsBySku(String sku);

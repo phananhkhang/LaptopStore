@@ -12,11 +12,13 @@ target/
 .springBeans
 .sts4-cache
 
-### IntelliJ IDEA ###
+### IntelliJ IDEA, VSCode, Eclipse ###
 .idea
+.vscode/
 *.iws
 *.iml
 *.ipr
+*.workspace.xml
 
 ### NetBeans ###
 /nbproject/private/
@@ -35,3 +37,12 @@ target/
 .DS_Store
 Thumbs.db
 .vscode
+
+# Build folders
+target/
+out/
+build/
+
+# OS generated files
+.DS_Store
+Thumbs.db

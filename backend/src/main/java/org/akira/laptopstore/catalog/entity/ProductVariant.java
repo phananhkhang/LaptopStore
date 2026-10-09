@@ -3,12 +3,16 @@ package org.akira.laptopstore.catalog.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
+@SQLDelete(sql = "UPDATE product_variants SET active = false WHERE id = ?")
+@SQLRestriction("active = true")
 @Table(name = "product_variants")
 @Getter
 @Setter
@@ -46,4 +50,8 @@ public class ProductVariant {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean active = true;
 }
