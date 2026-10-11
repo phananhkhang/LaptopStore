@@ -65,4 +65,23 @@ public class CatalogCheckoutServiceImpl implements CatalogCheckoutService {
         variant.setQuantity(before - quantity);
         return new StockChangeResult(variantId, before, before - quantity);
     }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY) // Bắt buộc phải chạy trong transaction của InventoryService
+    public StockChangeResult adjustStock(Long variantId, int delta) {
+        if (variantId == null || variantId <= 0) {
+            throw new ValidationException("variantId phải lớn hơn 0");
+        }
+        ProductVariant variant = productVariantRepository.findById(variantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy biến thể: " + variantId));
+
+        int before = variant.getQuantity() == null ? 0 : variant.getQuantity();
+        int after = before + delta;
+        if (after < 0) {
+            throw new ValidationException("Tồn kho không được âm. Biến thể: " + variantId);
+        }
+
+        variant.setQuantity(after);
+        return new StockChangeResult(variantId, before, after);
+    }
 }

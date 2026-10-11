@@ -6,7 +6,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.annotations.Formula;
 
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,5 +61,7 @@ public class Product {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProductSpecification specification;
 
-    private final boolean active = true;
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean active = true;
 }

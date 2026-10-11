@@ -35,6 +35,8 @@ export interface ProductSummaryResponse {
     categoryName: string;
     status: string;
     thumbnailImage: string | null;
+    startingPrice?: number;
+    active: boolean;
 }
 
 export interface ProductResponse {

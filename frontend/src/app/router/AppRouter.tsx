@@ -8,6 +8,7 @@ import { CheckoutPage } from '@/modules/order/pages/checkout/CheckoutPage';
 import { StaffOrderListPage } from '@/modules/order/pages/admin/StaffOrderListPage';
 import { OrderDetailPage } from '@/modules/order/pages/user/OrderDetailPage';
 import { OrderHistoryPage } from '@/modules/order/pages/user/OrderHistoryPage';
+import { CatalogRoutes } from '@/modules/catalog/routes/CatalogRoutes';
 
 const HomePage = () => <div style={{ padding: '2rem' }}><h1>Trang chủ LaptopStore</h1></div>;
 const LoginPage = () => <div style={{ padding: '2rem' }}><h1>Trang Đăng Nhập</h1></div>;
@@ -26,6 +27,8 @@ export const AppRouter: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/403" element={<ForbiddenPage />} />
+
+        <Route path="/*" element={<CatalogRoutes />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/profile" element={<ProfilePage />} />

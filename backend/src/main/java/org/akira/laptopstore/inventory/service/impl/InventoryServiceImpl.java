@@ -98,4 +98,32 @@ public class InventoryServiceImpl implements InventoryService {
                 .createdByUserId(actorId)
                 .build();
     }
+
+    @Override
+    @Transactional // Quan trọng: Bao bọc transaction cho cả thao tác cập nhật Catalog và ghi log
+    public void adjustStock(Long variantId, Integer delta, String reason, Long actorId) {
+        if (delta == null || delta == 0) {
+            throw new ValidationException("Delta phải khác 0");
+        }
+
+        // 1. Gọi sang Catalog để cập nhật quantity (CatalogCheckoutService)
+        StockChangeResult stockChange = catalogCheckoutService.adjustStock(variantId, delta);
+
+        // 2. Ghi nhận log (Ledger)
+        String operationKey = "adj-" + variantId + "-" + System.currentTimeMillis();
+        StockMovement movement = StockMovement.builder()
+                .variantId(variantId)
+                .type(delta > 0 ? "IN" : "OUT")
+                .delta(delta)
+                .quantityBefore(stockChange.getQuantityBefore())
+                .quantityAfter(stockChange.getQuantityAfter())
+                .referenceType("MANUAL_ADJUSTMENT")
+                .referenceId("N/A")
+                .operationKey(operationKey)
+                .note(reason)
+                .createdByUserId(actorId)
+                .build();
+
+        stockMovementRepository.save(movement);
+    }
 }

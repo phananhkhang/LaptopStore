@@ -19,12 +19,5 @@ public class ProductSpecification {
     @JoinColumn(name = "product_id", nullable = false, unique = true)
     private Product product;
 
-    private String cpu;
-    private String gpu;
-    private String screenSize;
-    private String screenResolution;
-    private String refreshRate;
-    private String battery;
-    private String weight;
-    private String os;
+    private String cpu, gpu, ram, storage, screenSize, screenResolution, refreshRate, battery, weight, os;
 }
