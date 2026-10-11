@@ -10,7 +10,7 @@ public interface PaymentTransactionRepository extends JpaRepository<PaymentTrans
 
     List<PaymentTransaction> findByPaymentId(Long paymentId);
 
-    Optional<PaymentTransaction> findByProviderTransactionId(String providerTransactionId);
+    Optional<PaymentTransaction> findByProviderTransactionId(Long providerTransactionId);
 
-    boolean existsByProviderTransactionId(String providerTransactionId);
+    boolean existsByProviderTransactionId(long providerTransactionId);
 }

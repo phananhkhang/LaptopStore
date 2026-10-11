@@ -3,7 +3,6 @@ package org.akira.laptopstore.inventory.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.akira.laptopstore.catalog.entity.ProductVariant;
 
 import java.time.LocalDateTime;
 
@@ -19,9 +18,8 @@ public class StockMovement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "variant_id", nullable = false)
-    private ProductVariant variant;
+    @Column(name = "variant_id", nullable = false)
+    private Long variantId;
 
     @Column(nullable = false)
     private String type; // Ví dụ: IMPORT, EXPORT, ADJUSTMENT

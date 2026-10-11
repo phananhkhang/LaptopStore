@@ -2,6 +2,9 @@ package org.akira.laptopstore.architecture;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.base.DescribedPredicate;
+import com.tngtech.archunit.core.domain.JavaClass;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -41,7 +44,9 @@ class ModuleArchitectureTest {
             "review", Set.of("order", "catalog")
     );
 
-    private final JavaClasses classes = new ClassFileImporter().importPackages(BASE_PACKAGE);
+    private final JavaClasses classes = new ClassFileImporter()
+            .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
+            .importPackages(BASE_PACKAGE);
 
     @Test
     void controllersMustNotDependDirectlyOnRepositories() {
@@ -74,10 +79,10 @@ class ModuleArchitectureTest {
 
                 noClasses()
                         .that().resideInAPackage(".." + source + "..")
-                        .should().dependOnClassesThat().resideInAnyPackage(
+                        .should().dependOnClassesThat(JavaClass.Predicates.resideInAnyPackage(
                                 ".." + target + ".repository..",
                                 ".." + target + ".entity.."
-                        )
+                        ).and(DescribedPredicate.describe("non-enum persistence types", type -> !type.isEnum())))
                         .allowEmptyShould(true)
                         .because(source + " must use service/DTO contracts instead of " + target + " persistence types")
                         .check(classes);
@@ -110,6 +115,10 @@ class ModuleArchitectureTest {
         slices()
                 .matching(BASE_PACKAGE + ".(*)..")
                 .should().beFreeOfCycles()
+                // Controllers may use the security principal; security loads credentials via user.service.
+                .ignoreDependency(
+                        DescribedPredicate.describe("controllers", type -> type.getPackageName().contains(".controller")),
+                        JavaClass.Predicates.resideInAPackage("..security.."))
                 .allowEmptyShould(true)
                 .check(classes);
     }

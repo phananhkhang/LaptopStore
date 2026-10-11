@@ -8,6 +8,7 @@ import org.akira.laptopstore.cart.repository.CartRepository;
 import org.akira.laptopstore.cart.service.impl.CartServiceImpl;
 import org.akira.laptopstore.catalog.entity.ProductVariant;
 import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
+import org.akira.laptopstore.catalog.service.impl.CatalogCartQueryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -46,7 +47,7 @@ class CartPersistenceTest {
     @EnableAutoConfiguration
     @EntityScan(basePackageClasses = {Cart.class, ProductVariant.class})
     @EnableJpaRepositories(basePackageClasses = {CartRepository.class, ProductVariantRepository.class})
-    @Import(CartServiceImpl.class)
+    @Import({CartServiceImpl.class, CatalogCartQueryServiceImpl.class})
     static class TestApplication {
     }
 
@@ -80,24 +81,24 @@ class CartPersistenceTest {
     @Test
     void crudPersistsItemIdsCurrentPricesAndOrphanRemovalWithoutChangingStock() {
         var added = cartService.addItemToCart(userId, new AddCartItemRequest(variantId, 2));
-        Long itemId = added.items().getFirst().cartItemId();
+        Long itemId = added.getItems().getFirst().getCartItemId();
         assertNotNull(itemId);
-        assertEquals(new BigDecimal("201.00"), added.totalAmount());
-        assertEquals("Laptop", added.items().getFirst().productName());
-        assertEquals("Laptop (16GB - 512GB - Silver)", added.items().getFirst().variantName());
+        assertEquals(new BigDecimal("201.00"), added.getTotalAmount());
+        assertEquals("Laptop", added.getItems().getFirst().getProductName());
+        assertEquals("Laptop (16GB - 512GB - Silver)", added.getItems().getFirst().getVariantName());
 
         var updated = cartService.updateCartItem(userId, itemId, new UpdateCartItemRequest(3));
-        assertEquals(new BigDecimal("301.50"), updated.totalAmount());
+        assertEquals(new BigDecimal("301.50"), updated.getTotalAmount());
         jdbc.update("update product_variants set price = 200 where id = ?", variantId);
-        assertEquals(new BigDecimal("600.00"), cartService.getCart(userId).totalAmount());
+        assertEquals(new BigDecimal("600.00"), cartService.getCart(userId).getTotalAmount());
         cartService.removeCartItem(userId, itemId);
         assertEquals(0, jdbc.queryForObject("select count(*) from cart_items where id = ?", Integer.class, itemId));
-        assertTrue(cartService.getCart(userId).items().isEmpty());
+        assertTrue(cartService.getCart(userId).getItems().isEmpty());
 
         cartService.addItemToCart(userId, new AddCartItemRequest(variantId, 1));
         cartService.addItemToCart(userId, new AddCartItemRequest(otherVariantId, 1));
         cartService.clearCart(userId);
-        assertTrue(cartService.getCart(userId).items().isEmpty());
+        assertTrue(cartService.getCart(userId).getItems().isEmpty());
         assertEquals(20, jdbc.queryForObject("select quantity from product_variants where id = ?", Integer.class, variantId));
     }
 
@@ -117,8 +118,8 @@ class CartPersistenceTest {
             second.get(10, TimeUnit.SECONDS);
         }
         var cart = cartService.getCart(userId);
-        assertEquals(1, cart.items().size());
-        assertEquals(3, cart.items().getFirst().quantity());
+        assertEquals(1, cart.getItems().size());
+        assertEquals(3, cart.getItems().getFirst().getQuantity());
         assertEquals(1, jdbc.queryForObject("select count(*) from carts where user_id = ?", Integer.class, userId));
     }
 
@@ -127,10 +128,10 @@ class CartPersistenceTest {
         var added = cartService.addItemToCart(userId, new AddCartItemRequest(variantId, 2));
         assertThrows(IllegalStateException.class, () -> new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
             var snapshot = cartService.lockAndGetCheckoutCart(userId);
-            cartService.clearPurchasedItems(userId, List.of(snapshot.items().getFirst().cartItemId()));
+            cartService.clearPurchasedItems(userId, List.of(snapshot.getItems().getFirst().getCartItemId()));
             throw new IllegalStateException("Simulated order failure");
         }));
-        assertEquals(added.items(), cartService.getCart(userId).items());
+        assertEquals(added.getItems(), cartService.getCart(userId).getItems());
     }
 
     @Test
@@ -157,7 +158,7 @@ class CartPersistenceTest {
                     Thread.currentThread().interrupt();
                     throw new IllegalStateException(exception);
                 }
-                cartService.clearPurchasedItems(userId, snapshot.items().stream().map(item -> item.cartItemId()).toList());
+                cartService.clearPurchasedItems(userId, snapshot.getItems().stream().map(item -> item.getCartItemId()).toList());
             }));
             try {
                 assertTrue(locked.await(5, TimeUnit.SECONDS));
@@ -175,8 +176,8 @@ class CartPersistenceTest {
             }
         }
         var remaining = cartService.getCart(userId);
-        assertEquals(1, remaining.items().size());
-        assertEquals(otherVariantId, remaining.items().getFirst().variantId());
+        assertEquals(1, remaining.getItems().size());
+        assertEquals(otherVariantId, remaining.getItems().getFirst().getVariantId());
     }
 
     private Long createVariant(Long productId, String sku) {

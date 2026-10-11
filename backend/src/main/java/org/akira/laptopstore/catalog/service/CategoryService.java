@@ -1,10 +1,17 @@
 package org.akira.laptopstore.catalog.service;
 
-import org.akira.laptopstore.catalog.entity.Category;
+import org.akira.laptopstore.catalog.dto.request.CreateCategoryRequest;
+import org.akira.laptopstore.catalog.dto.request.UpdateCategoryRequest;
+import org.akira.laptopstore.catalog.dto.response.CategoryResponse;
+
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> findAllCategories();
-    Category findCategoryById(Long id);
-    Category createCategory(Category category);
+
+    List<CategoryResponse> findAllCategories();
+    CategoryResponse findCategoryById(Long id);
+
+    CategoryResponse createCategory(CreateCategoryRequest request);
+    CategoryResponse updateCategory(Long id, UpdateCategoryRequest request);
+    void deleteCategory(Long id);
 }

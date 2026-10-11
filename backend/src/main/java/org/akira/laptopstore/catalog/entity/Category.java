@@ -2,9 +2,13 @@ package org.akira.laptopstore.catalog.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "categories")
+@SQLDelete(sql = "UPDATE categories SET active = false WHERE id = ?")
+@SQLRestriction("active = true") // Áo tàng hình che đi các category đã bị xóa mềm
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,5 +26,6 @@ public class Category {
     private String description;
 
     @Column(nullable = false)
-    private Boolean active;
+    @Builder.Default
+    private Boolean active = true;
 }

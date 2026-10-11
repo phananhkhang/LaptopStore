@@ -7,11 +7,11 @@ import org.akira.laptopstore.payment.entity.Payment;
 
 public interface PaymentService {
 
-    PaymentResponse startPayment(StartPaymentRequest request);
+    PaymentResponse startPayment(Long userId, StartPaymentRequest request);
 
-    PaymentResponse getById(Long id);
+    PaymentResponse getById(Long userId, Long id);
 
-    PaymentResponse getByOrderId(Long orderId);
+    PaymentResponse getByOrderId(Long userId, Long orderId);
 
     PaymentResponse recordCodPayment(RecordCodPaymentRequest request);
 }

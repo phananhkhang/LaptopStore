@@ -6,6 +6,9 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 
+import org.akira.laptopstore.payment.enums.PaymentProvider;
+import org.akira.laptopstore.payment.enums.PaymentTransactionStatus;
+
 @Entity
 @Table(name = "payment_transactions")
 @Getter
@@ -23,11 +26,12 @@ public class PaymentTransaction {
     @JoinColumn(name = "payment_id", nullable = false)
     private Payment payment;
 
-    @Column(length = 50)
-    private String provider;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider", length = 50)
+    private PaymentProvider provider;
 
-    @Column(name = "provider_transaction_id", length = 100, unique = true)
-    private String providerTransactionId;
+    @Column(name = "provider_transaction_id", unique = true)
+    private Long providerTransactionId;
 
     @Column(name = "provider_reference", length = 100)
     private String providerReference;
@@ -35,8 +39,9 @@ public class PaymentTransaction {
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal amount;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
-    private String status;
+    private PaymentTransactionStatus status;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

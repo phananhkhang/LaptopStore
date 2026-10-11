@@ -23,12 +23,15 @@ Không có cạnh `catalog → inventory`, `order → payment`, `cart → order`
 
 - `security → user.service` để nạp principal/role/trạng thái; không gọi auth. `auth → security` chỉ cho JwtService/PasswordEncoder, nên không tạo vòng.
 - Controller các module có thể dùng principal/annotation từ security. Service nhận actorId/actor context rõ, không nhận `HttpServletRequest`.
+- ArchUnit kiểm tra code production, không áp dụng ranh giới module cho fixture tích hợp. Rule vòng phụ thuộc bỏ qua cạnh controller → security đã cho phép ở trên; các cạnh service vẫn được kiểm tra. Enum dùng trong DTO contract được phép chia sẻ, nhưng JPA entity/repository vẫn bị cấm.
 - `cart.controller → security.principal.CustomUserDetails`: các API `/api/v1/me/cart` lấy `userDetails.getId()` qua `@AuthenticationPrincipal` và truyền ID cho `CartService`; các tầng khác của cart không phụ thuộc security.
 - Module được dùng common và exception cơ sở. Common không import module/exception/config/security. Exception không gọi service/repository.
 - Config chỉ wiring/cấu hình; không điều phối use case. Không inject module service vào config chỉ để chạy nghiệp vụ khi startup.
 - Security filter dùng EntryPoint/AccessDeniedHandler cho lỗi trước MVC; GlobalExceptionHandler không bao trùm mọi lỗi filter.
 
 ## Hợp đồng nội bộ dự kiến
+
+Contract đã triển khai cho cart: `CatalogCartQueryService.getVariant(id)` và `getVariants(ids)` trả `CartVariantSnapshot` bất biến (ID, tên, SKU, giá, tồn và cờ sellable). Contract chỉ đọc catalog; cart không đổi stock. Checkout tiếp tục khóa và chốt lại dữ liệu bằng `CatalogCheckoutService`.
 
 Tên dưới đây là thiết kế để owner triển khai, chưa có Java class/method. DTO contract bất biến, chỉ ID và trường cần dùng; không truyền entity.
 

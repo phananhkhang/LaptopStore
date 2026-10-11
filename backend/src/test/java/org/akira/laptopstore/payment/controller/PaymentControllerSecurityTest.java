@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -81,7 +82,7 @@ class PaymentControllerSecurityTest {
                 .createdAt(Instant.now())
                 .build();
 
-        when(paymentService.startPayment(any())).thenReturn(response);
+        when(paymentService.startPayment(eq(42L), any())).thenReturn(response);
 
         mockMvc.perform(post("/api/v1/payments")
                         .with(user(principal))
@@ -89,7 +90,7 @@ class PaymentControllerSecurityTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated());
 
-        verify(paymentService).startPayment(any());
+        verify(paymentService).startPayment(eq(42L), any());
     }
 
     @Test

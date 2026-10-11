@@ -4,8 +4,10 @@ import org.akira.laptopstore.payment.dto.request.RecordCodPaymentRequest;
 import org.akira.laptopstore.payment.dto.request.StartPaymentRequest;
 import org.akira.laptopstore.payment.dto.response.PaymentResponse;
 import org.akira.laptopstore.payment.service.PaymentService;
+import org.akira.laptopstore.security.principal.CustomUserDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,30 +27,40 @@ public class PaymentController {
         private final PaymentService paymentService;
 
         @PostMapping
+        @PreAuthorize("hasRole('USER')")
         public ResponseEntity<PaymentResponse> startPayment(
+                        @AuthenticationPrincipal CustomUserDetails userDetails,
                         @Valid @RequestBody StartPaymentRequest request) {
 
-                PaymentResponse response = paymentService.startPayment(request);
+                PaymentResponse response = paymentService.startPayment(
+                                userDetails.getId(),
+                                request);
 
-                return ResponseEntity
-                                .status(201)
-                                .body(response);
+                return ResponseEntity.status(201).body(response);
         }
 
         @GetMapping("/{id}")
+        @PreAuthorize("hasRole('USER')")
         public ResponseEntity<PaymentResponse> getById(
+                        @AuthenticationPrincipal CustomUserDetails userDetails,
                         @PathVariable Long id) {
 
                 return ResponseEntity.ok(
-                                paymentService.getById(id));
+                                paymentService.getById(
+                                                userDetails.getId(),
+                                                id));
         }
 
         @GetMapping("/order/{orderId}")
+        @PreAuthorize("hasRole('USER')")
         public ResponseEntity<PaymentResponse> getByOrder(
+                        @AuthenticationPrincipal CustomUserDetails userDetails,
                         @PathVariable Long orderId) {
 
                 return ResponseEntity.ok(
-                                paymentService.getByOrderId(orderId));
+                                paymentService.getByOrderId(
+                                                userDetails.getId(),
+                                                orderId));
         }
 
         @PutMapping("/cod")

@@ -9,9 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+@PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
 @RestController
 @RequestMapping("/api/v1/staff/reviews")
-@PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
 @RequiredArgsConstructor
 public class StaffReviewController {
 

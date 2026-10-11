@@ -1,6 +1,12 @@
 package org.akira.laptopstore.cart.dto.request;
 
-public record UpdateCartItemRequest(
-        Integer quantity
-) {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UpdateCartItemRequest {
+    private Integer quantity;
 }

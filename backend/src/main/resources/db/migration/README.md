@@ -1,5 +1,9 @@
 # Migration Flyway
 
+## V3 đồng bộ cột catalog
+
+`V3__align_catalog_entity_columns.sql` bổ sung `brands.created_at`, `brands.updated_at`, `products.active` và `product_variants.active` theo các entity đã có. Migration chỉ thêm cột với default, giữ nguyên dữ liệu và checksum V1/V2. CI chạy Flyway và Hibernate `ddl-auto=validate` trên PostgreSQL 17 để phát hiện sai lệch schema/entity.
+
 ## V1 khởi tạo toàn bộ schema
 
 `V1__init_schema.sql` tạo schema cho **database mới/trống** theo [Entity model](../../../../../docs/architecture/11-entity-model.md) và [ERD LaptopStore](../../../../../docs/architecture/12-ERD-LaptopStore.md):
