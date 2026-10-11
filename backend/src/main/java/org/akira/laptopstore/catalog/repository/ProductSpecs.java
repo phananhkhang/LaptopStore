@@ -45,51 +45,45 @@ public class ProductSpecs {
                 predicates.add(cb.equal(root.join("category", JoinType.INNER).get("name"), criteria.getCategoryName()));
             }
 
-            // 3. Lọc theo RAM & Storage (Linh hoạt bỏ qua khoảng trắng và dấu gạch ngang)
-            if (StringUtils.hasText(criteria.getRam()) || StringUtils.hasText(criteria.getStorage())) {
-                Join<Object, Object> specJoin = root.join("specification", JoinType.INNER);
+            // 3. Lọc theo Variant: Giá, RAM, Storage (Dùng chung 1 EXISTS Subquery để tránh duplicate)
+            if (criteria.getMinPrice() != null || criteria.getMaxPrice() != null || 
+                StringUtils.hasText(criteria.getRam()) || StringUtils.hasText(criteria.getStorage())) {
                 
-                if (StringUtils.hasText(criteria.getRam())) {
-                    // Dọn dẹp chuỗi tìm kiếm: lowercase, xóa space, xóa gạch ngang
-                    String searchRam = "%" + criteria.getRam().toLowerCase().replace(" ", "").replace("-", "") + "%";
-                    
-                    // Gọi hàm SQL: REPLACE(REPLACE(LOWER(ram), ' ', ''), '-', '')
-                    jakarta.persistence.criteria.Expression<String> ramDb = cb.function("REPLACE", String.class, cb.lower(specJoin.get("ram")), cb.literal(" "), cb.literal(""));
-                    ramDb = cb.function("REPLACE", String.class, ramDb, cb.literal("-"), cb.literal(""));
-                    
-                    predicates.add(cb.like(ramDb, searchRam));
-                }
-                
-                if (StringUtils.hasText(criteria.getStorage())) {
-                    String searchStorage = "%" + criteria.getStorage().toLowerCase().replace(" ", "").replace("-", "") + "%";
-                    
-                    jakarta.persistence.criteria.Expression<String> storageDb = cb.function("REPLACE", String.class, cb.lower(specJoin.get("storage")), cb.literal(" "), cb.literal(""));
-                    storageDb = cb.function("REPLACE", String.class, storageDb, cb.literal("-"), cb.literal(""));
-                    
-                    predicates.add(cb.like(storageDb, searchStorage));
-                }
-            }
-            
+                Subquery<Integer> variantSubquery = query.subquery(Integer.class);
+                Root<ProductVariant> variantRoot = variantSubquery.from(ProductVariant.class);
+                variantSubquery.select(cb.literal(1));
 
-            // 4. Lọc theo giá (Dùng EXISTS Subquery để tránh duplicate)
-            if (criteria.getMinPrice() != null || criteria.getMaxPrice() != null) {
-                Subquery<Integer> priceSubquery = query.subquery(Integer.class);
-                Root<ProductVariant> priceVariant = priceSubquery.from(ProductVariant.class);
-                priceSubquery.select(cb.literal(1));
+                List<Predicate> variantPredicates = new ArrayList<>();
+                variantPredicates.add(cb.equal(variantRoot.get("product"), root));
 
-                List<Predicate> pricePredicates = new ArrayList<>();
-                pricePredicates.add(cb.equal(priceVariant.get("product"), root));
-
+                // Điều kiện Giá
                 if (criteria.getMinPrice() != null) {
-                    pricePredicates.add(cb.greaterThanOrEqualTo(priceVariant.get("price"), criteria.getMinPrice()));
+                    variantPredicates.add(cb.greaterThanOrEqualTo(variantRoot.get("price"), criteria.getMinPrice()));
                 }
                 if (criteria.getMaxPrice() != null) {
-                    pricePredicates.add(cb.lessThanOrEqualTo(priceVariant.get("price"), criteria.getMaxPrice()));
+                    variantPredicates.add(cb.lessThanOrEqualTo(variantRoot.get("price"), criteria.getMaxPrice()));
                 }
 
-                priceSubquery.where(pricePredicates.toArray(new Predicate[0]));
-                predicates.add(cb.exists(priceSubquery));
+                // Điều kiện RAM
+                if (StringUtils.hasText(criteria.getRam())) {
+                    String searchRam = "%" + criteria.getRam().toLowerCase().replace(" ", "").replace("-", "") + "%";
+                    jakarta.persistence.criteria.Expression<String> ramDb = cb.function("REPLACE", String.class, cb.lower(variantRoot.get("ram")), cb.literal(" "), cb.literal(""));
+                    ramDb = cb.function("REPLACE", String.class, ramDb, cb.literal("-"), cb.literal(""));
+                    variantPredicates.add(cb.like(ramDb, searchRam));
+                }
+
+                // Điều kiện Storage
+                if (StringUtils.hasText(criteria.getStorage())) {
+                    String searchStorage = "%" + criteria.getStorage().toLowerCase().replace(" ", "").replace("-", "") + "%";
+                    jakarta.persistence.criteria.Expression<String> storageDb = cb.function("REPLACE", String.class, cb.lower(variantRoot.get("storage")), cb.literal(" "), cb.literal(""));
+                    storageDb = cb.function("REPLACE", String.class, storageDb, cb.literal("-"), cb.literal(""));
+                    variantPredicates.add(cb.like(storageDb, searchStorage));
+                }
+
+                variantSubquery.where(variantPredicates.toArray(new Predicate[0]));
+                predicates.add(cb.exists(variantSubquery));
             }
+
 
             // 5. SORT THEO PRICE BẰNG SUBQUERY (Bây giờ không còn DISTINCT nên Postgres sẽ cho phép)
             if (StringUtils.hasText(criteria.getSortPriceDirection())) {
