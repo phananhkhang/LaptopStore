@@ -41,15 +41,15 @@ public class AdminProductController {
 
     // 2. API Lấy danh sách tất cả sản phẩm
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.findAllProducts();
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
+        List<ProductResponse> products = productService.findAllProducts();
         return ResponseEntity.ok(products);
     }
 
     // 3. API Lấy chi tiết sản phẩm theo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Product product = productService.findProductById(id);
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
+        ProductResponse product = productService.findProductById(id);
         return ResponseEntity.ok(product);
     }
 

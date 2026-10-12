@@ -3,58 +3,103 @@ package org.akira.laptopstore.catalog.repository;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.criteria.Root;
 import org.akira.laptopstore.catalog.dto.request.ProductSearchCriteria;
 import org.akira.laptopstore.catalog.entity.Product;
+import org.akira.laptopstore.catalog.entity.ProductVariant;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductSpecs {
-public static Specification<Product> filterBy(ProductSearchCriteria criteria) {
+    public static Specification<Product> filterBy(ProductSearchCriteria criteria) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. Lọc theo Keyword (Tìm trên Name của Product HOẶC SKU của Variant)
+            // 1. Lọc theo Keyword (Dùng EXISTS Subquery cho SKU để tránh duplicate)
             if (StringUtils.hasText(criteria.getKeyword())) {
                 String pattern = "%" + criteria.getKeyword().toLowerCase() + "%";
                 Predicate nameMatch = cb.like(cb.lower(root.get("name")), pattern);
-                
-                // Cần LEFT JOIN bảng variants để lấy trường sku
-                Join<Object, Object> variantJoin = root.join("variants", JoinType.LEFT);
-                Predicate skuMatch = cb.like(cb.lower(variantJoin.get("sku")), pattern);
-                
+
+                Subquery<Integer> skuSubquery = query.subquery(Integer.class);
+                Root<ProductVariant> skuVariant = skuSubquery.from(ProductVariant.class);
+                skuSubquery.select(cb.literal(1));
+                skuSubquery.where(
+                        cb.equal(skuVariant.get("product"), root),
+                        cb.like(cb.lower(skuVariant.get("sku")), pattern)
+                );
+                Predicate skuMatch = cb.exists(skuSubquery);
+
                 predicates.add(cb.or(nameMatch, skuMatch));
             }
 
-            // 2. Lọc theo Brand
+            // 2. Lọc theo Brand & Category (ManyToOne -> INNER JOIN an toàn, không sinh duplicate)
             if (StringUtils.hasText(criteria.getBrandName())) {
-                Join<Object, Object> brandJoin = root.join("brand", JoinType.INNER);
-                predicates.add(cb.equal(brandJoin.get("name"), criteria.getBrandName()));
+                predicates.add(cb.equal(root.join("brand", JoinType.INNER).get("name"), criteria.getBrandName()));
             }
-
-            // 3. Lọc theo Category
             if (StringUtils.hasText(criteria.getCategoryName())) {
-                Join<Object, Object> categoryJoin = root.join("category", JoinType.INNER);
-                predicates.add(cb.equal(categoryJoin.get("name"), criteria.getCategoryName()));
+                predicates.add(cb.equal(root.join("category", JoinType.INNER).get("name"), criteria.getCategoryName()));
             }
 
-            // 4. Lọc theo khoảng giá (Dữ liệu giá nằm trong bảng ProductVariant)
-            if (criteria.getMinPrice() != null || criteria.getMaxPrice() != null) {
-                Join<Object, Object> variantJoin = root.join("variants", JoinType.INNER);
+            // 3. Lọc theo Variant: Giá, RAM, Storage (Dùng chung 1 EXISTS Subquery để tránh duplicate)
+            if (criteria.getMinPrice() != null || criteria.getMaxPrice() != null || 
+                StringUtils.hasText(criteria.getRam()) || StringUtils.hasText(criteria.getStorage())) {
+                
+                Subquery<Integer> variantSubquery = query.subquery(Integer.class);
+                Root<ProductVariant> variantRoot = variantSubquery.from(ProductVariant.class);
+                variantSubquery.select(cb.literal(1));
+
+                List<Predicate> variantPredicates = new ArrayList<>();
+                variantPredicates.add(cb.equal(variantRoot.get("product"), root));
+
+                // Điều kiện Giá
                 if (criteria.getMinPrice() != null) {
-                    predicates.add(cb.greaterThanOrEqualTo(variantJoin.get("price"), criteria.getMinPrice()));
+                    variantPredicates.add(cb.greaterThanOrEqualTo(variantRoot.get("price"), criteria.getMinPrice()));
                 }
                 if (criteria.getMaxPrice() != null) {
-                    predicates.add(cb.lessThanOrEqualTo(variantJoin.get("price"), criteria.getMaxPrice()));
+                    variantPredicates.add(cb.lessThanOrEqualTo(variantRoot.get("price"), criteria.getMaxPrice()));
+                }
+
+                // Điều kiện RAM
+                if (StringUtils.hasText(criteria.getRam())) {
+                    String searchRam = "%" + criteria.getRam().toLowerCase().replace(" ", "").replace("-", "") + "%";
+                    jakarta.persistence.criteria.Expression<String> ramDb = cb.function("REPLACE", String.class, cb.lower(variantRoot.get("ram")), cb.literal(" "), cb.literal(""));
+                    ramDb = cb.function("REPLACE", String.class, ramDb, cb.literal("-"), cb.literal(""));
+                    variantPredicates.add(cb.like(ramDb, searchRam));
+                }
+
+                // Điều kiện Storage
+                if (StringUtils.hasText(criteria.getStorage())) {
+                    String searchStorage = "%" + criteria.getStorage().toLowerCase().replace(" ", "").replace("-", "") + "%";
+                    jakarta.persistence.criteria.Expression<String> storageDb = cb.function("REPLACE", String.class, cb.lower(variantRoot.get("storage")), cb.literal(" "), cb.literal(""));
+                    storageDb = cb.function("REPLACE", String.class, storageDb, cb.literal("-"), cb.literal(""));
+                    variantPredicates.add(cb.like(storageDb, searchStorage));
+                }
+
+                variantSubquery.where(variantPredicates.toArray(new Predicate[0]));
+                predicates.add(cb.exists(variantSubquery));
+            }
+
+
+            // 5. SORT THEO PRICE BẰNG SUBQUERY (Bây giờ không còn DISTINCT nên Postgres sẽ cho phép)
+            if (StringUtils.hasText(criteria.getSortPriceDirection())) {
+                Subquery<BigDecimal> minPriceSubquery = query.subquery(BigDecimal.class);
+                Root<ProductVariant> sortVariant = minPriceSubquery.from(ProductVariant.class);
+                minPriceSubquery.select(cb.min(sortVariant.get("price")));
+                minPriceSubquery.where(cb.equal(sortVariant.get("product"), root));
+
+                if ("asc".equalsIgnoreCase(criteria.getSortPriceDirection())) {
+                    query.orderBy(cb.asc(minPriceSubquery));
+                } else if ("desc".equalsIgnoreCase(criteria.getSortPriceDirection())) {
+                    query.orderBy(cb.desc(minPriceSubquery));
                 }
             }
 
-            // Xử lý nòng cốt: Vì JOIN với bảng 1-N (Variants), kết quả trả về có thể bị nhân bản các dòng Product.
-            // Bắt buộc gọi query.distinct(true) để lọc bỏ dữ liệu trùng lặp ở tầng database.
-            query.distinct(true);
-
+            // ĐÃ XÓA: query.distinct(true); 
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

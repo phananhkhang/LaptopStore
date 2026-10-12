@@ -11,4 +11,6 @@ public interface CatalogCheckoutService {
     List<CheckoutVariantSnapshot> lockAndGetSellableVariants(Collection<Long> variantIds);
 
     StockChangeResult deductStock(Long variantId, int quantity);
+
+    StockChangeResult adjustStock(Long variantId, int delta);
 }

@@ -8,4 +8,5 @@ public interface InventoryService {
     List<StockMovement> getHistoryByVariantId(Long variantId);
     StockMovement recordMovement(StockMovement movement);
     void deductForOrder(Long orderId, Long actorId, List<OrderStockDeduction> lines);
+    void adjustStock(Long variantId, Integer delta, String reason, Long actorId);
 }

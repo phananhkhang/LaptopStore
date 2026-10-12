@@ -1,4 +1,3 @@
-// src/modules/catalog/routes/CatalogRoutes.tsx
 import { Route, Routes } from 'react-router-dom';
 import ProductListPage from '../pages/user/ProductListPage';
 import ProductDetailPage from '../pages/user/ProductDetailPage';
@@ -11,7 +10,7 @@ export const CatalogRoutes = () => {
             <Route path="/products" element={<ProductListPage />} />
             <Route path="/products/:id" element={<ProductDetailPage />} />
 
-            {/* Routes cho ADMIN (Sau này sẽ được bọc bởi AdminGuard) */}
+            {/* Routes cho ADMIN */}
             <Route path="/admin/products" element={<AdminProductPage />} />
         </Routes>
     );

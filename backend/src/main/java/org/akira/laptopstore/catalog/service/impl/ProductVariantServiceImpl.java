@@ -59,7 +59,10 @@ public class ProductVariantServiceImpl implements ProductVariantService {
                 .product(parentProduct)
                 .sku(request.getSku())
                 .price(request.getPrice())
-                .quantity(request.getQuantity())
+                .quantity(0)
+                .color(request.getColor())
+                .ram(request.getRam())
+                .storage(request.getStorage())
                 .status("ACTIVE") // hễ tạo mới là mặc định trạng thái hoạt động
                 .build();
 
@@ -100,7 +103,6 @@ public class ProductVariantServiceImpl implements ProductVariantService {
         // 4. Cập nhật dữ liệu vào Entity (sử dụng Setter, không build mới để giữ nguyên ID & Audit fields)
         variant.setSku(request.getSku());
         variant.setPrice(request.getPrice());
-        variant.setQuantity(request.getQuantity());
         variant.setStatus(request.getStatus());
         variant.setColor(request.getColor());
         variant.setRam(request.getRam());
