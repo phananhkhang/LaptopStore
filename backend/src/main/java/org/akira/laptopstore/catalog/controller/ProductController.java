@@ -3,9 +3,12 @@ package org.akira.laptopstore.catalog.controller;
 import lombok.RequiredArgsConstructor;
 
 import org.akira.laptopstore.catalog.dto.request.ProductSearchCriteria;
-import org.akira.laptopstore.catalog.dto.response.ProductSummaryResponse;
 
-import org.akira.laptopstore.catalog.entity.Product;
+import org.akira.laptopstore.catalog.dto.response.ProductResponse;
+import org.akira.laptopstore.catalog.dto.response.ProductSummaryResponse;
+import org.akira.laptopstore.catalog.dto.response.ProductImageDto;
+import org.akira.laptopstore.catalog.dto.response.ProductSpecificationDto;
+
 import org.akira.laptopstore.catalog.service.ProductService;
 
 import org.springframework.data.web.PageableDefault;
@@ -26,12 +29,12 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<List<ProductResponse>> getAllProducts() {
         return ResponseEntity.ok(productService.findAllProducts());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.findProductById(id));
     }
 
@@ -44,8 +47,22 @@ public class ProductController {
         // @PageableDefault bọc sẵn các tham số (page=0, size=12, sort=createdAt,desc)
         // Frontend có thể ghi đè bằng cách truyền: ?page=1&size=24&sort=price,asc
         @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        
+
         Page<ProductSummaryResponse> result = productService.searchAndFilterProducts(criteria, pageable);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{id}/images")
+    public ResponseEntity<List<ProductImageDto>> getProductImages(@PathVariable Long id) {
+        return ResponseEntity.ok(productService.getProductImages(id));
+    }
+
+    @GetMapping("/{id}/specification")
+    public ResponseEntity<ProductSpecificationDto> getProductSpecification(@PathVariable Long id) {
+        ProductSpecificationDto spec = productService.getProductSpecification(id);
+        if (spec == null) {
+            return ResponseEntity.noContent().build(); // Trả về 204 nếu sản phẩm chưa có thông số
+        }
+        return ResponseEntity.ok(spec);
     }
 }

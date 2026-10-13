@@ -6,10 +6,12 @@ import org.akira.laptopstore.catalog.dto.request.CreateProductRequest;
 import org.akira.laptopstore.catalog.entity.Brand;
 import org.akira.laptopstore.catalog.entity.Category;
 import org.akira.laptopstore.catalog.entity.Product;
-
+import org.akira.laptopstore.catalog.mapper.ProductMapper;
 import org.akira.laptopstore.catalog.repository.BrandRepository;
 import org.akira.laptopstore.catalog.repository.CategoryRepository;
+import org.akira.laptopstore.catalog.repository.ProductImageRepository;
 import org.akira.laptopstore.catalog.repository.ProductRepository;
+import org.akira.laptopstore.catalog.repository.ProductSpecificationRepository;
 import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
 import org.akira.laptopstore.catalog.repository.ProductSpecs;
 
@@ -22,10 +24,15 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+// import org.springframework.data.domain.PageRequest;
+// import org.springframework.data.domain.Sort;
+import org.springframework.util.StringUtils;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
+import org.akira.laptopstore.catalog.dto.response.ProductImageDto;
+import org.akira.laptopstore.catalog.dto.response.ProductResponse;
+import org.akira.laptopstore.catalog.dto.response.ProductSpecificationDto;
 import org.akira.laptopstore.catalog.dto.response.ProductSummaryResponse;
 import org.akira.laptopstore.catalog.dto.request.ProductSearchCriteria;
 import org.akira.laptopstore.catalog.dto.request.UpdateProductRequest;
@@ -42,6 +49,10 @@ public class ProductServiceImpl implements ProductService {
 
     // Thêm dòng này để "tiêm" ProductVariantRepository vào
     private final ProductVariantRepository productVariantRepository;
+    private final ProductMapper productMapper;
+
+    private final ProductImageRepository productImageRepository;
+    private final ProductSpecificationRepository productSpecificationRepository;
 
     @Override
     @Transactional
@@ -49,8 +60,8 @@ public class ProductServiceImpl implements ProductService {
         // Đổi hàm kiểm tra sang repository của Variant
         if (productVariantRepository.existsBySku(request.getSku())) {
             throw new BusinessException(
-                org.springframework.http.HttpStatus.BAD_REQUEST, 
-                "SKU_ALREADY_EXISTS", 
+                org.springframework.http.HttpStatus.BAD_REQUEST,
+                "SKU_ALREADY_EXISTS",
                 "Mã SKU '" + request.getSku() + "' đã tồn tại trong hệ thống. Vui lòng nhập mã khác!"
             );
         }
@@ -100,7 +111,7 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setDescription(request.getDescription());
         existingProduct.setCategory(category);
         existingProduct.setBrand(brand);
-        
+
         // Nếu DTO của em (UpdateProductRequest) có cho phép cập nhật thêm trạng thái, em có thể mở comment dòng dưới:
         // if (request.getStatus() != null) {
         //     existingProduct.setStatus(request.getStatus());
@@ -124,30 +135,48 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> findAllProducts() {
-        return productRepository.findAll();
+    public List<ProductResponse> findAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return productMapper.toProductResponseList(products);
     }
 
     @Override
-    public Product findProductById(Long id) {
-        return productRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Product với ID: " + id));
+    @Transactional(readOnly = true)
+    public ProductResponse findProductById(Long id) {
+
+        // 1. Lấy Product kèm Variants (bỏ qua Images tạm thời để không bị lỗi MultipleBag)
+        Product product = productRepository.findProductAndVariantsById(id)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "PRODUCT_NOT_FOUND",
+                        "Không tìm thấy sản phẩm với ID: " + id
+                ));
+
+        // 2. Chọc thêm 1 câu query nữa để kéo nốt Images lên và nhét vào cái Product vừa tìm được
+        productRepository.findProductImagesById(id).ifPresent(p -> {
+            product.setImages(p.getImages());
+        });
+
+        return productMapper.toResponse(product);
     }
 
     @Override
     public Page<ProductSummaryResponse> searchAndFilterProducts(ProductSearchCriteria criteria, Pageable pageable) {
+
+        // 1. Nếu có yêu cầu sort theo giá -> Gỡ bỏ Sort mặc định của Pageable
+        if (StringUtils.hasText(criteria.getSortPriceDirection())) {
+            pageable = org.springframework.data.domain.PageRequest.of(
+                    pageable.getPageNumber(),
+                    pageable.getPageSize(),
+                    org.springframework.data.domain.Sort.unsorted() // Ép nó thành Unsorted
+            );
+        }
+
+        // 2. Chạy Query với Specification (lúc này query.orderBy trong Specs sẽ lên ngôi)
         Specification<Product> spec = ProductSpecs.filterBy(criteria);
         Page<Product> productPage = productRepository.findAll(spec, pageable);
-        
-        // Tận dụng MapStruct hoặc map() của Page để chuyển đổi Entity sang DTO
-        return productPage.map(product -> {
-            ProductSummaryResponse dto = new ProductSummaryResponse();
-            dto.setId(product.getId());
-            dto.setName(product.getName());
-            dto.setStatus(product.getStatus());
-            // Giả sử có mapper, gọi: return productMapper.toProductSummaryResponse(product);
-            return dto;
-        });
+
+        return productPage.map(productMapper::toProductSummaryResponse);
     }
 
     private void validateBrandAndCategoryExists(Long brandId, Long categoryId) {
@@ -169,4 +198,26 @@ public class ProductServiceImpl implements ProductService {
             );
         }
     }
+
+    @Override
+    public List<ProductImageDto> getProductImages(Long productId) {
+        // Kiểm tra xem sản phẩm có tồn tại không
+        if (!productRepository.existsById(productId)) {
+            throw new ResourceNotFoundException("Không tìm thấy sản phẩm với ID: " + productId);
+        }
+        // Gọi repository lấy danh sách ảnh theo productId và map sang DTO
+        return productMapper.toProductImageDtoList(productImageRepository.findByProductId(productId));
+    }
+
+    @Override
+    public ProductSpecificationDto getProductSpecification(Long productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResourceNotFoundException("Không tìm thấy sản phẩm với ID: " + productId);
+        }
+        // Tìm specs, nếu không có thì trả về null (hoặc có thể ném lỗi tùy logic nghiệp vụ)
+        return productSpecificationRepository.findByProductId(productId)
+                .map(productMapper::toProductSpecificationDto)
+                .orElse(null);
+    }
+
 }
