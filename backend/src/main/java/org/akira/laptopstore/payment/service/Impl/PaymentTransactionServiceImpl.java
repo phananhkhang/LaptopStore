@@ -118,6 +118,15 @@ public class PaymentTransactionServiceImpl
 
                 transaction.setStatus(
                                 PaymentTransactionStatus.FAILED);
+                Payment payment = transaction.getPayment();
+
+                if (payment.getStatus() != PaymentStatus.PAID) {
+
+                        payment.setStatus(
+                                        PaymentStatus.FAILED);
+
+                        paymentRepository.save(payment);
+                }
 
                 PaymentTransaction saved = paymentTransactionRepository.save(transaction);
 

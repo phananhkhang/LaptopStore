@@ -11,4 +11,8 @@ public interface OrderQueryService {
     OrderItemReviewInfo getOrderItemForReview(Long orderItemId);
 
     void validateOrderOwner(Long orderId, Long userId);
+
+    void validateOrderPayable(Long orderId);
+
+    void validateOrderDelivered(Long orderId);
 }

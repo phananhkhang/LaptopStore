@@ -5,6 +5,7 @@ import org.akira.laptopstore.promotion.dto.request.CreateCouponUsageRequest;
 import org.akira.laptopstore.promotion.dto.response.CouponUsageResponse;
 import org.akira.laptopstore.promotion.service.CouponUsageService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,7 +17,6 @@ public class CouponUsageController {
 
     private final CouponUsageService couponUsageService;
 
-    @PostMapping
     public ResponseEntity<CouponUsageResponse> create(
             @RequestBody CreateCouponUsageRequest request) {
 
@@ -52,6 +52,7 @@ public class CouponUsageController {
     }
 
     @PutMapping("/{id}/release")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> release(
             @PathVariable Long id) {
 

@@ -7,8 +7,21 @@ import org.akira.laptopstore.promotion.dto.response.CouponResponse;
 import org.akira.laptopstore.promotion.entity.Coupon;
 import org.akira.laptopstore.promotion.enums.DiscountType;
 import org.akira.laptopstore.promotion.repository.CouponRepository;
+import org.akira.laptopstore.promotion.repository.CouponUsageRepository;
 import org.akira.laptopstore.promotion.service.CouponService;
 import org.springframework.stereotype.Service;
+
+import org.akira.laptopstore.promotion.entity.CouponUsage;
+import org.akira.laptopstore.promotion.enums.CouponUsageStatus;
+import org.akira.laptopstore.promotion.dto.response.CouponEvaluation;
+
+import org.akira.laptopstore.exception.ResourceNotFoundException;
+import org.akira.laptopstore.exception.ValidationException;
+
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.RoundingMode;
 
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -19,6 +32,7 @@ import java.util.List;
 public class CouponServiceImpl implements CouponService {
 
         private final CouponRepository couponRepository;
+        private final CouponUsageRepository couponUsageRepository;
 
         @Override
         public CouponResponse createCoupon(
@@ -26,6 +40,11 @@ public class CouponServiceImpl implements CouponService {
 
                 if (couponRepository.existsByCodeIgnoreCase(request.getCode())) {
                         throw new RuntimeException("Coupon code already exists");
+                }
+                if (request == null || request.getCode() == null || request.getCode().isBlank()) {
+
+                        throw new ValidationException(
+                                        "Coupon code is required");
                 }
 
                 String code = request.getCode().trim().toUpperCase();
@@ -41,7 +60,7 @@ public class CouponServiceImpl implements CouponService {
                                 code);
 
                 Coupon coupon = Coupon.builder()
-                                .code(request.getCode())
+                                .code(code)
                                 .discountType(request.getDiscountType())
                                 .discountValue(request.getDiscountValue())
                                 .maxDiscount(request.getMaxDiscount())
@@ -85,6 +104,11 @@ public class CouponServiceImpl implements CouponService {
                 Coupon coupon = couponRepository.findById(id)
                                 .orElseThrow(
                                                 () -> new RuntimeException("Coupon not found"));
+                if (request == null || request.getCode() == null || request.getCode().isBlank()) {
+
+                        throw new ValidationException(
+                                        "Coupon code is required");
+                }
                 String code = request.getCode().trim().toUpperCase();
                 validateCoupon(
                                 request.getDiscountType(),
@@ -105,7 +129,7 @@ public class CouponServiceImpl implements CouponService {
                                         "Coupon code already exists");
                 }
 
-                coupon.setCode(request.getCode());
+                coupon.setCode(code);
                 coupon.setDiscountType(request.getDiscountType());
                 coupon.setDiscountValue(request.getDiscountValue());
                 coupon.setMaxDiscount(request.getMaxDiscount());
@@ -242,27 +266,196 @@ public class CouponServiceImpl implements CouponService {
                 }
         }
 
+        @Override
+        @Transactional(propagation = Propagation.MANDATORY)
+        public CouponEvaluation reserveForOrder(
+                        String code,
+                        Long userId,
+                        Long orderId,
+                        BigDecimal subtotal) {
+
+                if (code == null || code.isBlank()) {
+                        throw new ValidationException(
+                                        "Coupon code is required");
+                }
+
+                if (userId == null || userId <= 0) {
+                        throw new ValidationException(
+                                        "Invalid user id");
+                }
+
+                if (orderId == null || orderId <= 0) {
+                        throw new ValidationException(
+                                        "Invalid order id");
+                }
+
+                if (subtotal == null
+                                || subtotal.compareTo(BigDecimal.ZERO) <= 0) {
+
+                        throw new ValidationException(
+                                        "Subtotal must be greater than 0");
+                }
+
+                if (couponUsageRepository.existsByOrderId(orderId)) {
+                        throw new ValidationException(
+                                        "Order already has a coupon");
+                }
+
+                String normalizedCode = code.trim().toUpperCase();
+
+                Coupon coupon = couponRepository
+                                .findByCodeForUpdate(normalizedCode)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Coupon not found"));
+
+                validateCouponUsable(coupon);
+
+                validateMinimumOrder(coupon, subtotal);
+
+                validateUsageLimit(
+                                coupon,
+                                userId);
+
+                BigDecimal discount = calculateDiscount(
+                                coupon,
+                                subtotal);
+
+                CouponUsage usage = CouponUsage.builder()
+                                .coupon(coupon)
+                                .userId(userId)
+                                .orderId(orderId)
+                                .discountAmount(discount)
+                                .status(
+                                                CouponUsageStatus.ACTIVE)
+                                .build();
+
+                couponUsageRepository.save(usage);
+
+                return new CouponEvaluation(
+                                coupon.getId(),
+                                coupon.getCode(),
+                                discount);
+        }
+
         private void validateCouponUsable(Coupon coupon) {
 
                 Instant now = Instant.now();
 
                 if (!coupon.isActive()) {
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Coupon is not active");
                 }
 
                 if (coupon.getStartsAt() != null
-                                && now.isBefore(coupon.getStartsAt())) {
+                                && now.isBefore(
+                                                coupon.getStartsAt())) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Coupon is not effective yet");
                 }
 
                 if (coupon.getEndsAt() != null
-                                && now.isAfter(coupon.getEndsAt())) {
+                                && !now.isBefore(
+                                                coupon.getEndsAt())) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Coupon has expired");
                 }
+        }
+
+        private void validateMinimumOrder(Coupon coupon, BigDecimal subtotal) {
+
+                if (coupon.getMinOrderAmount() != null && subtotal.compareTo(coupon.getMinOrderAmount()) < 0) {
+                        throw new ValidationException("Order does not meet minimum amount");
+                }
+        }
+
+        private void validateUsageLimit(Coupon coupon, Long userId) {
+
+                long totalUsed = couponUsageRepository
+                                .countByCouponIdAndStatus(
+                                                coupon.getId(),
+                                                CouponUsageStatus.ACTIVE);
+
+                if (coupon.getUsageLimit() != null
+                                && totalUsed >= coupon.getUsageLimit()) {
+
+                        throw new ValidationException(
+                                        "Coupon usage limit has been reached");
+                }
+
+                long userUsed = couponUsageRepository
+                                .countByCouponIdAndUserIdAndStatus(
+                                                coupon.getId(),
+                                                userId,
+                                                CouponUsageStatus.ACTIVE);
+
+                if (coupon.getUsagePerUser() != null
+                                && userUsed >= coupon.getUsagePerUser()) {
+
+                        throw new ValidationException(
+                                        "User has reached coupon usage limit");
+                }
+        }
+
+        private BigDecimal calculateDiscount(
+                        Coupon coupon,
+                        BigDecimal subtotal) {
+
+                BigDecimal discount;
+
+                if (coupon.getDiscountType() == DiscountType.PERCENT) {
+
+                        discount = subtotal
+                                        .multiply(coupon.getDiscountValue())
+                                        .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+
+                } else {
+
+                        discount = coupon.getDiscountValue();
+                }
+
+                if (coupon.getMaxDiscount() != null
+                                && discount.compareTo(
+                                                coupon.getMaxDiscount()) > 0) {
+
+                        discount = coupon.getMaxDiscount();
+                }
+
+                if (discount.compareTo(subtotal) > 0) {
+                        discount = subtotal;
+                }
+
+                if (discount.compareTo(
+                                BigDecimal.ZERO) < 0) {
+
+                        discount = BigDecimal.ZERO;
+                }
+
+                return discount.setScale(
+                                2,
+                                RoundingMode.HALF_UP);
+        }
+
+        @Override
+        @Transactional(propagation = Propagation.MANDATORY)
+        public void releaseForOrder(Long orderId) {
+
+                CouponUsage usage = couponUsageRepository
+                                .findByOrderId(orderId)
+                                .orElse(null);
+
+                if (usage == null) {
+                        return;
+                }
+
+                if (usage.getStatus() == CouponUsageStatus.RELEASED) {
+                        return;
+                }
+
+                usage.setStatus(
+                                CouponUsageStatus.RELEASED);
+
+                couponUsageRepository.save(usage);
         }
 }

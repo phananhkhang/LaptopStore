@@ -22,6 +22,8 @@ import org.akira.laptopstore.order.repository.OrderRepository;
 import org.akira.laptopstore.order.repository.OrderStatusHistoryRepository;
 import org.akira.laptopstore.order.service.OrderService;
 import org.akira.laptopstore.order.util.OrderCodeGenerator;
+import org.akira.laptopstore.promotion.dto.response.CouponEvaluation;
+import org.akira.laptopstore.promotion.service.CouponService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,7 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor 
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -48,7 +50,8 @@ public class OrderServiceImpl implements OrderService {
     private final CartService cartService;
     private final CatalogCheckoutService catalogCheckoutService;
     private final InventoryService inventoryService;
-
+    // Dong them
+    private final CouponService couponService;
 
     @Override
     @Transactional
@@ -58,7 +61,14 @@ public class OrderServiceImpl implements OrderService {
 
         String idempotencyKey = normalize(request.getIdempotencyKey());
         if (idempotencyKey != null) { // Chỉ kiem tra trung neu co idempotencyKey
-            Order previous = orderRepository.findByIdempotencyKeyAndUserId(idempotencyKey, userId).orElse(null); // Tim don cu cua user co cung idempotencyKey
+            Order previous = orderRepository.findByIdempotencyKeyAndUserId(idempotencyKey, userId).orElse(null); // Tim
+                                                                                                                 // don
+                                                                                                                 // cu
+                                                                                                                 // cua
+                                                                                                                 // user
+                                                                                                                 // co
+                                                                                                                 // cung
+                                                                                                                 // idempotencyKey
             if (previous != null) {
                 if (!sameCheckoutPayload(previous, request)) { // Neu don cu khac voi payload hien tai, thi bao loi
                     throw new ValidationException("Idempotency-Key was already used with a different checkout payload");
@@ -74,8 +84,8 @@ public class OrderServiceImpl implements OrderService {
         // Khóa variant, xác minh còn bán và lấy snapshot giá hiện tại.
         Map<Long, CheckoutVariantSnapshot> variants = catalogCheckoutService
                 .lockAndGetSellableVariants(cart.getItems().stream()
-                                                    .map(CartSnapshot.Item::getVariantId)
-                                                    .toList())
+                        .map(CartSnapshot.Item::getVariantId)
+                        .toList())
                 .stream().collect(Collectors.toMap(CheckoutVariantSnapshot::getVariantId, variant -> variant));
 
         // Tính lại tiền hàng ở server, không dùng giá do frontend gửi lên.
@@ -92,6 +102,30 @@ public class OrderServiceImpl implements OrderService {
                 .recipientName(request.getRecipientName().trim()).recipientPhone(request.getRecipientPhone().trim())
                 .shippingAddress(request.getShippingAddress().trim()).couponCodeSnapshot(null)
                 .idempotencyKey(idempotencyKey).build());
+        //đông thêm vào
+        if (!isBlank(
+                request.getCouponCode())) {
+
+            CouponEvaluation evaluation = couponService.reserveForOrder(
+                    request.getCouponCode(),
+                    userId,
+                    order.getId(),
+                    subtotal);
+
+            discount = evaluation.discountAmount();
+
+            BigDecimal total = subtotal
+                    .subtract(discount)
+                    .add(shippingFee);
+
+            order.setDiscountAmount(discount);
+            order.setTotalAmount(total);
+
+            order.setCouponCodeSnapshot(
+                    evaluation.couponCode());
+
+            orderRepository.save(order);
+        }
         // Lưu snapshot sản phẩm để dữ liệu đơn không đổi khi catalog được cập nhật.
         List<OrderItem> items = cart.getItems().stream().map(cartItem -> {
             CheckoutVariantSnapshot variant = requireVariant(variants, cartItem.getVariantId());
@@ -107,7 +141,8 @@ public class OrderServiceImpl implements OrderService {
         inventoryService.deductForOrder(order.getId(), userId, cart.getItems().stream()
                 .map(item -> new OrderStockDeduction(item.getVariantId(), item.getQuantity())).toList());
         // Chỉ xóa cart sau khi đã tạo order và trừ tồn thành công.
-        cartService.clearPurchasedItems(userId, cart.getItems().stream().map(CartSnapshot.Item::getCartItemId).toList());
+        cartService.clearPurchasedItems(userId,
+                cart.getItems().stream().map(CartSnapshot.Item::getCartItemId).toList());
 
         return orderMapper.toResponse(order, items, List.of(history));
     }
@@ -161,9 +196,9 @@ public class OrderServiceImpl implements OrderService {
                 || isBlank(request.getShippingAddress())) {
             throw new ValidationException("Recipient name, phone and shipping address are required");
         }
-        if (!isBlank(request.getCouponCode())) {
-            throw new ValidationException("Coupon checkout is not available yet");
-        }
+        // if (!isBlank(request.getCouponCode())) {
+        // throw new ValidationException("Coupon checkout is not available yet");
+        // }
     }
 
     private void requireCheckoutDependencies() {
