@@ -24,11 +24,17 @@ export const OrderDetailPage = () => {
       <p>Trạng thái: <strong>{order.status}</strong></p>
       <p>Người nhận: {order.recipientName} · {order.recipientPhone}</p>
       <p>Địa chỉ: {order.shippingAddress}</p>
+      {order.couponCodeSnapshot && <p>Mã giảm giá áp dụng: <strong>{order.couponCodeSnapshot}</strong></p>}
       <section>
         <h2>Sản phẩm</h2>
-        {order.items.map((item) => <p key={item.id}>{item.productName} — {item.quantity} × {money(item.unitPrice)} = {money(item.lineTotal)}</p>)}
+        {order.items.map((item) => <p key={item.id}>{item.productName} ({item.variantName}) — {item.quantity} × {money(item.unitPrice)} = {money(item.lineTotal)}</p>)}
       </section>
-      <p><strong>Tổng thanh toán: {money(order.totalAmount)}</strong></p>
+      <section style={{ marginTop: '1rem' }}>
+        <p>Tạm tính: {money(order.subtotal)}</p>
+        <p>Giảm giá: -{money(order.discountAmount)}</p>
+        <p>Phí vận chuyển: {money(order.shippingFee)}</p>
+        <p><strong>Tổng thanh toán: {money(order.totalAmount)}</strong></p>
+      </section>
       <section>
         <h2>Lịch sử trạng thái</h2>
         {order.statusHistories.map((history) => <p key={history.id}>{history.toStatus} · {new Date(history.changedAt).toLocaleString('vi-VN')}</p>)}

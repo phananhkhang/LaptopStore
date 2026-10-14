@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -25,29 +26,19 @@ public class CatalogCheckoutServiceImpl implements CatalogCheckoutService {
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public List<CheckoutVariantSnapshot> lockAndGetSellableVariants(Collection<Long> variantIds) {
-        if (variantIds == null || variantIds.isEmpty() || variantIds.stream().anyMatch(id -> id == null || id <= 0)) {
-            throw new ValidationException("variantIds must contain positive IDs");
-        }
-        List<Long> orderedIds = variantIds.stream().distinct().sorted().toList();
+        List<Long> orderedIds = validateAndOrderIds(variantIds);
         List<ProductVariant> variants = productVariantRepository.findAllByIdInForUpdate(orderedIds);
-        if (variants.size() != orderedIds.size()) {
-            throw new ResourceNotFoundException("One or more product variants were not found");
-        }
+        return toSellableSnapshots(orderedIds, variants);
+    }
 
-        List<CheckoutVariantSnapshot> snapshots = new ArrayList<>(variants.size());
-        for (ProductVariant variant : variants) {
-            // Kiểm tra xem biến thể có sẵn sàng để bán không
-            if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())
-                    || variant.getProduct() == null
-                    || !"ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus())) {
-                throw new ValidationException("Product variant is not available: " + variant.getId());
-            }
-            snapshots.add(new CheckoutVariantSnapshot(
-                    variant.getId(), variant.getProduct().getId(), variant.getProduct().getName(),
-                    VariantUtils.formatVariantName(variant.getRam(), variant.getStorage(), variant.getColor()),
-                    variant.getSku(), variant.getPrice()));
-        }
-        return List.copyOf(snapshots);
+    @Override
+    @Transactional(readOnly = true)
+    public List<CheckoutVariantSnapshot> getSellableVariants(Collection<Long> variantIds) {
+        List<Long> orderedIds = validateAndOrderIds(variantIds);
+        List<ProductVariant> variants = productVariantRepository.findAllById(orderedIds).stream()
+                .sorted(Comparator.comparing(ProductVariant::getId))
+                .toList();
+        return toSellableSnapshots(orderedIds, variants);
     }
 
     @Override
@@ -83,5 +74,39 @@ public class CatalogCheckoutServiceImpl implements CatalogCheckoutService {
 
         variant.setQuantity(after);
         return new StockChangeResult(variantId, before, after);
+    }
+
+    private List<Long> validateAndOrderIds(Collection<Long> variantIds) {
+        if (variantIds == null || variantIds.isEmpty() || variantIds.stream().anyMatch(id -> id == null || id <= 0)) {
+            throw new ValidationException("variantIds must contain positive IDs");
+        }
+        return variantIds.stream().distinct().sorted().toList();
+    }
+
+    private List<CheckoutVariantSnapshot> toSellableSnapshots(List<Long> orderedIds, List<ProductVariant> variants) {
+        if (variants.size() != orderedIds.size()) {
+            throw new ResourceNotFoundException("One or more product variants were not found");
+        }
+
+        List<CheckoutVariantSnapshot> snapshots = new ArrayList<>(variants.size());
+        for (ProductVariant variant : variants) {
+            // Kiểm tra xem biến thể có sẵn sàng để bán không
+            if (!"ACTIVE".equalsIgnoreCase(variant.getStatus())
+                    || variant.getProduct() == null
+                    || !"ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus())) {
+                throw new ValidationException("Product variant is not available: " + variant.getId());
+            }
+            int availableQuantity = variant.getQuantity() == null ? 0 : variant.getQuantity();
+            snapshots.add(new CheckoutVariantSnapshot(
+                    variant.getId(),
+                    variant.getProduct().getId(),
+                    variant.getProduct().getName(),
+                    VariantUtils.formatVariantName(variant.getRam(), variant.getStorage(), variant.getColor()),
+                    variant.getSku(),
+                    variant.getPrice(),
+                    availableQuantity
+            ));
+        }
+        return List.copyOf(snapshots);
     }
 }

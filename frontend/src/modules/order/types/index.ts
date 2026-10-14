@@ -1,5 +1,7 @@
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPING' | 'DELIVERED' | 'CANCELLED' | 'RETURNED';
 
+export type CheckoutPaymentMethod = 'COD' | 'VNPAY';
+
 export interface OrderSummary {
   id: number;
   orderCode: string;
@@ -41,6 +43,41 @@ export interface OrderDetail extends OrderSummary {
   items: OrderItem[];
   statusHistories: OrderStatusHistory[];
   updatedAt: string;
+}
+
+export interface CheckoutPreviewRequest {
+  addressId?: number | null;
+  recipientName?: string;
+  recipientPhone?: string;
+  shippingAddress?: string;
+  paymentMethod?: CheckoutPaymentMethod;
+  couponCode?: string;
+}
+
+export interface CheckoutPreviewResponse {
+  addressId: number | null;
+  recipientName: string | null;
+  recipientPhone: string | null;
+  shippingAddress: string | null;
+  paymentMethod: CheckoutPaymentMethod;
+  couponCode: string | null;
+  subtotal: number;
+  discountAmount: number;
+  shippingFee: number;
+  totalAmount: number;
+  totalItems: number;
+  items: OrderItem[];
+}
+
+export interface CreateOrderRequest {
+  addressId?: number | null;
+  recipientName?: string;
+  recipientPhone?: string;
+  shippingAddress?: string;
+  paymentMethod?: CheckoutPaymentMethod;
+  couponCode?: string;
+  note?: string;
+  idempotencyKey?: string;
 }
 
 export interface PageResponse<T> {

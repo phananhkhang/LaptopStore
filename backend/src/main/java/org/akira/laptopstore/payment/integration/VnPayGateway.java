@@ -22,16 +22,16 @@ public class VnPayGateway {
             DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
                     .withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
 
-    @Value("${vnpay.tmn-code}")
+    @Value("${vnpay.tmn-code:DEMO_TMN_CODE}")
     private String tmnCode;
 
-    @Value("${vnpay.hash-secret}")
+    @Value("${vnpay.hash-secret:DEMO_HASH_SECRET_KEY_FOR_SANDBOX}")
     private String hashSecret;
 
-    @Value("${vnpay.pay-url}")
+    @Value("${vnpay.pay-url:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}")
     private String payUrl;
 
-    @Value("${vnpay.return-url}")
+    @Value("${vnpay.return-url:http://localhost:5173/payment/vnpay-return}")
     private String returnUrl;
 
     public String createPaymentUrl(

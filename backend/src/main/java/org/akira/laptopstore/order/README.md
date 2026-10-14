@@ -1,62 +1,42 @@
-# Module order — Đơn hàng
+# Module order — Đơn hàng & Checkout
 
-**Owner đề xuất:** C theo [bảng ownership](../../../../../../../docs/architecture/03-ownership.md). Chưa gán thành viên thật. **Trạng thái:** đã có query foundation cho lịch sử và chi tiết đơn; checkout và workflow ghi đơn còn chờ contract liên module.
+**Owner:** Phan Anh Khang (C theo [bảng ownership](../../../../../../../docs/architecture/03-ownership.md)).
+**Trạng thái (Tuần 4):** Đã hoàn thiện luồng Checkout service (chọn `addressId` từ sổ địa chỉ hoặc nhập thông tin nhận hàng, validate `paymentMethod`, tính `subtotal`/`discountAmount`/`shippingFee`/`totalAmount`, validate tồn kho và mã giảm giá `couponCode` trước khi tạo đơn, trừ kho atomic, xóa mục đã mua khỏi giỏ hàng và hỗ trợ `Idempotency-Key`) cùng API preview checkout và giao diện Checkout UI.
 
 ## Trách nhiệm
 
-Điều phối checkout, snapshot giá/địa chỉ, trạng thái đơn, hủy và lịch sử. Sở hữu điểm nhận kết quả thanh toán do payment xác minh.
+Điều phối checkout, snapshot giá/địa chỉ/mã giảm giá, trạng thái đơn và lịch sử. Cung cấp hợp đồng truy vấn/xác thực trạng thái đơn (`OrderQueryService`) cho module `payment` và `review`.
 
-## Cần viết gì
+## Thành phần chính
 
-| Thành phần | Class định hướng |
+| Thành phần | Class |
 |---|---|
-| Entity | Order, OrderItem, OrderStatusHistory |
-| Repository | OrderRepository, OrderItemRepository, OrderStatusHistoryRepository |
-| Service | OrderService, OrderPaymentService, OrderQueryService |
-| Controller | OrderController, StaffOrderController |
-| Request | PlaceOrderRequest, ChangeOrderStatusRequest |
-| Response/contract | OrderResponse, OrderSummaryResponse, OrderPaymentSnapshot, PurchasedItemView |
-
-Đây là danh sách gợi ý theo use case, không bắt buộc tạo đủ class trước khi có nhu cầu.
-
-DTO request/response dùng class với getter theo chuẩn JavaBean (`getOrderCode()`, `getItems()`, ...), constructor rỗng và constructor đầy đủ. Các tên trường JSON và constraint validation được giữ nguyên.
+| Entity | `Order`, `OrderItem`, `OrderStatusHistory` |
+| Enum | `OrderStatus`, `CheckoutPaymentMethod` |
+| Repository | `OrderRepository`, `OrderItemRepository`, `OrderStatusHistoryRepository` |
+| Service | `OrderService`, `OrderServiceImpl`, `OrderQueryService`, `OrderQueryServiceImpl` |
+| Controller | `OrderController` |
+| Request DTO | `CreateOrderRequest`, `CheckoutPreviewRequest`, `UpdateOrderStatusRequest` |
+| Response DTO | `OrderResponse`, `OrderSummaryResponse`, `OrderPageResponse`, `OrderItemResponse`, `OrderStatusHistoryResponse`, `CheckoutPreviewResponse`, `OrderItemReviewInfo` |
 
 ## Dữ liệu và phụ thuộc
 
-**Dữ liệu sở hữu:** orders, order_items, order_status_history.
+**Dữ liệu sở hữu:** `orders`, `order_items`, `order_status_history`.
 
-**Được gọi:** user.service, cart.service, catalog.service, inventory.service, promotion.service. Không gọi payment để tránh vòng phụ thuộc. Không gọi repository/entity module khác. Xem [allowlist và contract](../../../../../../../docs/architecture/04-dependencies.md).
+**Được gọi:** `user.service` (`AddressService`), `cart.service` (`CartService`), `catalog.service` (`CatalogCheckoutService`), `inventory.service` (`InventoryService`), `promotion.service` (`CouponService`). Không gọi `payment` để tránh vòng phụ thuộc. Không gọi repository/entity module khác. Xem [allowlist và contract](../../../../../../../docs/architecture/04-dependencies.md).
 
-## API hiện có
+## API đã triển khai
 
 - `GET /api/v1/me/orders`: danh sách đơn của người đang đăng nhập.
 - `GET /api/v1/me/orders/{orderId}`: chi tiết đơn thuộc người đang đăng nhập; đơn của người khác trả 404.
-- `GET /api/v1/staff/orders`: danh sách đơn cho STAFF/ADMIN.
-
-Hai endpoint danh sách nhận `page`, `size`, `sort` của Spring Data và trả `content`, `totalElements`, `totalPages`, `number`, `size`.
-
-Mapper chỉ chuyển dữ liệu do module order sở hữu. `lineTotal` được tính từ snapshot `unitPrice × quantity`; tổng tiền order vẫn đọc từ snapshot đã lưu.
-
-Chưa mở endpoint tạo đơn, hủy đơn hay đổi trạng thái. Các thao tác này phải được triển khai cùng contract cart/catalog/inventory/promotion và transaction checkout ở luồng bên dưới.
+- `GET /api/v1/staff/orders`: danh sách đơn cho `STAFF`/`ADMIN`.
+- `POST /api/v1/me/orders/preview`: xem trước kết quả tính toán checkout (`subtotal`, `discountAmount`, `shippingFee`, `totalAmount`, địa chỉ nhận hàng, phương thức thanh toán, kiểm tra tồn kho và điều kiện coupon) mà không ghi DB.
+- `POST /api/v1/me/orders`: tạo đơn hàng từ giỏ hàng hiện tại của user, hỗ trợ header `Idempotency-Key`.
 
 ## Bất biến và ràng buộc
 
-- Một transaction bao trùm order/items/history, trừ tồn/ledger, lượt coupon và dọn giỏ. Không gọi HTTP cổng thanh toán trong transaction này.
-- Giá, phí, giảm giá và tổng tính ở server. Order snapshot người nhận/điện thoại/địa chỉ; OrderItem snapshot productName, SKU, variantName, unitPrice và lineTotal để lịch sử không đổi khi dữ liệu gốc sửa.
-- Checkout hỗ trợ Idempotency-Key ràng buộc user; cùng key và payload trả đơn cũ, khác payload trả 409.
-- Khóa order trước khi chuyển trạng thái/hủy. Chỉ hoàn tồn/coupon một lần khi chuyển thành CANCELLED.
-- Order.paymentStatus chỉ là bản phản chiếu cho workflow; chỉ OrderPaymentService cập nhật theo kết quả đã xác minh từ payment. Không có HTTP endpoint tự đánh dấu đã trả tiền.
-- Bản đầu không hủy tự động đơn online đã PAID; cần quy trình hoàn tiền riêng. Không hồi sinh đơn CANCELLED khi nhận thanh toán trễ.
-
-## Luồng triển khai điển hình
-
-Khóa giỏ → kiểm tra địa chỉ → catalog khóa variants và chốt snapshot giá/SKU/trạng thái → khóa/kiểm tra coupon → tạo order để có ID → inventory khóa InventoryStock và trừ tồn/ghi ledger → hoàn tất items/history/coupon → dọn giỏ → commit. Order tạo sớm vẫn rollback nếu bước sau thất bại; không trả đơn ra ngoài trước commit.
-
-## Bàn giao và kiểm tra
-
-Các ca cần chứng minh: rollback giữa checkout; hai người mua SKU cuối; request lặp; hủy lặp; chuyển trạng thái sai; khách đọc đơn người khác; callback thanh toán chạy đua với hủy. Cập nhật API, migration và test module cùng PR; ghi kết quả thật. Owner phối hợp người dùng contract khi đổi input/output/lỗi.
-
-## Quy tắc các tầng và liên kết kiến trúc
-
-Quy tắc và ràng buộc chi tiết cho từng tầng (`controller`, `service`, `repository`, `entity`, `dto`, `mapper`) tuân thủ theo [luật tầng](../../../../../../../docs/architecture/02-structure-and-layers.md) và [luồng nghiệp vụ](../../../../../../../docs/architecture/06-business-flows.md).
-
+- Một transaction bao trùm `order`/`items`/`history`, trừ tồn/ledger (`InventoryService.deductForOrder`), lượt sử dụng coupon (`CouponService.reserveForOrder`) và dọn giỏ (`CartService.clearPurchasedItems`).
+- Hỗ trợ chọn địa chỉ qua `addressId` (kiểm tra quyền sở hữu qua `AddressService.getAddressById` và ghép snapshot địa chỉ) hoặc truyền trực tiếp `recipientName`, `recipientPhone`, `shippingAddress`.
+- Validate phương thức thanh toán (`COD`, `VNPAY`), kiểm tra tồn kho khả dụng (`availableQuantity`) của từng biến thể và hiệu lực/điều kiện mã giảm giá (`CouponService.evaluateForCheckout`) trước khi lưu `Order`.
+- Giá, phí vận chuyển, giảm giá và tổng thanh toán được tính hoàn toàn ở server.
+- Hỗ trợ `Idempotency-Key` ràng buộc theo user; cùng key và cùng payload trả lại đơn đã tạo, khác payload trả lỗi.

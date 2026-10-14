@@ -2,11 +2,11 @@ package org.akira.laptopstore.promotion.service;
 
 import org.akira.laptopstore.promotion.dto.request.CreateCouponRequest;
 import org.akira.laptopstore.promotion.dto.request.UpdateCouponRequest;
+import org.akira.laptopstore.promotion.dto.response.CouponEvaluation;
 import org.akira.laptopstore.promotion.dto.response.CouponResponse;
 
-import java.util.List;
 import java.math.BigDecimal;
-import org.akira.laptopstore.promotion.dto.response.CouponEvaluation;
+import java.util.List;
 
 public interface CouponService {
 
@@ -19,6 +19,8 @@ public interface CouponService {
     CouponResponse updateCoupon(Long id, UpdateCouponRequest request);
 
     void deleteCoupon(Long id);
+
+    CouponEvaluation evaluateForCheckout(String code, Long userId, BigDecimal subtotal);
 
     CouponEvaluation reserveForOrder(String code, Long userId, Long orderId, BigDecimal subtotal);
 

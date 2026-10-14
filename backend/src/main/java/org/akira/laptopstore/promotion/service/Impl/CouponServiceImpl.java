@@ -1,29 +1,25 @@
 package org.akira.laptopstore.promotion.service.Impl;
 
 import lombok.RequiredArgsConstructor;
+import org.akira.laptopstore.exception.ResourceNotFoundException;
+import org.akira.laptopstore.exception.ValidationException;
 import org.akira.laptopstore.promotion.dto.request.CreateCouponRequest;
 import org.akira.laptopstore.promotion.dto.request.UpdateCouponRequest;
+import org.akira.laptopstore.promotion.dto.response.CouponEvaluation;
 import org.akira.laptopstore.promotion.dto.response.CouponResponse;
 import org.akira.laptopstore.promotion.entity.Coupon;
+import org.akira.laptopstore.promotion.entity.CouponUsage;
+import org.akira.laptopstore.promotion.enums.CouponUsageStatus;
 import org.akira.laptopstore.promotion.enums.DiscountType;
 import org.akira.laptopstore.promotion.repository.CouponRepository;
 import org.akira.laptopstore.promotion.repository.CouponUsageRepository;
 import org.akira.laptopstore.promotion.service.CouponService;
 import org.springframework.stereotype.Service;
-
-import org.akira.laptopstore.promotion.entity.CouponUsage;
-import org.akira.laptopstore.promotion.enums.CouponUsageStatus;
-import org.akira.laptopstore.promotion.dto.response.CouponEvaluation;
-
-import org.akira.laptopstore.exception.ResourceNotFoundException;
-import org.akira.laptopstore.exception.ValidationException;
-
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.RoundingMode;
-
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.List;
 
@@ -38,13 +34,11 @@ public class CouponServiceImpl implements CouponService {
         public CouponResponse createCoupon(
                         CreateCouponRequest request) {
 
+                if (request == null || request.getCode() == null || request.getCode().isBlank()) {
+                        throw new ValidationException("Coupon code is required");
+                }
                 if (couponRepository.existsByCodeIgnoreCase(request.getCode())) {
                         throw new RuntimeException("Coupon code already exists");
-                }
-                if (request == null || request.getCode() == null || request.getCode().isBlank()) {
-
-                        throw new ValidationException(
-                                        "Coupon code is required");
                 }
 
                 String code = request.getCode().trim().toUpperCase();
@@ -105,9 +99,7 @@ public class CouponServiceImpl implements CouponService {
                                 .orElseThrow(
                                                 () -> new RuntimeException("Coupon not found"));
                 if (request == null || request.getCode() == null || request.getCode().isBlank()) {
-
-                        throw new ValidationException(
-                                        "Coupon code is required");
+                        throw new ValidationException("Coupon code is required");
                 }
                 String code = request.getCode().trim().toUpperCase();
                 validateCoupon(
@@ -153,6 +145,107 @@ public class CouponServiceImpl implements CouponService {
                                                 () -> new RuntimeException("Coupon not found"));
 
                 couponRepository.delete(coupon);
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public CouponEvaluation evaluateForCheckout(
+                        String code,
+                        Long userId,
+                        BigDecimal subtotal) {
+
+                if (code == null || code.isBlank()) {
+                        throw new ValidationException("Coupon code is required");
+                }
+                if (userId == null || userId <= 0) {
+                        throw new ValidationException("Invalid user id");
+                }
+                if (subtotal == null || subtotal.compareTo(BigDecimal.ZERO) <= 0) {
+                        throw new ValidationException("Subtotal must be greater than 0");
+                }
+
+                String normalizedCode = code.trim().toUpperCase();
+                Coupon coupon = couponRepository
+                                .findByCodeIgnoreCase(normalizedCode)
+                                .orElseThrow(() -> new ResourceNotFoundException("Coupon not found"));
+
+                validateCouponUsable(coupon);
+                validateMinimumOrder(coupon, subtotal);
+                validateUsageLimit(coupon, userId);
+
+                BigDecimal discount = calculateDiscount(coupon, subtotal);
+                return new CouponEvaluation(coupon.getId(), coupon.getCode(), discount);
+        }
+
+        @Override
+        @Transactional(propagation = Propagation.MANDATORY)
+        public CouponEvaluation reserveForOrder(
+                        String code,
+                        Long userId,
+                        Long orderId,
+                        BigDecimal subtotal) {
+
+                if (code == null || code.isBlank()) {
+                        throw new ValidationException(
+                                        "Coupon code is required");
+                }
+
+                if (userId == null || userId <= 0) {
+                        throw new ValidationException(
+                                        "Invalid user id");
+                }
+
+                if (orderId == null || orderId <= 0) {
+                        throw new ValidationException(
+                                        "Invalid order id");
+                }
+
+                if (subtotal == null
+                                || subtotal.compareTo(BigDecimal.ZERO) <= 0) {
+
+                        throw new ValidationException(
+                                        "Subtotal must be greater than 0");
+                }
+
+                if (couponUsageRepository.existsByOrderId(orderId)) {
+                        throw new ValidationException(
+                                        "Order already has a coupon");
+                }
+
+                String normalizedCode = code.trim().toUpperCase();
+
+                Coupon coupon = couponRepository
+                                .findByCodeForUpdate(normalizedCode)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Coupon not found"));
+
+                validateCouponUsable(coupon);
+
+                validateMinimumOrder(coupon, subtotal);
+
+                validateUsageLimit(
+                                coupon,
+                                userId);
+
+                BigDecimal discount = calculateDiscount(
+                                coupon,
+                                subtotal);
+
+                CouponUsage usage = CouponUsage.builder()
+                                .coupon(coupon)
+                                .userId(userId)
+                                .orderId(orderId)
+                                .discountAmount(discount)
+                                .status(
+                                                CouponUsageStatus.ACTIVE)
+                                .build();
+
+                couponUsageRepository.save(usage);
+
+                return new CouponEvaluation(
+                                coupon.getId(),
+                                coupon.getCode(),
+                                discount);
         }
 
         private CouponResponse toResponse(Coupon coupon) {
@@ -264,77 +357,6 @@ public class CouponServiceImpl implements CouponService {
                         throw new RuntimeException(
                                         "Coupon code must be 3-30 characters and contain only A-Z, 0-9, _ or -");
                 }
-        }
-
-        @Override
-        @Transactional(propagation = Propagation.MANDATORY)
-        public CouponEvaluation reserveForOrder(
-                        String code,
-                        Long userId,
-                        Long orderId,
-                        BigDecimal subtotal) {
-
-                if (code == null || code.isBlank()) {
-                        throw new ValidationException(
-                                        "Coupon code is required");
-                }
-
-                if (userId == null || userId <= 0) {
-                        throw new ValidationException(
-                                        "Invalid user id");
-                }
-
-                if (orderId == null || orderId <= 0) {
-                        throw new ValidationException(
-                                        "Invalid order id");
-                }
-
-                if (subtotal == null
-                                || subtotal.compareTo(BigDecimal.ZERO) <= 0) {
-
-                        throw new ValidationException(
-                                        "Subtotal must be greater than 0");
-                }
-
-                if (couponUsageRepository.existsByOrderId(orderId)) {
-                        throw new ValidationException(
-                                        "Order already has a coupon");
-                }
-
-                String normalizedCode = code.trim().toUpperCase();
-
-                Coupon coupon = couponRepository
-                                .findByCodeForUpdate(normalizedCode)
-                                .orElseThrow(() -> new ResourceNotFoundException(
-                                                "Coupon not found"));
-
-                validateCouponUsable(coupon);
-
-                validateMinimumOrder(coupon, subtotal);
-
-                validateUsageLimit(
-                                coupon,
-                                userId);
-
-                BigDecimal discount = calculateDiscount(
-                                coupon,
-                                subtotal);
-
-                CouponUsage usage = CouponUsage.builder()
-                                .coupon(coupon)
-                                .userId(userId)
-                                .orderId(orderId)
-                                .discountAmount(discount)
-                                .status(
-                                                CouponUsageStatus.ACTIVE)
-                                .build();
-
-                couponUsageRepository.save(usage);
-
-                return new CouponEvaluation(
-                                coupon.getId(),
-                                coupon.getCode(),
-                                discount);
         }
 
         private void validateCouponUsable(Coupon coupon) {
