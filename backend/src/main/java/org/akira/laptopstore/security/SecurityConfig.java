@@ -20,6 +20,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 @Configuration
@@ -31,6 +32,11 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint authenticationEntryPoint;
     private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    @Bean
+    public SecureRandom secureRandom() {
+        return new SecureRandom();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
