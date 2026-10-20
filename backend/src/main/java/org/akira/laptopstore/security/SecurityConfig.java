@@ -71,7 +71,7 @@ public class SecurityConfig {
                         // Authenticated endpoints
                         .requestMatchers("/api/v1/me/**").authenticated()
                         .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated()                
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

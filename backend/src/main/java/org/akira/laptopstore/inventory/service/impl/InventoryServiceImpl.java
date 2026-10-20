@@ -5,12 +5,20 @@ import lombok.RequiredArgsConstructor;
 import org.akira.laptopstore.inventory.entity.StockMovement;
 import org.akira.laptopstore.inventory.repository.StockMovementRepository;
 import org.akira.laptopstore.inventory.service.InventoryService;
+
 import org.akira.laptopstore.inventory.dto.request.OrderStockDeduction;
+import org.akira.laptopstore.inventory.dto.response.StockMovementResponse;
 
 import org.akira.laptopstore.catalog.dto.response.StockChangeResult;
+import org.akira.laptopstore.catalog.dto.response.VariantStockSnapshot;
+
 import org.akira.laptopstore.catalog.service.CatalogCheckoutService;
+import org.akira.laptopstore.catalog.service.CatalogVariantQueryService;
 
 import org.akira.laptopstore.exception.ValidationException;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.stereotype.Service;
 
@@ -19,6 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -27,16 +38,79 @@ public class InventoryServiceImpl implements InventoryService {
     private final StockMovementRepository stockMovementRepository;
     private final CatalogCheckoutService catalogCheckoutService;
 
+    // Inject thêm Query Service của Catalog để lấy tên sản phẩm & SKU
+    private final CatalogVariantQueryService catalogVariantQueryService;
+
     @Override
-    public List<StockMovement> getHistoryByVariantId(Long variantId) {
-        return stockMovementRepository.findByVariantIdOrderByCreatedAtDesc(variantId);
+    @Transactional(readOnly = true)
+    public List<StockMovementResponse> getHistoryByVariantId(Long variantId) {
+        List<StockMovement> movements = stockMovementRepository.findByVariantIdOrderByCreatedAtDesc(variantId);
+        return mapMovementsToResponses(movements);
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Page<StockMovementResponse> getHistoryByVariantId(Long variantId, Pageable pageable) {
+        Page<StockMovement> movements = stockMovementRepository.findByVariantIdOrderByCreatedAtDesc(variantId, pageable);
+        return mapMovementsToResponsesPage(movements);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<StockMovementResponse> getAllMovements(Pageable pageable) {
+        Page<StockMovement> movements = stockMovementRepository.findAllByOrderByCreatedAtDesc(pageable);
+        return mapMovementsToResponsesPage(movements);
+    }
+
+    // --- CÁC HÀM MAPPER NỘI BỘ (Chống lỗi N+1 Query khi gọi chéo Module) ---
+
+    private Page<StockMovementResponse> mapMovementsToResponsesPage(Page<StockMovement> movements) {
+        // Gom tất cả variantId lại để gọi Catalog 1 lần duy nhất (Batch Fetching)
+        Set<Long> variantIds = movements.stream().map(StockMovement::getVariantId).collect(Collectors.toSet());
+        Map<Long, VariantStockSnapshot> variantMap = catalogVariantQueryService.getVariantStocks(variantIds).stream()
+                .collect(Collectors.toMap(VariantStockSnapshot::getVariantId, v -> v));
+
+        return movements.map(movement -> buildResponse(movement, variantMap.get(movement.getVariantId())));
+    }
+
+    private List<StockMovementResponse> mapMovementsToResponses(List<StockMovement> movements) {
+        Set<Long> variantIds = movements.stream().map(StockMovement::getVariantId).collect(Collectors.toSet());
+        Map<Long, VariantStockSnapshot> variantMap = catalogVariantQueryService.getVariantStocks(variantIds).stream()
+                .collect(Collectors.toMap(VariantStockSnapshot::getVariantId, v -> v));
+
+        return movements.stream()
+                .map(movement -> buildResponse(movement, variantMap.get(movement.getVariantId())))
+                .toList();
+    }
+
+    private StockMovementResponse buildResponse(StockMovement movement, VariantStockSnapshot variant) {
+        return StockMovementResponse.builder()
+                .id(movement.getId())
+                .variantId(movement.getVariantId())
+                .sku(variant != null ? variant.getSku() : "N/A")
+                .productName(variant != null ? variant.getProductName() : "Unknown Product")
+                .variantName(variant != null ? variant.getVariantName() : "")
+                .type(movement.getType())
+                .delta(movement.getDelta())
+                .quantityBefore(movement.getQuantityBefore())
+                .quantityAfter(movement.getQuantityAfter())
+                .referenceType(movement.getReferenceType())
+                .referenceId(movement.getReferenceId())
+                .operationKey(movement.getOperationKey())
+                .note(movement.getNote())
+                .createdByUserId(movement.getCreatedByUserId())
+                .createdAt(movement.getCreatedAt())
+                .build();
+    }
+
+    // ========================================================================
+    // CÁC HÀM NGHIỆP VỤ GHI (ĐÃ ĐƯỢC CHUẨN HÓA)
+    // ========================================================================
+
+    @Override
     public StockMovement recordMovement(StockMovement movement) {
-        // Kiểm tra chống lặp bằng operation key trước khi lưu
         if (stockMovementRepository.findByOperationKey(movement.getOperationKey()).isPresent()) {
-            throw new RuntimeException("Biến động kho đã được ghi nhận trước đó!");
+            throw new ValidationException("Biến động kho đã được ghi nhận trước đó!");
         }
         return stockMovementRepository.save(movement);
     }
@@ -45,77 +119,51 @@ public class InventoryServiceImpl implements InventoryService {
     @Transactional(propagation = Propagation.MANDATORY)
     public void deductForOrder(Long orderId, Long actorId, List<OrderStockDeduction> lines) {
         validateDeductionRequest(orderId, lines);
-
         for (OrderStockDeduction line : sortedByVariant(lines)) {
             validateLine(line);
-
             String operationKey = operationKey(orderId, line.getVariantId());
-            if (alreadyDeducted(operationKey)) {
+            if (alreadyProcessed(operationKey)) {
                 continue;
             }
-
             StockChangeResult stockChange = catalogCheckoutService.deductStock(
                     line.getVariantId(), line.getQuantity());
-            stockMovementRepository.save(createSaleMovement(
-                    orderId, actorId, line, operationKey, stockChange));
+            stockMovementRepository.save(createOrderMovement(
+                    orderId, actorId, line, operationKey, stockChange, "SALE", -line.getQuantity()));
         }
-    }
-
-    private void validateDeductionRequest(Long orderId, List<OrderStockDeduction> lines) {
-        if (orderId == null || orderId <= 0 || lines == null || lines.isEmpty()) {
-            throw new ValidationException("An order and at least one stock line are required");
-        }
-    }
-
-    private List<OrderStockDeduction> sortedByVariant(List<OrderStockDeduction> lines) {
-        return lines.stream()
-                .sorted(Comparator.comparing(OrderStockDeduction::getVariantId,
-                        Comparator.nullsLast(Comparator.naturalOrder())))
-                .toList();
-    }
-
-    private void validateLine(OrderStockDeduction line) {
-        if (line == null || line.getVariantId() == null
-                || line.getQuantity() == null || line.getQuantity() <= 0) {
-            throw new ValidationException("Stock lines must contain a positive variantId and quantity");
-        }
-    }
-
-    private boolean alreadyDeducted(String operationKey) {
-        return stockMovementRepository.findByOperationKey(operationKey).isPresent();
-    }
-
-    private String operationKey(Long orderId, Long variantId) {
-        return "order-" + orderId + "-variant-" + variantId;
-    }
-
-    private StockMovement createSaleMovement(Long orderId, Long actorId, OrderStockDeduction line,
-                                            String operationKey, StockChangeResult stockChange) {
-        return StockMovement.builder()
-                .variantId(line.getVariantId())
-                .type("SALE")
-                .delta(-line.getQuantity())
-                .quantityBefore(stockChange.getQuantityBefore())
-                .quantityAfter(stockChange.getQuantityAfter())
-                .referenceType("ORDER")
-                .referenceId(orderId.toString())
-                .operationKey(operationKey)
-                .createdByUserId(actorId)
-                .build();
     }
 
     @Override
-    @Transactional // Quan trọng: Bao bọc transaction cho cả thao tác cập nhật Catalog và ghi log
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void restoreForOrder(Long orderId, Long actorId, List<OrderStockDeduction> lines) {
+        validateDeductionRequest(orderId, lines);
+        for (OrderStockDeduction line : sortedByVariant(lines)) {
+            validateLine(line);
+            // Khóa chống lặp riêng cho luồng hoàn kho
+            String operationKey = "restore-" + orderId + "-variant-" + line.getVariantId();
+            if (alreadyProcessed(operationKey)) {
+                continue;
+            }
+            // Hoàn tồn kho là CỘNG lại số lượng đã trừ (delta > 0)
+            StockChangeResult stockChange = catalogCheckoutService.adjustStock(
+                    line.getVariantId(), line.getQuantity());
+            stockMovementRepository.save(createOrderMovement(
+                    orderId, actorId, line, operationKey, stockChange, "CANCEL_RESTORE", line.getQuantity()));
+        }
+    }
+
+    @Override
+    @Transactional
     public void adjustStock(Long variantId, Integer delta, String reason, Long actorId) {
         if (delta == null || delta == 0) {
-            throw new ValidationException("Delta phải khác 0");
+            throw new ValidationException("Delta điều chỉnh kho phải khác 0");
+        }
+        if (reason == null || reason.trim().isEmpty()) {
+            throw new ValidationException("Bắt buộc phải nhập lý do khi điều chỉnh kho thủ công");
         }
 
-        // 1. Gọi sang Catalog để cập nhật quantity (CatalogCheckoutService)
         StockChangeResult stockChange = catalogCheckoutService.adjustStock(variantId, delta);
-
-        // 2. Ghi nhận log (Ledger)
         String operationKey = "adj-" + variantId + "-" + System.currentTimeMillis();
+
         StockMovement movement = StockMovement.builder()
                 .variantId(variantId)
                 .type(delta > 0 ? "IN" : "OUT")
@@ -131,4 +179,50 @@ public class InventoryServiceImpl implements InventoryService {
 
         stockMovementRepository.save(movement);
     }
+
+    // --- CÁC HÀM VALIDATE VÀ TẠO MOVEMENT HỖ TRỢ ---
+
+    private void validateDeductionRequest(Long orderId, List<OrderStockDeduction> lines) {
+        if (orderId == null || orderId <= 0 || lines == null || lines.isEmpty()) {
+            throw new ValidationException("Bắt buộc phải có thông tin đơn hàng và danh sách sản phẩm");
+        }
+    }
+
+    private List<OrderStockDeduction> sortedByVariant(List<OrderStockDeduction> lines) {
+        return lines.stream()
+                .sorted(Comparator.comparing(OrderStockDeduction::getVariantId,
+                        Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+    }
+
+    private void validateLine(OrderStockDeduction line) {
+        if (line == null || line.getVariantId() == null || line.getQuantity() == null || line.getQuantity() <= 0) {
+            throw new ValidationException("Danh sách biến thể phải chứa ID và số lượng hợp lệ (> 0)");
+        }
+    }
+
+    private boolean alreadyProcessed(String operationKey) {
+        return stockMovementRepository.findByOperationKey(operationKey).isPresent();
+    }
+
+    private String operationKey(Long orderId, Long variantId) {
+        return "order-" + orderId + "-variant-" + variantId;
+    }
+
+    private StockMovement createOrderMovement(Long orderId, Long actorId, OrderStockDeduction line,
+                                            String operationKey, StockChangeResult stockChange, 
+                                            String type, int delta) {
+        return StockMovement.builder()
+                .variantId(line.getVariantId())
+                .type(type)
+                .delta(delta)
+                .quantityBefore(stockChange.getQuantityBefore())
+                .quantityAfter(stockChange.getQuantityAfter())
+                .referenceType("ORDER")
+                .referenceId(orderId.toString())
+                .operationKey(operationKey)
+                .createdByUserId(actorId)
+                .build();
+    }
+
 }
