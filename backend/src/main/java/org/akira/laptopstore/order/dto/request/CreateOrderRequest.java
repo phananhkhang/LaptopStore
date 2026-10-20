@@ -1,25 +1,27 @@
 package org.akira.laptopstore.order.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateOrderRequest {
-    @NotBlank(message = "Recipient name is required")
+    private Long addressId;
+
     @Size(max = 100, message = "Recipient name must not exceed 100 characters")
     private String recipientName;
 
-    @NotBlank(message = "Recipient phone is required")
     @Size(max = 20, message = "Recipient phone must not exceed 20 characters")
     private String recipientPhone;
 
-    @NotBlank(message = "Shipping address is required")
     private String shippingAddress;
+
+    private String paymentMethod;
 
     private String couponCode;
 
@@ -27,4 +29,19 @@ public class CreateOrderRequest {
     private String note;
 
     private String idempotencyKey;
+
+    public CreateOrderRequest(
+            String recipientName,
+            String recipientPhone,
+            String shippingAddress,
+            String couponCode,
+            String note,
+            String idempotencyKey
+    ) {
+        this(null, recipientName, recipientPhone, shippingAddress, null, couponCode, note, idempotencyKey);
+    }
+
+    public CreateOrderRequest(Long addressId, String paymentMethod, String couponCode) {
+        this(addressId, null, null, null, paymentMethod, couponCode, null, null);
+    }
 }

@@ -1,5 +1,8 @@
 package org.akira.laptopstore.order.controller;
 
+import org.akira.laptopstore.order.dto.request.CheckoutPreviewRequest;
+import org.akira.laptopstore.order.dto.request.CreateOrderRequest;
+import org.akira.laptopstore.order.dto.response.CheckoutPreviewResponse;
 import org.akira.laptopstore.order.dto.response.OrderResponse;
 import org.akira.laptopstore.order.dto.response.OrderSummaryResponse;
 import org.akira.laptopstore.order.entity.enums.OrderStatus;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -31,6 +35,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -65,6 +70,56 @@ class OrderControllerTest {
 
         verify(orderService).getOwnOrders(eq(42L), any());
         verify(orderService).getOwnOrder(42L, 10L);
+    }
+
+    @Test
+    void userCanPreviewAndCreateOrderFromCheckout() throws Exception {
+        CustomUserDetails principal = principal(42L, "ROLE_USER");
+        CheckoutPreviewResponse preview = CheckoutPreviewResponse.builder()
+                .addressId(15L)
+                .recipientName("Nguyen Van A")
+                .recipientPhone("0900000000")
+                .shippingAddress("123 Nguyen Trai, Q5, TP.HCM")
+                .paymentMethod("COD")
+                .couponCode("STUDENT10")
+                .subtotal(new BigDecimal("25000000"))
+                .discountAmount(new BigDecimal("500000"))
+                .shippingFee(BigDecimal.ZERO)
+                .totalAmount(new BigDecimal("24500000"))
+                .totalItems(1)
+                .items(List.of())
+                .build();
+        OrderResponse created = new OrderResponse(125L, 42L, "ORD-125", OrderStatus.PENDING,
+                new BigDecimal("25000000"), new BigDecimal("500000"), BigDecimal.ZERO, new BigDecimal("24500000"),
+                "Nguyen Van A", "0900000000", "123 Nguyen Trai, Q5, TP.HCM", "STUDENT10",
+                List.of(), List.of(), Instant.parse("2026-10-14T10:00:00Z"), Instant.parse("2026-10-14T10:00:00Z"));
+
+        when(orderService.previewCheckout(eq(42L), any(CheckoutPreviewRequest.class))).thenReturn(preview);
+        when(orderService.createOrder(eq(42L), any(CreateOrderRequest.class))).thenReturn(created);
+
+        mockMvc.perform(post("/api/v1/me/orders/preview")
+                        .with(user(principal))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"addressId\":15,\"paymentMethod\":\"COD\",\"couponCode\":\"STUDENT10\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.subtotal").value(25000000))
+                .andExpect(jsonPath("$.discountAmount").value(500000))
+                .andExpect(jsonPath("$.totalAmount").value(24500000));
+
+        mockMvc.perform(post("/api/v1/me/orders")
+                        .with(user(principal))
+                        .header("Idempotency-Key", "checkout-key-001")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"addressId\":15,\"paymentMethod\":\"COD\",\"couponCode\":\"STUDENT10\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(125L))
+                .andExpect(jsonPath("$.orderCode").value("ORD-125"))
+                .andExpect(jsonPath("$.discountAmount").value(500000))
+                .andExpect(jsonPath("$.totalAmount").value(24500000))
+                .andExpect(jsonPath("$.couponCodeSnapshot").value("STUDENT10"));
+
+        verify(orderService).previewCheckout(eq(42L), any(CheckoutPreviewRequest.class));
+        verify(orderService).createOrder(eq(42L), any(CreateOrderRequest.class));
     }
 
     @Test

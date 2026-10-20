@@ -1,14 +1,19 @@
 package org.akira.laptopstore.inventory.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
 import org.akira.laptopstore.inventory.entity.StockMovement;
 import org.akira.laptopstore.inventory.repository.StockMovementRepository;
 import org.akira.laptopstore.inventory.service.InventoryService;
 import org.akira.laptopstore.inventory.dto.request.OrderStockDeduction;
+
 import org.akira.laptopstore.catalog.dto.response.StockChangeResult;
 import org.akira.laptopstore.catalog.service.CatalogCheckoutService;
+
 import org.akira.laptopstore.exception.ValidationException;
+
 import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,7 +90,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     private StockMovement createSaleMovement(Long orderId, Long actorId, OrderStockDeduction line,
-                                             String operationKey, StockChangeResult stockChange) {
+                                            String operationKey, StockChangeResult stockChange) {
         return StockMovement.builder()
                 .variantId(line.getVariantId())
                 .type("SALE")

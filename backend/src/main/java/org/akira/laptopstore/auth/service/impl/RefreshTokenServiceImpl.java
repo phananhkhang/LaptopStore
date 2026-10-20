@@ -26,7 +26,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtProperties jwtProperties;
-    private final SecureRandom secureRandom = new SecureRandom();
+    private final SecureRandom secureRandom;
 
     @Override
     @Transactional

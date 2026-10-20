@@ -10,6 +10,10 @@ import java.util.List;
 public interface CatalogCheckoutService {
     List<CheckoutVariantSnapshot> lockAndGetSellableVariants(Collection<Long> variantIds);
 
+    default List<CheckoutVariantSnapshot> getSellableVariants(Collection<Long> variantIds) {
+        return lockAndGetSellableVariants(variantIds);
+    }
+
     StockChangeResult deductStock(Long variantId, int quantity);
 
     StockChangeResult adjustStock(Long variantId, int delta);

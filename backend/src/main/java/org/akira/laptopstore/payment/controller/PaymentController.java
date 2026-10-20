@@ -3,6 +3,7 @@ package org.akira.laptopstore.payment.controller;
 import org.akira.laptopstore.payment.dto.request.RecordCodPaymentRequest;
 import org.akira.laptopstore.payment.dto.request.StartPaymentRequest;
 import org.akira.laptopstore.payment.dto.response.PaymentResponse;
+import org.akira.laptopstore.payment.dto.response.PaymentSessionResponse;
 import org.akira.laptopstore.payment.service.PaymentService;
 import org.akira.laptopstore.security.principal.CustomUserDetails;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -70,5 +72,23 @@ public class PaymentController {
 
                 return ResponseEntity.ok(
                                 paymentService.recordCodPayment(request));
+        }
+
+        @PostMapping("/{paymentId}/vnpay-session")
+        @PreAuthorize("hasRole('USER')")
+        public ResponseEntity<PaymentSessionResponse> createVnpaySession(
+                        @AuthenticationPrincipal CustomUserDetails userDetails,
+
+                        @PathVariable Long paymentId,
+
+                        HttpServletRequest request) {
+
+                PaymentSessionResponse response = paymentService
+                                .createVnpaySession(
+                                                userDetails.getId(),
+                                                paymentId,
+                                                request.getRemoteAddr());
+
+                return ResponseEntity.ok(response);
         }
 }
