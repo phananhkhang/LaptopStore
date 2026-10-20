@@ -17,6 +17,8 @@
 | [11 Entity model](11-entity-model.md) | 25 bảng ERD, field/kiểu Java, ánh xạ JPA và khác biệt triển khai |
 | [12 ERD LaptopStore](12-ERD-LaptopStore.md) | Từng bảng, thuộc tính, PK/FK/UQ và toàn bộ quan hệ |
 | [13 Phân quyền và chức năng](13-roles-and-functions.md) | Chức năng USER/STAFF/ADMIN, dữ liệu liên quan và hiện trạng kiểm quyền |
+| [SD-05 Sequence Đăng ký](SD-05-sequence-dang-ky.md) | Biểu đồ tuần tự quy trình đăng ký tài khoản và mã hóa mật khẩu |
+| [SD-06 Sequence Đăng nhập + JWT/RBAC](SD-06-sequence-dang-nhap-jwt-rbac.md) | Biểu đồ tuần tự đăng nhập, cấp phát JWT và phân quyền đa vai trò |
 
 ## Cách áp dụng
 

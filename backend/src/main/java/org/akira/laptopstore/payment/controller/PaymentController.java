@@ -65,8 +65,8 @@ public class PaymentController {
                                                 orderId));
         }
 
-        @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
         @PutMapping("/cod")
+        @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
         public ResponseEntity<PaymentResponse> recordCod(
                         @Valid @RequestBody RecordCodPaymentRequest request) {
 

@@ -28,9 +28,7 @@ public class ReviewController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @Valid @RequestBody CreateReviewRequest request) {
 
-        ReviewResponse response = reviewService.create(
-                userDetails.getId(),
-                request);
+        ReviewResponse response = reviewService.create(userDetails.getId(), request);
 
         return ResponseEntity.status(201).body(response);
     }
