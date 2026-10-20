@@ -61,3 +61,20 @@ export interface PageResponse<T> {
     first: boolean;
     last: boolean;
 }
+
+export interface Category {
+    id: number;
+    name: string;
+    description?: string;
+    active: boolean;
+}
+
+export interface CreateCategoryRequest {
+    name: string;
+    description?: string;
+}
+
+export interface UpdateCategoryRequest {
+    name: string;
+    description?: string;
+}
