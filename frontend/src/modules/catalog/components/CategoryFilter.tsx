@@ -1,26 +1,110 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { categoryApi } from '../api/categoryApi';
+import { brandApi } from '../api/brandApi';
+import { Category, Brand } from '../types';
 
-const CategoryFilter: React.FC = () => {
+interface CategoryFilterProps {
+    selectedCategoryId?: number;
+    selectedBrandId?: number;
+    onFilterChange: (categoryId?: number, brandId?: number) => void;
+}
+
+const CategoryFilter: React.FC<CategoryFilterProps> = ({ selectedCategoryId, selectedBrandId, onFilterChange }) => {
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [brands, setBrands] = useState<Brand[]>([]);
+
+    useEffect(() => {
+        const fetchFilters = async () => {
+            try {
+                // Gọi song song 2 API để tiết kiệm thời gian chờ
+                const [cats, brds] = await Promise.all([
+                    categoryApi.getAllCategories(),
+                    brandApi.getAllBrands()
+                ]);
+                // Chỉ hiển thị những mục đang ACTIVE
+                setCategories(cats.filter(c => c.active));
+                setBrands(brds.filter(b => b.active));
+            } catch (error) {
+                console.error('Lỗi khi tải danh mục và thương hiệu:', error);
+            }
+        };
+        fetchFilters();
+    }, []);
+
     return (
-        <div className="bg-white p-5 border rounded-lg shadow-sm">
-            <h3 className="font-bold text-lg mb-4 border-b pb-2 text-gray-800">Bộ lọc tìm kiếm</h3>
-            
-            <div className="mb-6">
-                <h4 className="font-semibold mb-3 text-sm text-gray-600 uppercase tracking-wider">Hãng sản xuất</h4>
-                <div className="space-y-2 text-sm text-gray-700">
-                    <label className="flex items-center cursor-pointer hover:text-blue-600"><input type="checkbox" className="mr-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500" /> Asus</label>
-                    <label className="flex items-center cursor-pointer hover:text-blue-600"><input type="checkbox" className="mr-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500" /> Dell</label>
-                    <label className="flex items-center cursor-pointer hover:text-blue-600"><input type="checkbox" className="mr-3 rounded border-gray-300 text-blue-600 focus:ring-blue-500" /> Lenovo</label>
-                </div>
+        <div className="space-y-6">
+            {/* Lọc theo danh mục */}
+            <div>
+                <h3 className="font-semibold text-gray-800 mb-3 uppercase text-sm tracking-wider">Danh mục</h3>
+                <ul className="space-y-2 text-sm">
+                    <li>
+                        <label className="flex items-center space-x-2 cursor-pointer group">
+                            <input 
+                                type="radio" 
+                                name="category"
+                                className="form-radio text-blue-600 focus:ring-blue-500"
+                                checked={!selectedCategoryId}
+                                onChange={() => onFilterChange(undefined, selectedBrandId)}
+                            />
+                            <span className={!selectedCategoryId ? 'font-bold text-blue-700' : 'text-gray-600 group-hover:text-blue-600'}>
+                                Tất cả danh mục
+                            </span>
+                        </label>
+                    </li>
+                    {categories.map(cat => (
+                        <li key={cat.id}>
+                            <label className="flex items-center space-x-2 cursor-pointer group">
+                                <input 
+                                    type="radio" 
+                                    name="category"
+                                    className="form-radio text-blue-600 focus:ring-blue-500"
+                                    checked={selectedCategoryId === cat.id}
+                                    onChange={() => onFilterChange(cat.id, selectedBrandId)}
+                                />
+                                <span className={selectedCategoryId === cat.id ? 'font-bold text-blue-700' : 'text-gray-600 group-hover:text-blue-600'}>
+                                    {cat.name}
+                                </span>
+                            </label>
+                        </li>
+                    ))}
+                </ul>
             </div>
 
-            <div className="mb-4">
-                <h4 className="font-semibold mb-3 text-sm text-gray-600 uppercase tracking-wider">Khoảng giá</h4>
-                <div className="space-y-2 text-sm text-gray-700">
-                    <label className="flex items-center cursor-pointer hover:text-blue-600"><input type="radio" name="price" className="mr-3 text-blue-600 focus:ring-blue-500" /> Dưới 15 triệu</label>
-                    <label className="flex items-center cursor-pointer hover:text-blue-600"><input type="radio" name="price" className="mr-3 text-blue-600 focus:ring-blue-500" /> 15 - 25 triệu</label>
-                    <label className="flex items-center cursor-pointer hover:text-blue-600"><input type="radio" name="price" className="mr-3 text-blue-600 focus:ring-blue-500" /> Trên 25 triệu</label>
-                </div>
+            {/* Lọc theo thương hiệu */}
+            <div className="border-t border-gray-200 pt-5">
+                <h3 className="font-semibold text-gray-800 mb-3 uppercase text-sm tracking-wider">Thương hiệu</h3>
+                <ul className="space-y-2 text-sm">
+                    <li>
+                        <label className="flex items-center space-x-2 cursor-pointer group">
+                            <input 
+                                type="radio" 
+                                name="brand"
+                                className="form-radio text-blue-600 focus:ring-blue-500"
+                                checked={!selectedBrandId}
+                                onChange={() => onFilterChange(selectedCategoryId, undefined)}
+                            />
+                            <span className={!selectedBrandId ? 'font-bold text-blue-700' : 'text-gray-600 group-hover:text-blue-600'}>
+                                Tất cả thương hiệu
+                            </span>
+                        </label>
+                    </li>
+                    {brands.map(brand => (
+                        <li key={brand.id}>
+                            <label className="flex items-center space-x-2 cursor-pointer group">
+                                <input 
+                                    type="radio" 
+                                    name="brand"
+                                    className="form-radio text-blue-600 focus:ring-blue-500"
+                                    checked={selectedBrandId === brand.id}
+                                    onChange={() => onFilterChange(selectedCategoryId, brand.id)}
+                                />
+                                <span className={selectedBrandId === brand.id ? 'font-bold text-blue-700' : 'text-gray-600 group-hover:text-blue-600'}>
+                                    {brand.name}
+                                </span>
+                            </label>
+                        </li>
+                    ))}
+                </ul>
             </div>
         </div>
     );
