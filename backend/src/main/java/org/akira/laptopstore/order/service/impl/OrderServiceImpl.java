@@ -13,6 +13,7 @@ import org.akira.laptopstore.inventory.dto.request.OrderStockDeduction;
 import org.akira.laptopstore.inventory.service.InventoryService;
 import org.akira.laptopstore.order.dto.request.CheckoutPreviewRequest;
 import org.akira.laptopstore.order.dto.request.CreateOrderRequest;
+import org.akira.laptopstore.order.dto.request.UpdateOrderStatusRequest;
 import org.akira.laptopstore.order.dto.response.CheckoutPreviewResponse;
 import org.akira.laptopstore.order.dto.response.OrderItemResponse;
 import org.akira.laptopstore.order.dto.response.OrderResponse;
@@ -27,18 +28,20 @@ import org.akira.laptopstore.order.repository.OrderItemRepository;
 import org.akira.laptopstore.order.repository.OrderRepository;
 import org.akira.laptopstore.order.repository.OrderStatusHistoryRepository;
 import org.akira.laptopstore.order.service.OrderService;
+import org.akira.laptopstore.order.statemachine.OrderStateMachine;
 import org.akira.laptopstore.order.util.OrderCodeGenerator;
 import org.akira.laptopstore.promotion.dto.response.CouponEvaluation;
 import org.akira.laptopstore.promotion.service.CouponService;
 import org.akira.laptopstore.user.dto.AddressResponse;
 import org.akira.laptopstore.user.service.AddressService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.RequiredArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -49,6 +52,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor 
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
@@ -60,66 +64,7 @@ public class OrderServiceImpl implements OrderService {
     private final InventoryService inventoryService;
     private final AddressService addressService;
     private final CouponService couponService;
-
-    @Autowired
-    public OrderServiceImpl(
-            OrderRepository orderRepository,
-            OrderItemRepository orderItemRepository,
-            OrderStatusHistoryRepository orderStatusHistoryRepository,
-            OrderMapper orderMapper,
-            CartService cartService,
-            CatalogCheckoutService catalogCheckoutService,
-            InventoryService inventoryService,
-            AddressService addressService,
-            CouponService couponService
-    ) {
-        this.orderRepository = orderRepository;
-        this.orderItemRepository = orderItemRepository;
-        this.orderStatusHistoryRepository = orderStatusHistoryRepository;
-        this.orderMapper = orderMapper;
-        this.cartService = cartService;
-        this.catalogCheckoutService = catalogCheckoutService;
-        this.inventoryService = inventoryService;
-        this.addressService = addressService;
-        this.couponService = couponService;
-    }
-
-    public OrderServiceImpl(
-            OrderRepository orderRepository,
-            OrderItemRepository orderItemRepository,
-            OrderStatusHistoryRepository orderStatusHistoryRepository,
-            OrderMapper orderMapper,
-            CartService cartService,
-            CatalogCheckoutService catalogCheckoutService,
-            InventoryService inventoryService,
-            CouponService couponService
-    ) {
-        this(orderRepository, orderItemRepository, orderStatusHistoryRepository, orderMapper,
-                cartService, catalogCheckoutService, inventoryService, null, couponService);
-    }
-
-    public OrderServiceImpl(
-            OrderRepository orderRepository,
-            OrderItemRepository orderItemRepository,
-            OrderStatusHistoryRepository orderStatusHistoryRepository,
-            OrderMapper orderMapper,
-            CartService cartService,
-            CatalogCheckoutService catalogCheckoutService,
-            InventoryService inventoryService
-    ) {
-        this(orderRepository, orderItemRepository, orderStatusHistoryRepository, orderMapper,
-                cartService, catalogCheckoutService, inventoryService, null, null);
-    }
-
-    public OrderServiceImpl(
-            OrderRepository orderRepository,
-            OrderItemRepository orderItemRepository,
-            OrderStatusHistoryRepository orderStatusHistoryRepository,
-            OrderMapper orderMapper
-    ) {
-        this(orderRepository, orderItemRepository, orderStatusHistoryRepository, orderMapper,
-                null, null, null, null, null);
-    }
+    private final OrderStateMachine orderStateMachine;
 
     @Override
     @Transactional(readOnly = true)
@@ -276,10 +221,15 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal totalAmount = calculateTotalAmount(subtotal, discount, shippingFee);
 
         // 7. Lưu order để có ID cho item, coupon usage, lịch sử trạng thái và lịch sử kho.
+        CheckoutPaymentMethod paymentMethod = CheckoutPaymentMethod.fromValue(request.getPaymentMethod());
+        OrderStatus initialStatus = (paymentMethod == CheckoutPaymentMethod.VNPAY)
+                ? OrderStatus.PENDING_PAYMENT
+                : OrderStatus.WAITING_CONFIRMATION;
+
         Order order = orderRepository.saveAndFlush(Order.builder()
                 .userId(userId)
                 .orderCode(OrderCodeGenerator.generate())
-                .status(OrderStatus.PENDING)
+                .status(initialStatus)
                 .subtotal(subtotal)
                 .discountAmount(discount)
                 .shippingFee(shippingFee)
@@ -333,10 +283,10 @@ public class OrderServiceImpl implements OrderService {
         }).toList();
         orderItemRepository.saveAll(items);
 
-        // 10. Đơn mới luôn bắt đầu ở trạng thái PENDING.
+        // 10. Đơn mới bắt đầu ở trạng thái initialStatus.
         OrderStatusHistory history = orderStatusHistoryRepository.save(OrderStatusHistory.builder()
                 .order(order)
-                .toStatus(OrderStatus.PENDING)
+                .toStatus(initialStatus)
                 .changedAt(Instant.now())
                 .changedByUserId(userId)
                 .build());
@@ -470,6 +420,129 @@ public class OrderServiceImpl implements OrderService {
                 normalize(request.getShippingAddress())
         );
     }
+    @Override
+    @Transactional
+    public OrderResponse updateOrderStatus(Long actorId, Long orderId, UpdateOrderStatusRequest request) {
+        requireOrderId(orderId);
+        if (request == null || request.getStatus() == null) {
+            throw new ValidationException("Order status is required");
+        }
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + orderId));
+
+        OrderStatus currentStatus = order.getStatus();
+        OrderStatus targetStatus = request.getStatus();
+
+        int deliveryAttempts = (int) orderStatusHistoryRepository.findByOrderIdOrderByChangedAtDesc(orderId).stream()
+                .filter(h -> h.getToStatus() == OrderStatus.DELIVERY_FAILED)
+                .count();
+
+        orderStateMachine.validateTransition(currentStatus, targetStatus, true, deliveryAttempts);
+
+        order.setStatus(targetStatus);
+        orderRepository.save(order);
+
+        orderStatusHistoryRepository.save(OrderStatusHistory.builder()
+                .order(order)
+                .fromStatus(currentStatus)
+                .toStatus(targetStatus)
+                .changedAt(Instant.now())
+                .changedByUserId(actorId)
+                .build());
+
+        if (targetStatus == OrderStatus.CANCELLED || targetStatus == OrderStatus.RETURNED) {
+            handleOrderCancellationSideEffects(order, actorId);
+        }
+
+        return getOwnOrder(order.getUserId(), orderId);
+    }
+
+    @Override
+    @Transactional
+    public OrderResponse cancelOrder(Long userId, Long orderId, String reason) {
+        requireUserId(userId);
+        requireOrderId(orderId);
+
+        Order order = orderRepository.findById(orderId)
+                .filter(candidate -> userId.equals(candidate.getUserId()))
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+
+        OrderStatus currentStatus = order.getStatus();
+
+        orderStateMachine.validateTransition(currentStatus, OrderStatus.CANCELLED, false, 0);
+
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+
+        orderStatusHistoryRepository.save(OrderStatusHistory.builder()
+                .order(order)
+                .fromStatus(currentStatus)
+                .toStatus(OrderStatus.CANCELLED)
+                .changedAt(Instant.now())
+                .changedByUserId(userId)
+                .build());
+
+        handleOrderCancellationSideEffects(order, userId);
+
+        return getOwnOrder(userId, orderId);
+    }
+
+    @Override
+    @Transactional
+    public int expirePendingOrders(Duration timeout) {
+        if (timeout == null || timeout.isNegative() || timeout.isZero()) {
+            timeout = Duration.ofMinutes(15);
+        }
+        Instant cutoffTime = Instant.now().minus(timeout);
+        List<Order> expiredOrders = orderRepository.findByStatusAndCreatedAtBefore(OrderStatus.PENDING_PAYMENT, cutoffTime);
+        int count = 0;
+
+        for (Order order : expiredOrders) {
+            try {
+                order.setStatus(OrderStatus.CANCELLED);
+                orderRepository.save(order);
+
+                orderStatusHistoryRepository.save(OrderStatusHistory.builder()
+                        .order(order)
+                        .fromStatus(OrderStatus.PENDING_PAYMENT)
+                        .toStatus(OrderStatus.CANCELLED)
+                        .changedAt(Instant.now())
+                        .changedByUserId(null)
+                        .build());
+
+                handleOrderCancellationSideEffects(order, null);
+                count++;
+            } catch (Exception ignored) {
+                // Tiếp tục xử lý các đơn quá hạn khác nếu 1 đơn gặp lỗi
+            }
+        }
+
+        return count;
+    }
+
+    @Override
+    @Transactional
+    public int expirePendingOrders() {
+        return expirePendingOrders(Duration.ofMinutes(15));
+    }
+
+    private void handleOrderCancellationSideEffects(Order order, Long actorId) {
+        List<OrderItem> items = orderItemRepository.findByOrderId(order.getId());
+        List<OrderStockDeduction> lines = items.stream()
+                .map(item -> new OrderStockDeduction(item.getVariantId(), item.getQuantity()))
+                .toList();
+
+        if (inventoryService != null && !lines.isEmpty()) {
+            inventoryService.restoreForOrder(order.getId(), actorId, lines);
+        }
+
+        if (order.getCouponCodeSnapshot() != null && couponService != null) {
+            couponService.releaseForOrder(order.getId());
+        }
+    }
+        
+    
 
     private void validateShippingStrings(String recipientName, String recipientPhone, String shippingAddress) {
         if (isBlank(recipientName) || isBlank(recipientPhone) || isBlank(shippingAddress)) {

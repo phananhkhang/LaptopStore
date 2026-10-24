@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.laptopstore.order.dto.request.CheckoutPreviewRequest;
 import org.akira.laptopstore.order.dto.request.CreateOrderRequest;
+import org.akira.laptopstore.order.dto.request.UpdateOrderStatusRequest;
 import org.akira.laptopstore.order.dto.response.CheckoutPreviewResponse;
 import org.akira.laptopstore.order.dto.response.OrderPageResponse;
 import org.akira.laptopstore.order.dto.response.OrderResponse;
@@ -74,5 +75,26 @@ public class OrderController {
             request.setIdempotencyKey(idempotencyKey.trim());
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(orderService.createOrder(userDetails.getId(), request));
+    }
+
+    // Staff/Admin cập nhật trạng thái đơn hàng theo State Machine
+    @PutMapping("/staff/orders/{orderId}/status")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<OrderResponse> updateOrderStatus(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long orderId,
+            @Valid @RequestBody UpdateOrderStatusRequest request
+    ) {
+        return ResponseEntity.ok(orderService.updateOrderStatus(userDetails.getId(), orderId, request));
+    }
+
+    // Khách hàng chủ động hủy đơn của mình
+    @PostMapping("/me/orders/{orderId}/cancel")
+    public ResponseEntity<OrderResponse> cancelOwnOrder(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long orderId,
+            @RequestParam(required = false, defaultValue = "Khách hàng yêu cầu hủy") String reason
+    ) {
+        return ResponseEntity.ok(orderService.cancelOrder(userDetails.getId(), orderId, reason));
     }
 }

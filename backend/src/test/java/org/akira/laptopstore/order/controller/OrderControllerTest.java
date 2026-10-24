@@ -52,9 +52,9 @@ class OrderControllerTest {
     @Test
     void userCanReadOnlyTheirOrderEndpoints() throws Exception {
         CustomUserDetails principal = principal(42L, "ROLE_USER");
-        OrderSummaryResponse summary = new OrderSummaryResponse(10L, "ORD-10", OrderStatus.PENDING,
+        OrderSummaryResponse summary = new OrderSummaryResponse(10L, "ORD-10", OrderStatus.CONFIRMED,
                 2, new BigDecimal("25000000"), "Nguyen Van A", Instant.parse("2026-10-01T10:00:00Z"));
-        OrderResponse detail = new OrderResponse(10L, 42L, "ORD-10", OrderStatus.PENDING,
+        OrderResponse detail = new OrderResponse(10L, 42L, "ORD-10", OrderStatus.CONFIRMED,
                 new BigDecimal("25000000"), BigDecimal.ZERO, BigDecimal.ZERO, new BigDecimal("25000000"),
                 "Nguyen Van A", "0900000000", "Ho Chi Minh City", null,
                 List.of(), List.of(), Instant.parse("2026-10-01T10:00:00Z"), Instant.parse("2026-10-01T10:00:00Z"));
@@ -89,7 +89,7 @@ class OrderControllerTest {
                 .totalItems(1)
                 .items(List.of())
                 .build();
-        OrderResponse created = new OrderResponse(125L, 42L, "ORD-125", OrderStatus.PENDING,
+        OrderResponse created = new OrderResponse(125L, 42L, "ORD-125", OrderStatus.WAITING_CONFIRMATION,
                 new BigDecimal("25000000"), new BigDecimal("500000"), BigDecimal.ZERO, new BigDecimal("24500000"),
                 "Nguyen Van A", "0900000000", "123 Nguyen Trai, Q5, TP.HCM", "STUDENT10",
                 List.of(), List.of(), Instant.parse("2026-10-14T10:00:00Z"), Instant.parse("2026-10-14T10:00:00Z"));

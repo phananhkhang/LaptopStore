@@ -1,4 +1,14 @@
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPING' | 'DELIVERED' | 'CANCELLED' | 'RETURNED';
+export type OrderStatus =
+  | 'CREATED'
+  | 'PENDING_PAYMENT'
+  | 'WAITING_CONFIRMATION'
+  | 'CONFIRMED'
+  | 'PACKED'
+  | 'SHIPPING'
+  | 'DELIVERED'
+  | 'DELIVERY_FAILED'
+  | 'CANCELLED'
+  | 'RETURNED';
 
 export type CheckoutPaymentMethod = 'COD' | 'VNPAY';
 
