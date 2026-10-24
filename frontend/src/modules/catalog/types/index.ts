@@ -78,3 +78,20 @@ export interface UpdateCategoryRequest {
     name: string;
     description?: string;
 }
+
+export interface Brand {
+    id: number;
+    name: string;
+    description?: string;
+    active: boolean;
+}
+
+export interface CreateBrandRequest {
+    name: string;
+    description?: string;
+}
+
+export interface UpdateBrandRequest {
+    name: string;
+    description?: string;
+}
