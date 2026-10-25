@@ -18,5 +18,10 @@ public class OrderItemReviewInfo {
 
     private Long variantId;
 
+    // Snapshot tại thời điểm mua, dùng để hiển thị "Đã mua: ..." dưới review
+    private String productName;
+
+    private String variantName;
+
     private OrderStatus orderStatus;
 }

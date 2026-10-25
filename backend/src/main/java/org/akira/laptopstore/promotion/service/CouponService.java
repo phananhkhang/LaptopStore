@@ -18,6 +18,8 @@ public interface CouponService {
 
     CouponResponse updateCoupon(Long id, UpdateCouponRequest request);
 
+    CouponResponse setActive(Long id, boolean active);
+
     void deleteCoupon(Long id);
 
     CouponEvaluation evaluateForCheckout(String code, Long userId, BigDecimal subtotal);

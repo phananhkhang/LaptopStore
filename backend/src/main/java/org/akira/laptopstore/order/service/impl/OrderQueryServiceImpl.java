@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,40 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         OrderItem orderItem = orderItemRepository.findById(orderItemId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order item not found: " + orderItemId));
 
+        return toReviewInfo(orderItem);
+    }
+
+    //Lấy thông tin cả một trang review trong một lần gọi
+    @Override
+    public List<OrderItemReviewInfo> getOrderItemsForReview(Collection<Long> orderItemIds) {
+        if (orderItemIds == null || orderItemIds.isEmpty()) {
+            return List.of();
+        }
+        return orderItemRepository.findAllWithOrderByIdIn(orderItemIds)
+                .stream()
+                .map(this::toReviewInfo)
+                .toList();
+    }
+
+    //Review theo sản phẩm, điểm trung bình
+    @Override
+    public List<Long> getOrderItemIdsByProduct(Long productId) {
+        if (productId == null || productId <= 0) {
+            throw new ValidationException("productId must be greater than 0");
+        }
+        return orderItemRepository.findIdsByProductId(productId);
+    }
+
+    //	Review của tôi
+    @Override
+    public List<Long> getOrderItemIdsByUser(Long userId) {
+        if (userId == null || userId <= 0) {
+            throw new ValidationException("userId must be greater than 0");
+        }
+        return orderItemRepository.findIdsByUserId(userId);
+    }
+
+    private OrderItemReviewInfo toReviewInfo(OrderItem orderItem) {
         Order order = orderItem.getOrder();
 
         return OrderItemReviewInfo.builder()
@@ -43,6 +79,8 @@ public class OrderQueryServiceImpl implements OrderQueryService {
                 .userId(order.getUserId())
                 .productId(orderItem.getProductId())
                 .variantId(orderItem.getVariantId())
+                .productName(orderItem.getProductName())
+                .variantName(orderItem.getVariantName())
                 .orderStatus(order.getStatus())
                 .build();
     }

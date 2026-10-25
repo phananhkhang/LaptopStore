@@ -33,6 +33,23 @@ Coupon, điều kiện áp dụng và lượt sử dụng. Không tự tính l�
 - `coupon_usages.order_id` là UQ nên mỗi order có tối đa một coupon usage; ERD không khai báo unique ghép `(coupon_id, order_id)`. Reserve/release phải idempotent; hủy hợp lệ trả lượt đúng một lần.
 - Không tin subtotal client gửi để chốt đơn; preview chỉ mang tính tham khảo.
 
+## API hiện có
+
+| Endpoint | Quyền | Ghi chú |
+|---|---|---|
+| `POST/GET/PUT/DELETE /api/v1/admin/coupons[/{id}]` | ADMIN | DELETE: coupon đã có usage thì chỉ `active=false` (xóa mềm) |
+| `PATCH /api/v1/admin/coupons/{id}/active` | ADMIN | Body `{"active": true/false}` |
+| `GET /api/v1/admin/coupon-usages`, `/{id}`, `/coupon/{couponId}`; `PUT /{id}/release` | ADMIN | Release idempotent |
+| `POST /api/v1/me/coupons/preview` | Đăng nhập | Body `{"code","subtotal"}`; chỉ tham khảo, không giữ lượt |
+| `GET /api/v1/me/coupons/usages` | Đăng nhập | Lịch sử dùng coupon của chính user |
+
+Mã lỗi: 400 `VALIDATION_ERROR`, 404 `RESOURCE_NOT_FOUND`, 409 `COUPON_CODE_EXISTS`, 422 `COUPON_NOT_APPLICABLE`.
+
+## Contract với module order (bắt buộc)
+
+- Đặt hàng: gọi `CouponService.reserveForOrder(...)` trong transaction tạo order (đã làm trong `OrderServiceImpl.createOrder`).
+- **Mọi chỗ chuyển order sang `CANCELLED`** (user hủy, staff hủy, thanh toán thất bại/hết hạn) phải gọi `CouponService.releaseForOrder(orderId)` **trong cùng transaction**. Hàm idempotent nên gọi lặp an toàn. Hiện order chưa có luồng hủy nên lượt coupon chưa được trả.
+
 ## Luồng triển khai điển hình
 
 Khóa coupon → kiểm tra điều kiện bằng dữ liệu server → tính giảm → ghi usage ACTIVE; khi hủy đổi RELEASED một lần.

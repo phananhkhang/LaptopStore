@@ -3,6 +3,7 @@ package org.akira.laptopstore.promotion.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.akira.laptopstore.promotion.dto.request.CreateCouponRequest;
+import org.akira.laptopstore.promotion.dto.request.UpdateCouponActiveRequest;
 import org.akira.laptopstore.promotion.dto.request.UpdateCouponRequest;
 import org.akira.laptopstore.promotion.dto.response.CouponResponse;
 import org.akira.laptopstore.promotion.service.CouponService;
@@ -13,14 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/coupons")
+@RequestMapping("/api/v1/admin/coupons")
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
-public class CouponController {
+public class AdminCouponController {
 
     private final CouponService couponService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<CouponResponse> create(
             @Valid @RequestBody CreateCouponRequest request) {
 
@@ -47,7 +48,6 @@ public class CouponController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<CouponResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody UpdateCouponRequest request) {
@@ -56,8 +56,16 @@ public class CouponController {
                 couponService.updateCoupon(id, request));
     }
 
+    @PatchMapping("/{id}/active")
+    public ResponseEntity<CouponResponse> setActive(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateCouponActiveRequest request) {
+
+        return ResponseEntity.ok(
+                couponService.setActive(id, request.getActive()));
+    }
+
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public ResponseEntity<Void> delete(
             @PathVariable Long id) {
 

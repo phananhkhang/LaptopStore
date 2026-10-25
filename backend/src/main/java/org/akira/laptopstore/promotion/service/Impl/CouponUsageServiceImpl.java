@@ -1,17 +1,15 @@
 package org.akira.laptopstore.promotion.service.Impl;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.laptopstore.promotion.dto.request.CreateCouponUsageRequest;
+import org.akira.laptopstore.exception.ResourceNotFoundException;
 import org.akira.laptopstore.promotion.dto.response.CouponUsageResponse;
-import org.akira.laptopstore.promotion.entity.Coupon;
 import org.akira.laptopstore.promotion.entity.CouponUsage;
 import org.akira.laptopstore.promotion.enums.CouponUsageStatus;
-import org.akira.laptopstore.promotion.repository.CouponRepository;
 import org.akira.laptopstore.promotion.repository.CouponUsageRepository;
 import org.akira.laptopstore.promotion.service.CouponUsageService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -19,43 +17,16 @@ import java.util.List;
 public class CouponUsageServiceImpl implements CouponUsageService {
 
         private final CouponUsageRepository couponUsageRepository;
-        private final CouponRepository couponRepository;
 
         @Override
-        public CouponUsageResponse createUsage(CreateCouponUsageRequest request) {
-
-                validateCouponUsage(request);
-
-                Coupon coupon = couponRepository
-                                .findById(request.getCouponId())
-                                .orElseThrow(() -> new RuntimeException(
-                                                "Coupon not found"));
-
-                validateUsageLimit(coupon, request.getUserId());
-
-                CouponUsage usage = CouponUsage.builder()
-                                .coupon(coupon)
-                                .userId(request.getUserId())
-                                .orderId(request.getOrderId())
-                                .discountAmount(request.getDiscountAmount())
-                                .status(CouponUsageStatus.ACTIVE)
-                                .build();
-
-                CouponUsage saved = couponUsageRepository.save(usage);
-
-                return toResponse(saved);
-        }
-
-        @Override
+        @Transactional(readOnly = true)
         public CouponUsageResponse getById(Long id) {
-                CouponUsage usage = couponUsageRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException(
-                                                "Coupon usage not found"));
 
-                return toResponse(usage);
+                return toResponse(findUsage(id));
         }
 
         @Override
+        @Transactional(readOnly = true)
         public List<CouponUsageResponse> getAll() {
 
                 return couponUsageRepository.findAll()
@@ -65,6 +36,7 @@ public class CouponUsageServiceImpl implements CouponUsageService {
         }
 
         @Override
+        @Transactional(readOnly = true)
         public List<CouponUsageResponse> getByCouponId(Long couponId) {
 
                 return couponUsageRepository
@@ -75,67 +47,37 @@ public class CouponUsageServiceImpl implements CouponUsageService {
         }
 
         @Override
+        @Transactional(readOnly = true)
+        public List<CouponUsageResponse> getByUserId(Long userId) {
+
+                return couponUsageRepository
+                                .findByUserId(userId)
+                                .stream()
+                                .map(this::toResponse)
+                                .toList();
+        }
+
+        @Override
+        @Transactional
         public void releaseUsage(Long id) {
 
-                CouponUsage usage = couponUsageRepository.findById(id)
-                                .orElseThrow(() -> new RuntimeException(
-                                                "Coupon usage not found"));
+                CouponUsage usage = findUsage(id);
+
+                // idempotent: đã trả lượt thì không làm gì thêm
+                if (usage.getStatus() == CouponUsageStatus.RELEASED) {
+                        return;
+                }
 
                 usage.setStatus(CouponUsageStatus.RELEASED);
 
                 couponUsageRepository.save(usage);
         }
 
-        private void validateCouponUsage(CreateCouponUsageRequest request) {
+        private CouponUsage findUsage(Long id) {
 
-                if (request.getCouponId() == null) {
-                        throw new RuntimeException(
-                                        "Coupon id is required");
-                }
-
-                if (request.getUserId() == null) {
-                        throw new RuntimeException(
-                                        "User id is required");
-                }
-
-                if (request.getOrderId() == null) {
-                        throw new RuntimeException(
-                                        "Order id is required");
-                }
-
-                if (request.getDiscountAmount() == null
-                                || request.getDiscountAmount()
-                                                .compareTo(BigDecimal.ZERO) <= 0) {
-
-                        throw new RuntimeException(
-                                        "Discount amount must be greater than 0");
-                }
-
-                if (couponUsageRepository
-                                .existsByOrderId(request.getOrderId())) {
-
-                        throw new RuntimeException(
-                                        "This order has already used a coupon");
-                }
-        }
-
-        private void validateUsageLimit(Coupon coupon, Long userId) {
-
-                long totalUsed = couponUsageRepository.countByCouponIdAndStatus(coupon.getId(),
-                                CouponUsageStatus.ACTIVE);
-
-                if (coupon.getUsageLimit() != null && totalUsed >= coupon.getUsageLimit()) {
-
-                        throw new RuntimeException("Coupon usage limit has been reached");
-                }
-
-                long userUsed = couponUsageRepository.countByCouponIdAndUserIdAndStatus(coupon.getId(), userId,
-                                CouponUsageStatus.ACTIVE);
-
-                if (coupon.getUsagePerUser() != null && userUsed >= coupon.getUsagePerUser()) {
-
-                        throw new RuntimeException("User has reached the usage limit");
-                }
+                return couponUsageRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException(
+                                                "Coupon usage not found"));
         }
 
         private CouponUsageResponse toResponse(

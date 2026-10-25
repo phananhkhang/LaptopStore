@@ -13,6 +13,15 @@ public class ReviewResponse {
 
     private Long orderItemId;
 
+    // Lấy từ order item (snapshot lúc mua), không lưu trong bảng reviews
+    private Long productId;
+
+    private Long variantId;
+
+    private String productName;
+
+    private String variantName;
+
     private Integer rating;
 
     private String comment;

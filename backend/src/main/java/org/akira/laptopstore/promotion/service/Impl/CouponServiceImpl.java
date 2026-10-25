@@ -11,6 +11,8 @@ import org.akira.laptopstore.promotion.entity.Coupon;
 import org.akira.laptopstore.promotion.entity.CouponUsage;
 import org.akira.laptopstore.promotion.enums.CouponUsageStatus;
 import org.akira.laptopstore.promotion.enums.DiscountType;
+import org.akira.laptopstore.promotion.exception.CouponCodeConflictException;
+import org.akira.laptopstore.promotion.exception.CouponNotApplicableException;
 import org.akira.laptopstore.promotion.repository.CouponRepository;
 import org.akira.laptopstore.promotion.repository.CouponUsageRepository;
 import org.akira.laptopstore.promotion.service.CouponService;
@@ -31,17 +33,17 @@ public class CouponServiceImpl implements CouponService {
         private final CouponUsageRepository couponUsageRepository;
 
         @Override
+        @Transactional
         public CouponResponse createCoupon(
                         CreateCouponRequest request) {
 
                 if (request == null || request.getCode() == null || request.getCode().isBlank()) {
                         throw new ValidationException("Coupon code is required");
                 }
-                if (couponRepository.existsByCodeIgnoreCase(request.getCode())) {
-                        throw new RuntimeException("Coupon code already exists");
-                }
-
                 String code = request.getCode().trim().toUpperCase();
+                if (couponRepository.existsByCodeIgnoreCase(code)) {
+                        throw new CouponCodeConflictException("Coupon code already exists");
+                }
                 validateCoupon(
                                 request.getDiscountType(),
                                 request.getDiscountValue(),
@@ -72,6 +74,7 @@ public class CouponServiceImpl implements CouponService {
         }
 
         @Override
+        @Transactional(readOnly = true)
         public List<CouponResponse> getAllCoupons() {
 
                 return couponRepository.findAll()
@@ -81,23 +84,19 @@ public class CouponServiceImpl implements CouponService {
         }
 
         @Override
+        @Transactional(readOnly = true)
         public CouponResponse getCouponById(Long id) {
 
-                Coupon coupon = couponRepository.findById(id)
-                                .orElseThrow(
-                                                () -> new RuntimeException("Coupon not found"));
-
-                return toResponse(coupon);
+                return toResponse(findCoupon(id));
         }
 
         @Override
+        @Transactional
         public CouponResponse updateCoupon(
                         Long id,
                         UpdateCouponRequest request) {
 
-                Coupon coupon = couponRepository.findById(id)
-                                .orElseThrow(
-                                                () -> new RuntimeException("Coupon not found"));
+                Coupon coupon = findCoupon(id);
                 if (request == null || request.getCode() == null || request.getCode().isBlank()) {
                         throw new ValidationException("Coupon code is required");
                 }
@@ -112,12 +111,11 @@ public class CouponServiceImpl implements CouponService {
                                 request.getStartsAt(),
                                 request.getEndsAt(),
                                 code);
-                String newCode = request.getCode().trim().toUpperCase();
 
                 // check duplicate
-                if (!coupon.getCode().equalsIgnoreCase(newCode) && couponRepository.existsByCodeIgnoreCase(newCode)) {
+                if (!coupon.getCode().equalsIgnoreCase(code) && couponRepository.existsByCodeIgnoreCase(code)) {
 
-                        throw new RuntimeException(
+                        throw new CouponCodeConflictException(
                                         "Coupon code already exists");
                 }
 
@@ -130,7 +128,10 @@ public class CouponServiceImpl implements CouponService {
                 coupon.setUsagePerUser(request.getUsagePerUser());
                 coupon.setStartsAt(request.getStartsAt());
                 coupon.setEndsAt(request.getEndsAt());
-                coupon.setActive(request.isActive());
+                // không gửi active thì giữ nguyên trạng thái hiện tại
+                if (request.getActive() != null) {
+                        coupon.setActive(request.getActive());
+                }
 
                 Coupon savedCoupon = couponRepository.save(coupon);
 
@@ -138,13 +139,35 @@ public class CouponServiceImpl implements CouponService {
         }
 
         @Override
+        @Transactional
+        public CouponResponse setActive(Long id, boolean active) {
+
+                Coupon coupon = findCoupon(id);
+                coupon.setActive(active);
+
+                return toResponse(couponRepository.save(coupon));
+        }
+
+        @Override
+        @Transactional
         public void deleteCoupon(Long id) {
 
-                Coupon coupon = couponRepository.findById(id)
-                                .orElseThrow(
-                                                () -> new RuntimeException("Coupon not found"));
+                Coupon coupon = findCoupon(id);
+
+                // coupon_usages có FK tới coupons: coupon đã dùng thì chỉ vô hiệu hóa (xóa mềm)
+                if (couponUsageRepository.existsByCouponId(id)) {
+                        coupon.setActive(false);
+                        couponRepository.save(coupon);
+                        return;
+                }
 
                 couponRepository.delete(coupon);
+        }
+
+        private Coupon findCoupon(Long id) {
+
+                return couponRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Coupon not found"));
         }
 
         @Override
@@ -278,7 +301,7 @@ public class CouponServiceImpl implements CouponService {
 
                 // 1. Loại giảm giá bắt buộc phải có
                 if (discountType == null) {
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Discount type is required");
                 }
 
@@ -286,7 +309,7 @@ public class CouponServiceImpl implements CouponService {
                 if (discountValue == null
                                 || discountValue.compareTo(BigDecimal.ZERO) <= 0) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Discount value must be greater than 0");
                 }
 
@@ -295,7 +318,7 @@ public class CouponServiceImpl implements CouponService {
                                 && discountValue.compareTo(
                                                 BigDecimal.valueOf(100)) > 0) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Percent discount cannot be greater than 100");
                 }
 
@@ -303,7 +326,7 @@ public class CouponServiceImpl implements CouponService {
                 if (maxDiscount != null
                                 && maxDiscount.compareTo(BigDecimal.ZERO) < 0) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Max discount cannot be negative");
                 }
 
@@ -311,7 +334,7 @@ public class CouponServiceImpl implements CouponService {
                 if (minOrderAmount != null
                                 && minOrderAmount.compareTo(BigDecimal.ZERO) < 0) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Minimum order amount cannot be negative");
                 }
 
@@ -319,7 +342,7 @@ public class CouponServiceImpl implements CouponService {
                 if (usageLimit != null
                                 && usageLimit <= 0) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Usage limit must be greater than 0");
                 }
 
@@ -327,7 +350,7 @@ public class CouponServiceImpl implements CouponService {
                 if (usagePerUser != null
                                 && usagePerUser <= 0) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Usage per user must be greater than 0");
                 }
 
@@ -336,7 +359,7 @@ public class CouponServiceImpl implements CouponService {
                                 && usagePerUser != null
                                 && usagePerUser > usageLimit) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Usage per user cannot be greater than usage limit");
                 }
 
@@ -345,16 +368,16 @@ public class CouponServiceImpl implements CouponService {
                                 && endsAt != null
                                 && !endsAt.isAfter(startsAt)) {
 
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "End time must be after start time");
                 }
                 // 10. valide Code null/format/blank
                 if (code == null || code.isBlank()) {
-                        throw new RuntimeException("Coupon code is required");
+                        throw new ValidationException("Coupon code is required");
                 }
 
                 if (!code.matches("^[A-Z0-9_-]{3,30}$")) {
-                        throw new RuntimeException(
+                        throw new ValidationException(
                                         "Coupon code must be 3-30 characters and contain only A-Z, 0-9, _ or -");
                 }
         }
@@ -364,7 +387,7 @@ public class CouponServiceImpl implements CouponService {
                 Instant now = Instant.now();
 
                 if (!coupon.isActive()) {
-                        throw new ValidationException(
+                        throw new CouponNotApplicableException (
                                         "Coupon is not active");
                 }
 
@@ -372,7 +395,7 @@ public class CouponServiceImpl implements CouponService {
                                 && now.isBefore(
                                                 coupon.getStartsAt())) {
 
-                        throw new ValidationException(
+                        throw new CouponNotApplicableException (
                                         "Coupon is not effective yet");
                 }
 
@@ -380,7 +403,7 @@ public class CouponServiceImpl implements CouponService {
                                 && !now.isBefore(
                                                 coupon.getEndsAt())) {
 
-                        throw new ValidationException(
+                        throw new CouponNotApplicableException (
                                         "Coupon has expired");
                 }
         }
@@ -388,7 +411,7 @@ public class CouponServiceImpl implements CouponService {
         private void validateMinimumOrder(Coupon coupon, BigDecimal subtotal) {
 
                 if (coupon.getMinOrderAmount() != null && subtotal.compareTo(coupon.getMinOrderAmount()) < 0) {
-                        throw new ValidationException("Order does not meet minimum amount");
+                        throw new CouponNotApplicableException ("Order does not meet minimum amount");
                 }
         }
 
@@ -402,7 +425,7 @@ public class CouponServiceImpl implements CouponService {
                 if (coupon.getUsageLimit() != null
                                 && totalUsed >= coupon.getUsageLimit()) {
 
-                        throw new ValidationException(
+                        throw new CouponNotApplicableException (
                                         "Coupon usage limit has been reached");
                 }
 
@@ -415,7 +438,7 @@ public class CouponServiceImpl implements CouponService {
                 if (coupon.getUsagePerUser() != null
                                 && userUsed >= coupon.getUsagePerUser()) {
 
-                        throw new ValidationException(
+                        throw new CouponNotApplicableException (
                                         "User has reached coupon usage limit");
                 }
         }
@@ -459,6 +482,7 @@ public class CouponServiceImpl implements CouponService {
                                 RoundingMode.HALF_UP);
         }
 
+        //Hủy đơn gọi
         @Override
         @Transactional(propagation = Propagation.MANDATORY)
         public void releaseForOrder(Long orderId) {
