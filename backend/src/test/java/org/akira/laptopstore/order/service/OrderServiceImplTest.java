@@ -11,6 +11,7 @@ import org.akira.laptopstore.exception.ValidationException;
 import org.akira.laptopstore.inventory.service.InventoryService;
 import org.akira.laptopstore.order.dto.request.CheckoutPreviewRequest;
 import org.akira.laptopstore.order.dto.request.CreateOrderRequest;
+import org.akira.laptopstore.order.dto.request.UpdateOrderStatusRequest;
 import org.akira.laptopstore.order.entity.Order;
 import org.akira.laptopstore.order.entity.OrderItem;
 import org.akira.laptopstore.order.entity.OrderStatusHistory;
@@ -20,6 +21,7 @@ import org.akira.laptopstore.order.repository.OrderItemRepository;
 import org.akira.laptopstore.order.repository.OrderRepository;
 import org.akira.laptopstore.order.repository.OrderStatusHistoryRepository;
 import org.akira.laptopstore.order.service.impl.OrderServiceImpl;
+import org.akira.laptopstore.order.statemachine.OrderStateMachine;
 import org.akira.laptopstore.promotion.dto.response.CouponEvaluation;
 import org.akira.laptopstore.promotion.service.CouponService;
 import org.akira.laptopstore.user.dto.AddressResponse;
@@ -33,7 +35,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -41,6 +45,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -68,7 +73,8 @@ class OrderServiceImplTest {
                 catalogCheckoutService,
                 inventoryService,
                 addressService,
-                couponService
+                couponService,
+                new OrderStateMachine()
         );
     }
 
@@ -81,14 +87,14 @@ class OrderServiceImplTest {
                 .variantName("16GB / 512GB").sku("LP-3").unitPrice(new BigDecimal("12500000"))
                 .quantity(2).build()));
         when(histories.findByOrderIdOrderByChangedAtDesc(10L)).thenReturn(List.of(OrderStatusHistory.builder()
-                .id(30L).toStatus(OrderStatus.PENDING).changedAt(Instant.parse("2026-10-01T10:00:00Z"))
+                .id(30L).toStatus(OrderStatus.CONFIRMED).changedAt(Instant.parse("2026-10-01T10:00:00Z"))
                 .changedByUserId(42L).build()));
 
         var response = service.getOwnOrder(42L, 10L);
 
         assertEquals("ORD-10", response.getOrderCode());
         assertEquals(new BigDecimal("25000000"), response.getItems().getFirst().getLineTotal());
-        assertEquals(OrderStatus.PENDING, response.getStatusHistories().getFirst().getToStatus());
+        assertEquals(OrderStatus.CONFIRMED, response.getStatusHistories().getFirst().getToStatus());
     }
 
     @Test
@@ -262,8 +268,73 @@ class OrderServiceImplTest {
         verifyNoInteractions(orders, orderItems, histories, inventoryService);
     }
 
+    @Test
+    void staffCanUpdateStatusToPackedWhenOrderIsConfirmed() {
+        Order order = order(10L, 42L);
+        order.setStatus(OrderStatus.CONFIRMED);
+        when(orders.findById(10L)).thenReturn(Optional.of(order));
+        when(histories.findByOrderIdOrderByChangedAtDesc(10L)).thenReturn(List.of());
+
+        var response = service.updateOrderStatus(99L, 10L, new UpdateOrderStatusRequest(OrderStatus.PACKED, "Packed by staff"));
+
+        assertEquals(OrderStatus.PACKED, order.getStatus());
+        verify(orders).save(order);
+        verify(histories).save(any(OrderStatusHistory.class));
+    }
+
+    @Test
+    void userCanCancelOrderWhenWaitingConfirmationAndRestoresStockAndCoupon() {
+        Order order = order(10L, 42L);
+        order.setStatus(OrderStatus.WAITING_CONFIRMATION);
+        order.setCouponCodeSnapshot("DISCOUNT10");
+        when(orders.findById(10L)).thenReturn(Optional.of(order));
+        when(orderItems.findByOrderId(10L)).thenReturn(List.of(OrderItem.builder()
+                .id(20L).productId(1L).variantId(5L).quantity(2).unitPrice(BigDecimal.TEN).build()));
+        when(histories.findByOrderIdOrderByChangedAtDesc(10L)).thenReturn(List.of());
+
+        var response = service.cancelOrder(42L, 10L, "Changed my mind");
+
+        assertEquals(OrderStatus.CANCELLED, order.getStatus());
+        verify(inventoryService).restoreForOrder(eq(10L), eq(42L), any());
+        verify(couponService).releaseForOrder(10L);
+    }
+
+    @Test
+    void expirePendingOrdersCancelsExpiredOrdersAndRestoresStockAndCoupons() {
+        Order expiredOrder = order(101L, 42L);
+        expiredOrder.setStatus(OrderStatus.PENDING_PAYMENT);
+        expiredOrder.setCouponCodeSnapshot("EXPIRED10");
+        expiredOrder.setCreatedAt(Instant.now().minus(30, ChronoUnit.MINUTES));
+
+        when(orders.findByStatusAndCreatedAtBefore(eq(OrderStatus.PENDING_PAYMENT), any(Instant.class)))
+                .thenReturn(List.of(expiredOrder));
+        when(orderItems.findByOrderId(101L)).thenReturn(List.of(OrderItem.builder()
+                .id(1L).productId(10L).variantId(20L).quantity(1).unitPrice(BigDecimal.TEN).build()));
+
+        int cancelledCount = service.expirePendingOrders(Duration.ofMinutes(15));
+
+        assertEquals(1, cancelledCount);
+        assertEquals(OrderStatus.CANCELLED, expiredOrder.getStatus());
+        verify(orders).save(expiredOrder);
+        verify(histories).save(any(OrderStatusHistory.class));
+        verify(inventoryService).restoreForOrder(eq(101L), isNull(), any());
+        verify(couponService).releaseForOrder(101L);
+    }
+
+    @Test
+    void expirePendingOrdersDoesNothingWhenNoExpiredOrders() {
+        when(orders.findByStatusAndCreatedAtBefore(eq(OrderStatus.PENDING_PAYMENT), any(Instant.class)))
+                .thenReturn(List.of());
+
+        int cancelledCount = service.expirePendingOrders(Duration.ofMinutes(15));
+
+        assertEquals(0, cancelledCount);
+        verify(orders, never()).save(any());
+        verifyNoInteractions(inventoryService);
+    }
+
     private Order order(Long id, Long userId) {
-        return Order.builder().id(id).userId(userId).orderCode("ORD-" + id).status(OrderStatus.PENDING)
+        return Order.builder().id(id).userId(userId).orderCode("ORD-" + id).status(OrderStatus.CONFIRMED)
                 .subtotal(new BigDecimal("25000000")).discountAmount(BigDecimal.ZERO).shippingFee(BigDecimal.ZERO)
                 .totalAmount(new BigDecimal("25000000")).recipientName("Nguyen Van A").recipientPhone("0900000000")
                 .shippingAddress("Ho Chi Minh City").createdAt(Instant.parse("2026-10-01T10:00:00Z"))

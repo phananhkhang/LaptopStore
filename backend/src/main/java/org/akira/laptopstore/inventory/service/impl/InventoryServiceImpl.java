@@ -7,6 +7,7 @@ import org.akira.laptopstore.inventory.repository.StockMovementRepository;
 import org.akira.laptopstore.inventory.service.InventoryService;
 
 import org.akira.laptopstore.inventory.dto.request.OrderStockDeduction;
+import org.akira.laptopstore.inventory.dto.request.PurchaseStockReceipt;
 import org.akira.laptopstore.inventory.dto.response.StockMovementResponse;
 
 import org.akira.laptopstore.catalog.dto.response.StockChangeResult;
@@ -128,7 +129,7 @@ public class InventoryServiceImpl implements InventoryService {
             StockChangeResult stockChange = catalogCheckoutService.deductStock(
                     line.getVariantId(), line.getQuantity());
             stockMovementRepository.save(createOrderMovement(
-                    orderId, actorId, line, operationKey, stockChange, "SALE", -line.getQuantity()));
+                    orderId, actorId, line.getVariantId(), operationKey, stockChange, "SALE", -line.getQuantity()));
         }
     }
 
@@ -147,7 +148,53 @@ public class InventoryServiceImpl implements InventoryService {
             StockChangeResult stockChange = catalogCheckoutService.adjustStock(
                     line.getVariantId(), line.getQuantity());
             stockMovementRepository.save(createOrderMovement(
-                    orderId, actorId, line, operationKey, stockChange, "CANCEL_RESTORE", line.getQuantity()));
+                    orderId, actorId, line.getVariantId(), operationKey, stockChange, "CANCEL_RESTORE", line.getQuantity()));
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void receivePurchase(Long purchaseOrderId, Long actorId, List<PurchaseStockReceipt> lines) {
+        if (purchaseOrderId == null || purchaseOrderId <= 0 || lines == null || lines.isEmpty()) {
+            throw new ValidationException("Bắt buộc phải có thông tin phiếu nhập và danh sách sản phẩm");
+        }
+
+        // Sắp xếp ID tăng dần để chống Deadlock
+        List<PurchaseStockReceipt> sortedLines = lines.stream()
+                .sorted(Comparator.comparing(PurchaseStockReceipt::getVariantId,
+                        Comparator.nullsLast(Comparator.naturalOrder())))
+                .toList();
+
+        for (PurchaseStockReceipt line : sortedLines) {
+            if (line == null || line.getVariantId() == null || line.getQuantity() == null || line.getQuantity() <= 0) {
+                throw new ValidationException("Danh sách biến thể nhận hàng phải hợp lệ và số lượng > 0");
+            }
+
+            // Khóa chống trùng lặp theo ID Phiếu Nhập và Variant
+            String operationKey = "receipt-" + purchaseOrderId + "-variant-" + line.getVariantId();
+            if (alreadyProcessed(operationKey)) {
+                continue; // Bỏ qua nếu đã xử lý rồi (Idempotency)
+            }
+
+            // Gọi catalog để TĂNG tồn kho
+            StockChangeResult stockChange = catalogCheckoutService.adjustStock(
+                    line.getVariantId(), line.getQuantity());
+
+            // Ghi nhật ký StockMovement
+            StockMovement movement = StockMovement.builder()
+                    .variantId(line.getVariantId())
+                    .type("PURCHASE_RECEIPT")
+                    .delta(line.getQuantity())
+                    .quantityBefore(stockChange.getQuantityBefore())
+                    .quantityAfter(stockChange.getQuantityAfter())
+                    .referenceType("PURCHASE_ORDER")
+                    .referenceId(purchaseOrderId.toString())
+                    .operationKey(operationKey)
+                    .note("Nhận hàng từ phiếu nhập #" + purchaseOrderId)
+                    .createdByUserId(actorId)
+                    .build();
+
+            stockMovementRepository.save(movement);
         }
     }
 
@@ -209,11 +256,12 @@ public class InventoryServiceImpl implements InventoryService {
         return "order-" + orderId + "-variant-" + variantId;
     }
 
-    private StockMovement createOrderMovement(Long orderId, Long actorId, OrderStockDeduction line,
+    // Đã refactor lại để tái sử dụng cho cả Sale và Cancel_Restore
+    private StockMovement createOrderMovement(Long orderId, Long actorId, Long variantId,
                                             String operationKey, StockChangeResult stockChange, 
                                             String type, int delta) {
         return StockMovement.builder()
-                .variantId(line.getVariantId())
+                .variantId(variantId)
                 .type(type)
                 .delta(delta)
                 .quantityBefore(stockChange.getQuantityBefore())
@@ -224,5 +272,4 @@ public class InventoryServiceImpl implements InventoryService {
                 .createdByUserId(actorId)
                 .build();
     }
-
 }

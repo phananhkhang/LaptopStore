@@ -1,6 +1,7 @@
 package org.akira.laptopstore.inventory.service;
 
 import org.akira.laptopstore.inventory.dto.request.OrderStockDeduction;
+import org.akira.laptopstore.inventory.dto.request.PurchaseStockReceipt;
 import org.akira.laptopstore.inventory.dto.response.StockMovementResponse;
 
 import org.akira.laptopstore.inventory.entity.StockMovement;
@@ -29,4 +30,7 @@ public interface InventoryService {
     void restoreForOrder(Long orderId, Long actorId, List<OrderStockDeduction> lines);
 
     void adjustStock(Long variantId, Integer delta, String reason, Long actorId);
+
+    // Hợp đồng cho module procurement gọi sang khi xác nhận nhận hàng
+    void receivePurchase(Long purchaseOrderId, Long actorId, List<PurchaseStockReceipt> lines);
 }

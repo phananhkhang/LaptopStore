@@ -96,7 +96,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     @Override
     public void validateOrderPayable(Long orderId) {
         Order order = findOrderOrThrow(orderId);
-        if (order.getStatus() != OrderStatus.PENDING && order.getStatus() != OrderStatus.CONFIRMED) {
+        if (order.getStatus() != OrderStatus.PENDING_PAYMENT && order.getStatus() != OrderStatus.CONFIRMED) {
             throw new ValidationException("Order cannot be paid in current status");
         }
     }
