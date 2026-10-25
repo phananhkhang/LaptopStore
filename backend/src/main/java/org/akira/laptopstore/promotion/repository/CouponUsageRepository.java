@@ -22,6 +22,8 @@ public interface CouponUsageRepository
 
         boolean existsByOrderId(Long orderId);
 
+        boolean existsByCouponId(Long couponId);
+
         Optional<CouponUsage> findByOrderId(Long orderId);
 
         List<CouponUsage> findByCouponId(Long couponId);

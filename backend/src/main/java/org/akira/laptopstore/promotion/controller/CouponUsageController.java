@@ -1,7 +1,6 @@
 package org.akira.laptopstore.promotion.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.akira.laptopstore.promotion.dto.request.CreateCouponUsageRequest;
 import org.akira.laptopstore.promotion.dto.response.CouponUsageResponse;
 import org.akira.laptopstore.promotion.service.CouponUsageService;
 import org.springframework.http.ResponseEntity;
@@ -10,22 +9,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Tra cứu lượt dùng coupon cho ADMIN. Lượt dùng chỉ được tạo trong transaction
+ * đặt hàng (CouponService.reserveForOrder), nên không có API tạo ở đây.
+ */
 @RestController
-@RequestMapping("/api/v1/coupon-usages")
+@RequestMapping("/api/v1/admin/coupon-usages")
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class CouponUsageController {
 
     private final CouponUsageService couponUsageService;
-
-    public ResponseEntity<CouponUsageResponse> create(
-            @RequestBody CreateCouponUsageRequest request) {
-
-        CouponUsageResponse response = couponUsageService.createUsage(request);
-
-        return ResponseEntity
-                .status(201)
-                .body(response);
-    }
 
     @GetMapping
     public ResponseEntity<List<CouponUsageResponse>> getAll() {
@@ -52,7 +46,6 @@ public class CouponUsageController {
     }
 
     @PutMapping("/{id}/release")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> release(
             @PathVariable Long id) {
 

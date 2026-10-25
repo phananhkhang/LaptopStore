@@ -33,6 +33,30 @@
 - USER chỉ sửa review của mình. STAFF/ADMIN được đổi cờ `visible`; ERD không có cột lưu lý do/người ẩn, nên muốn audit moderation phải mở rộng ERD trước. Không đổi rating thay khách.
 - Chỉ review hiển thị được dùng tính điểm trung bình. Không tạo quan hệ service ngược catalog → review; frontend gọi API review riêng.
 
+## API hiện có
+
+| Endpoint | Quyền | Ghi chú |
+|---|---|---|
+| `POST /api/v1/me/reviews` | USER | Body `{orderItemId, rating 1..5, comment ≤ 2000}` |
+| `PUT /api/v1/me/reviews/{id}` | USER (chủ review) | Không sửa được review đã bị ẩn |
+| `GET /api/v1/me/reviews` | Đăng nhập | Phân trang; gồm cả review đã ẩn |
+| `GET /api/v1/reviews/{id}` | Public | 404 nếu review đã ẩn |
+| `GET /api/v1/products/{productId}/reviews` | Public | Phân trang, chỉ review hiển thị, mặc định mới nhất |
+| `GET /api/v1/products/{productId}/reviews/summary` | Public | `averageRating`, `totalReviews`, `ratingCounts` (đủ 1..5) |
+| `GET /api/v1/staff/reviews?visible=&rating=` | STAFF/ADMIN | Danh sách duyệt, lọc tùy chọn |
+| `PATCH /api/v1/staff/reviews/{id}/visibility` | STAFF/ADMIN | Body `{visible}` |
+
+Mã lỗi: 400 `VALIDATION_ERROR`, 403 `REVIEW_FORBIDDEN`, 404 `RESOURCE_NOT_FOUND`, 409 `REVIEW_ALREADY_EXISTS` (kể cả 2 request đồng thời), 422 `REVIEW_NOT_ALLOWED` (đơn chưa giao, sửa review đã ẩn).
+
+## Lấy product/user qua order (không thêm cột vào `reviews`)
+
+Nhóm chốt giữ ERD: `reviews` chỉ có `order_item_id`. Product, variant, chủ review lấy qua `OrderQueryService`:
+
+- `getOrderItemForReview(id)`: kiểm tra chủ đơn và DELIVERED khi tạo/sửa.
+- `getOrderItemIdsByProduct(productId)`: review theo sản phẩm và điểm trung bình (`WHERE order_item_id IN (...)`).
+- `getOrderItemIdsByUser(userId)`: review của tôi.
+- `getOrderItemsForReview(ids)`: lấy thông tin cả trang trong một lần gọi để tránh N+1.
+
 ## Luồng triển khai điển hình
 
 Kiểm tra order item qua order → xác minh actor/trạng thái → insert review → trả DTO.
