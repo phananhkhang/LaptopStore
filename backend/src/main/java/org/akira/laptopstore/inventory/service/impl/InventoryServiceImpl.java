@@ -171,7 +171,8 @@ public class InventoryServiceImpl implements InventoryService {
             }
 
             // Khóa chống trùng lặp theo ID Phiếu Nhập và Variant
-            String operationKey = "receipt-" + purchaseOrderId + "-variant-" + line.getVariantId();
+            // SỬA LỖI: Thêm System.currentTimeMillis() để đảm bảo mỗi lần nhận hàng (dù cùng 1 phiếu) đều có operationKey duy nhất
+            String operationKey = "receipt-" + purchaseOrderId + "-variant-" + line.getVariantId() + "-" + System.currentTimeMillis();
             if (alreadyProcessed(operationKey)) {
                 continue; // Bỏ qua nếu đã xử lý rồi (Idempotency)
             }

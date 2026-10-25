@@ -1,13 +1,18 @@
 package org.akira.laptopstore.catalog.repository;
 
 import org.akira.laptopstore.catalog.entity.ProductVariant;
-import org.springframework.data.jpa.repository.JpaRepository;
+
 import org.springframework.stereotype.Repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Lock;
+
+import org.springframework.data.repository.query.Param;
+
+
+import jakarta.persistence.LockModeType;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -48,4 +53,9 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
 
     @Query("SELECT v FROM ProductVariant v JOIN FETCH v.product WHERE v.quantity <= :threshold ORDER BY v.quantity ASC, v.id ASC")
     List<ProductVariant> findLowStockVariants(@Param("threshold") int threshold);
+
+    // BỔ SUNG HÀM NÀY ĐỂ CHỐNG GHI ĐÈ TỒN KHO
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT p FROM ProductVariant p WHERE p.id = :id")
+    Optional<ProductVariant> findByIdForUpdate(@Param("id") Long id);
 }
