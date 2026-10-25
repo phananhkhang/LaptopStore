@@ -10,8 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * Tra cứu lượt dùng coupon cho ADMIN. Lượt dùng chỉ được tạo trong transaction
- * đặt hàng (CouponService.reserveForOrder), nên không có API tạo ở đây.
+ * Controller quản lý và tra cứu lịch sử sử dụng coupon.
+ *
+ * CouponUsage không được tạo trực tiếp qua Controller.
+ * Nó chỉ được tạo trong transaction đặt hàng
+ * thông qua CouponService.reserveForOrder().
  */
 @RestController
 @RequestMapping("/api/v1/admin/coupon-usages")
@@ -19,40 +22,57 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CouponUsageController {
 
-    private final CouponUsageService couponUsageService;
+        private final CouponUsageService couponUsageService;
 
-    @GetMapping
-    public ResponseEntity<List<CouponUsageResponse>> getAll() {
+        /**
+         * Lấy toàn bộ lịch sử sử dụng coupon.
+         */
+        @GetMapping
+        public ResponseEntity<List<CouponUsageResponse>> getAll() {
 
-        return ResponseEntity.ok(
-                couponUsageService.getAll());
-    }
+                return ResponseEntity.ok(
+                                couponUsageService.getAll());
+        }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CouponUsageResponse> getById(
-            @PathVariable Long id) {
+        /**
+         * Lấy chi tiết một CouponUsage theo ID.
+         */
+        @GetMapping("/{id}")
+        public ResponseEntity<CouponUsageResponse> getById(
+                        @PathVariable Long id) {
 
-        return ResponseEntity.ok(
-                couponUsageService.getById(id));
-    }
+                return ResponseEntity.ok(
+                                couponUsageService.getById(id));
+        }
 
-    @GetMapping("/coupon/{couponId}")
-    public ResponseEntity<List<CouponUsageResponse>> getByCoupon(
-            @PathVariable Long couponId) {
+        /**
+         * Lấy toàn bộ lượt sử dụng của một coupon cụ thể.
+         *
+         * Dùng để ADMIN kiểm tra coupon đã được sử dụng
+         * bởi những order/user nào.
+         */
+        @GetMapping("/coupon/{couponId}")
+        public ResponseEntity<List<CouponUsageResponse>> getByCoupon(
+                        @PathVariable Long couponId) {
 
-        return ResponseEntity.ok(
-                couponUsageService
-                        .getByCouponId(couponId));
-    }
+                return ResponseEntity.ok(
+                                couponUsageService.getByCouponId(couponId));
+        }
 
-    @PutMapping("/{id}/release")
-    public ResponseEntity<Void> release(
-            @PathVariable Long id) {
+        /**
+         * Giải phóng một lượt sử dụng coupon.
+         *
+         * Chuyển CouponUsage sang RELEASED,
+         * thường dùng khi cần hoàn lại lượt coupon.
+         */
+        @PutMapping("/{id}/release")
+        public ResponseEntity<Void> release(
+                        @PathVariable Long id) {
 
-        couponUsageService.releaseUsage(id);
+                couponUsageService.releaseUsage(id);
 
-        return ResponseEntity
-                .noContent()
-                .build();
-    }
+                return ResponseEntity
+                                .noContent()
+                                .build();
+        }
 }
