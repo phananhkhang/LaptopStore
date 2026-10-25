@@ -1,15 +1,21 @@
 package org.akira.laptopstore.catalog.service.impl;
 
 import lombok.RequiredArgsConstructor;
+
 import org.akira.laptopstore.catalog.dto.response.CheckoutVariantSnapshot;
 import org.akira.laptopstore.catalog.dto.response.StockChangeResult;
+
 import org.akira.laptopstore.catalog.entity.ProductVariant;
 import org.akira.laptopstore.catalog.repository.ProductVariantRepository;
 import org.akira.laptopstore.catalog.service.CatalogCheckoutService;
+
 import org.akira.laptopstore.common.util.VariantUtils;
+import org.akira.laptopstore.exception.BusinessException;
 import org.akira.laptopstore.exception.ResourceNotFoundException;
 import org.akira.laptopstore.exception.ValidationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,22 +64,25 @@ public class CatalogCheckoutServiceImpl implements CatalogCheckoutService {
     }
 
     @Override
-    @Transactional(propagation = Propagation.MANDATORY) // Bắt buộc phải chạy trong transaction của InventoryService
+    @Transactional
     public StockChangeResult adjustStock(Long variantId, int delta) {
-        if (variantId == null || variantId <= 0) {
-            throw new ValidationException("variantId phải lớn hơn 0");
-        }
-        ProductVariant variant = productVariantRepository.findById(variantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy biến thể: " + variantId));
+        // SỬ DỤNG FINDBYIDFORUPDATE ĐỂ KHÓA DÒNG DỮ LIỆU
+        ProductVariant variant = productVariantRepository.findByIdForUpdate(variantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Variant ID: " + variantId));
 
-        int before = variant.getQuantity() == null ? 0 : variant.getQuantity();
-        int after = before + delta;
-        if (after < 0) {
-            throw new ValidationException("Tồn kho không được âm. Biến thể: " + variantId);
+        int quantityBefore = variant.getQuantity();
+        int quantityAfter = quantityBefore + delta;
+
+        // Chặn luồng bán hàng nếu trừ âm kho (tùy nghiệp vụ của bạn)
+        if (quantityAfter < 0) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "OUT_OF_STOCK", 
+                    "Không đủ số lượng tồn kho để thực hiện giao dịch.");
         }
 
-        variant.setQuantity(after);
-        return new StockChangeResult(variantId, before, after);
+        variant.setQuantity(quantityAfter);
+        productVariantRepository.save(variant);
+
+        return new StockChangeResult(variantId, quantityBefore, quantityAfter);
     }
 
     private List<Long> validateAndOrderIds(Collection<Long> variantIds) {
