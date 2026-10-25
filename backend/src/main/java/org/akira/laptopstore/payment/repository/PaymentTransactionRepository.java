@@ -6,6 +6,11 @@ import java.util.Optional;
 import org.akira.laptopstore.payment.entity.PaymentTransaction;
 import org.akira.laptopstore.payment.enums.PaymentTransactionStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import jakarta.persistence.LockModeType;
+
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PaymentTransactionRepository extends JpaRepository<PaymentTransaction, Long> {
 
@@ -20,4 +25,13 @@ public interface PaymentTransactionRepository extends JpaRepository<PaymentTrans
     Optional<PaymentTransaction> findTopByPaymentIdOrderByCreatedAtDesc(Long paymentId);
 
     Optional<PaymentTransaction> findByProviderReference(String providerReference);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select pt
+            from PaymentTransaction pt
+            where pt.providerReference = :providerReference
+            """)
+    Optional<PaymentTransaction> findByProviderReferenceForUpdate(
+            @Param("providerReference") String providerReference);
 }

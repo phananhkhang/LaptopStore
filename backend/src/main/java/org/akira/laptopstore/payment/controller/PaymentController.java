@@ -28,6 +28,15 @@ public class PaymentController {
 
         private final PaymentService paymentService;
 
+        /**
+         * Khởi tạo thanh toán cho một đơn hàng của user hiện tại.
+         *
+         * User gửi orderId và phương thức thanh toán.
+         * Controller lấy userId từ tài khoản đang đăng nhập
+         * và chuyển dữ liệu cho PaymentService xử lý.
+         *
+         * @return Payment vừa được tạo với HTTP 201.
+         */
         @PostMapping
         @PreAuthorize("hasRole('USER')")
         public ResponseEntity<PaymentResponse> startPayment(
@@ -41,6 +50,11 @@ public class PaymentController {
                 return ResponseEntity.status(201).body(response);
         }
 
+        /**
+         * Lấy thông tin một Payment theo paymentId.
+         *
+         * Chỉ USER sở hữu đơn hàng liên quan mới được xem.
+         */
         @GetMapping("/{id}")
         @PreAuthorize("hasRole('USER')")
         public ResponseEntity<PaymentResponse> getById(
@@ -53,6 +67,12 @@ public class PaymentController {
                                                 id));
         }
 
+        /**
+         * Lấy thông tin thanh toán của một đơn hàng theo orderId.
+         *
+         * Dùng khi frontend cần kiểm tra đơn hàng đã thanh toán
+         * hay đang chờ thanh toán.
+         */
         @GetMapping("/order/{orderId}")
         @PreAuthorize("hasRole('USER')")
         public ResponseEntity<PaymentResponse> getByOrder(
@@ -65,6 +85,12 @@ public class PaymentController {
                                                 orderId));
         }
 
+        /**
+         * Xác nhận đã thu tiền đối với thanh toán COD.
+         *
+         * Chỉ STAFF hoặc ADMIN được thực hiện,
+         * thường được gọi sau khi đơn hàng đã giao thành công.
+         */
         @PutMapping("/cod")
         @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
         public ResponseEntity<PaymentResponse> recordCod(
@@ -74,20 +100,23 @@ public class PaymentController {
                                 paymentService.recordCodPayment(request));
         }
 
+        /**
+         * Tạo phiên thanh toán VNPay cho Payment.
+         *
+         * Backend tạo PaymentTransaction và URL thanh toán,
+         * sau đó frontend dùng URL này để redirect user sang VNPay.
+         */
         @PostMapping("/{paymentId}/vnpay-session")
         @PreAuthorize("hasRole('USER')")
         public ResponseEntity<PaymentSessionResponse> createVnpaySession(
                         @AuthenticationPrincipal CustomUserDetails userDetails,
-
                         @PathVariable Long paymentId,
-
                         HttpServletRequest request) {
 
-                PaymentSessionResponse response = paymentService
-                                .createVnpaySession(
-                                                userDetails.getId(),
-                                                paymentId,
-                                                request.getRemoteAddr());
+                PaymentSessionResponse response = paymentService.createVnpaySession(
+                                userDetails.getId(),
+                                paymentId,
+                                request.getRemoteAddr());
 
                 return ResponseEntity.ok(response);
         }

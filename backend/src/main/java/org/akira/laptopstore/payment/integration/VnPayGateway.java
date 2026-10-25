@@ -12,152 +12,292 @@ import java.util.TreeMap;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.akira.laptopstore.payment.config.VnPayProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
+import java.security.MessageDigest;
+
 @Component
+@RequiredArgsConstructor
 public class VnPayGateway {
 
-    private static final DateTimeFormatter VNP_DATE_FORMAT =
-            DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
-                    .withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
+        private static final DateTimeFormatter VNP_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+                        .withZone(ZoneId.of("Asia/Ho_Chi_Minh"));
 
-    @Value("${vnpay.tmn-code:DEMO_TMN_CODE}")
-    private String tmnCode;
+        private final VnPayProperties properties;
 
-    @Value("${vnpay.hash-secret:DEMO_HASH_SECRET_KEY_FOR_SANDBOX}")
-    private String hashSecret;
+        public String createPaymentUrl(
+                        BigDecimal amount,
+                        String transactionRef,
+                        String clientIp,
+                        Instant expiresAt) {
 
-    @Value("${vnpay.pay-url:https://sandbox.vnpayment.vn/paymentv2/vpcpay.html}")
-    private String payUrl;
+                validateConfiguration();
 
-    @Value("${vnpay.return-url:http://localhost:5173/payment/vnpay-return}")
-    private String returnUrl;
+                Instant now = Instant.now();
 
-    public String createPaymentUrl(
-            BigDecimal amount,
-            String transactionRef,
-            String clientIp,
-            Instant expiresAt) {
+                Map<String, String> params = new TreeMap<>();
 
-        Instant now = Instant.now();
+                params.put("vnp_Version", "2.1.0");
+                params.put("vnp_Command", "pay");
 
-        Map<String, String> params = new TreeMap<>();
+                params.put(
+                                "vnp_TmnCode",
+                                properties.getTmnCode());
 
-        params.put("vnp_Version", "2.1.0");
-        params.put("vnp_Command", "pay");
-        params.put("vnp_TmnCode", tmnCode);
+                params.put(
+                                "vnp_Amount",
+                                amount
+                                                .multiply(BigDecimal.valueOf(100))
+                                                .toBigIntegerExact()
+                                                .toString());
 
-        params.put(
-                "vnp_Amount",
-                amount.multiply(BigDecimal.valueOf(100))
-                        .toBigIntegerExact()
-                        .toString()
-        );
+                params.put("vnp_CurrCode", "VND");
 
-        params.put("vnp_CurrCode", "VND");
+                params.put(
+                                "vnp_TxnRef",
+                                transactionRef);
 
-        params.put("vnp_TxnRef", transactionRef);
+                params.put(
+                                "vnp_OrderInfo",
+                                "Thanh toan don hang " + transactionRef);
 
-        params.put(
-                "vnp_OrderInfo",
-                "Thanh toan don hang " + transactionRef
-        );
+                params.put("vnp_OrderType", "other");
+                params.put("vnp_Locale", "vn");
 
-        params.put("vnp_OrderType", "other");
+                params.put(
+                                "vnp_ReturnUrl",
+                                properties.getReturnUrl());
 
-        params.put("vnp_Locale", "vn");
+                params.put(
+                                "vnp_IpAddr",
+                                normalizeClientIp(clientIp));
 
-        params.put("vnp_ReturnUrl", returnUrl);
+                params.put(
+                                "vnp_CreateDate",
+                                VNP_DATE_FORMAT.format(now));
 
-        params.put("vnp_IpAddr", clientIp);
+                params.put(
+                                "vnp_ExpireDate",
+                                VNP_DATE_FORMAT.format(expiresAt));
 
-        params.put(
-                "vnp_CreateDate",
-                VNP_DATE_FORMAT.format(now)
-        );
+                String hashData = buildHashData(params);
 
-        params.put(
-                "vnp_ExpireDate",
-                VNP_DATE_FORMAT.format(expiresAt)
-        );
+                String query = buildQuery(params);
 
-        StringBuilder hashData = new StringBuilder();
-        StringBuilder query = new StringBuilder();
+                String secureHash = hmacSha512(
+                                properties.getHashSecret(),
+                                hashData);
 
-        for (Map.Entry<String, String> entry : params.entrySet()) {
-
-            if (!hashData.isEmpty()) {
-                hashData.append('&');
-                query.append('&');
-            }
-
-            hashData
-                    .append(entry.getKey())
-                    .append('=')
-                    .append(entry.getValue());
-
-            query
-                    .append(URLEncoder.encode(
-                            entry.getKey(),
-                            StandardCharsets.UTF_8
-                    ))
-                    .append('=')
-                    .append(URLEncoder.encode(
-                            entry.getValue(),
-                            StandardCharsets.UTF_8
-                    ));
+                return properties.getPayUrl()
+                                + "?"
+                                + query
+                                + "&vnp_SecureHash="
+                                + secureHash;
         }
 
-        String secureHash =
-                hmacSha512(hashSecret, hashData.toString());
+        private String normalizeClientIp(
+                        String clientIp) {
 
-        return payUrl
-                + "?"
-                + query
-                + "&vnp_SecureHash="
-                + secureHash;
-    }
+                if (!StringUtils.hasText(clientIp)
+                                || "::1".equals(clientIp)
+                                || "0:0:0:0:0:0:0:1".equals(clientIp)) {
 
-    private String hmacSha512(
-            String key,
-            String data) {
+                        return "127.0.0.1";
+                }
 
-        try {
-
-            Mac hmac =
-                    Mac.getInstance("HmacSHA512");
-
-            SecretKeySpec secretKey =
-                    new SecretKeySpec(
-                            key.getBytes(StandardCharsets.UTF_8),
-                            "HmacSHA512"
-                    );
-
-            hmac.init(secretKey);
-
-            byte[] bytes =
-                    hmac.doFinal(
-                            data.getBytes(StandardCharsets.UTF_8)
-                    );
-
-            StringBuilder result =
-                    new StringBuilder();
-
-            for (byte b : bytes) {
-                result.append(
-                        String.format("%02x", b)
-                );
-            }
-
-            return result.toString();
-
-        } catch (Exception e) {
-
-            throw new IllegalStateException(
-                    "Cannot create VNPay secure hash",
-                    e
-            );
+                return clientIp;
         }
-    }
+
+        private String buildHashData(
+                        Map<String, String> params) {
+
+                StringBuilder hashData = new StringBuilder();
+
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+
+                        if (!StringUtils.hasText(
+                                        entry.getValue())) {
+                                continue;
+                        }
+
+                        if (hashData.length() > 0) {
+                                hashData.append('&');
+                        }
+
+                        hashData
+                                        .append(entry.getKey())
+                                        .append('=')
+                                        .append(
+                                                        urlEncode(
+                                                                        entry.getValue()));
+                }
+
+                return hashData.toString();
+        }
+
+        private String buildQuery(
+                        Map<String, String> params) {
+
+                StringBuilder query = new StringBuilder();
+
+                for (Map.Entry<String, String> entry : params.entrySet()) {
+
+                        if (!StringUtils.hasText(
+                                        entry.getValue())) {
+                                continue;
+                        }
+
+                        if (query.length() > 0) {
+                                query.append('&');
+                        }
+
+                        query
+                                        .append(
+                                                        urlEncode(
+                                                                        entry.getKey()))
+                                        .append('=')
+                                        .append(
+                                                        urlEncode(
+                                                                        entry.getValue()));
+                }
+
+                return query.toString();
+        }
+
+        private String urlEncode(
+                        String value) {
+
+                return URLEncoder.encode(
+                                value,
+                                StandardCharsets.US_ASCII);
+        }
+
+        private String hmacSha512(
+                        String key,
+                        String data) {
+
+                try {
+
+                        Mac hmac512 = Mac.getInstance("HmacSHA512");
+
+                        SecretKeySpec secretKey = new SecretKeySpec(
+                                        key.getBytes(
+                                                        StandardCharsets.UTF_8),
+                                        "HmacSHA512");
+
+                        hmac512.init(secretKey);
+
+                        byte[] bytes = hmac512.doFinal(
+                                        data.getBytes(
+                                                        StandardCharsets.UTF_8));
+
+                        StringBuilder hash = new StringBuilder();
+
+                        for (byte b : bytes) {
+
+                                hash.append(
+                                                String.format(
+                                                                "%02x",
+                                                                b));
+                        }
+
+                        return hash.toString();
+
+                } catch (Exception ex) {
+
+                        throw new IllegalStateException(
+                                        "Cannot generate VNPay signature",
+                                        ex);
+                }
+        }
+
+        public boolean verifySignature(
+                        Map<String, String> incomingParams) {
+
+                validateConfiguration();
+
+                String receivedHash = incomingParams.get(
+                                "vnp_SecureHash");
+
+                if (!StringUtils.hasText(
+                                receivedHash)) {
+
+                        return false;
+                }
+
+                Map<String, String> signedParams = new TreeMap<>();
+
+                incomingParams.forEach(
+                                (key, value) -> {
+
+                                        if (!"vnp_SecureHash"
+                                                        .equals(key)
+                                                        &&
+                                                        !"vnp_SecureHashType"
+                                                                        .equals(key)
+                                                        &&
+                                                        StringUtils.hasText(value)) {
+
+                                                signedParams.put(
+                                                                key,
+                                                                value);
+                                        }
+                                });
+
+                String expectedHash = hmacSha512(
+                                properties.getHashSecret(),
+                                buildHashData(
+                                                signedParams));
+
+                return MessageDigest.isEqual(
+
+                                expectedHash
+                                                .toLowerCase()
+                                                .getBytes(
+                                                                StandardCharsets.US_ASCII),
+
+                                receivedHash
+                                                .toLowerCase()
+                                                .getBytes(
+                                                                StandardCharsets.US_ASCII));
+        }
+
+        public boolean isExpectedTmnCode(
+                        String tmnCode) {
+
+                return StringUtils.hasText(tmnCode)
+                                &&
+                                properties
+                                                .getTmnCode()
+                                                .equals(tmnCode);
+        }
+
+        private void validateConfiguration() {
+
+                if (!StringUtils.hasText(
+                                properties.getTmnCode())
+                                ||
+                                properties
+                                                .getTmnCode()
+                                                .startsWith("DEMO_")) {
+
+                        throw new IllegalStateException(
+                                        "VNPAY_TMN_CODE is not configured");
+                }
+
+                if (!StringUtils.hasText(
+                                properties.getHashSecret())
+                                ||
+                                properties
+                                                .getHashSecret()
+                                                .startsWith("DEMO_")) {
+
+                        throw new IllegalStateException(
+                                        "VNPAY_HASH_SECRET is not configured");
+                }
+        }
 }

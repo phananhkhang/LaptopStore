@@ -15,6 +15,10 @@ import org.akira.laptopstore.security.principal.CustomUserDetails;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
+/**
+ * Controller cung cấp API để user tra cứu
+ * các lần giao dịch thanh toán của mình.
+ */
 @RestController
 @RequestMapping("/api/v1/payment-transactions")
 @RequiredArgsConstructor
@@ -22,15 +26,30 @@ public class PaymentTransactionController {
 
     private final PaymentTransactionService paymentTransactionService;
 
+    /**
+     * Lấy chi tiết một lần giao dịch thanh toán theo transactionId.
+     *
+     * Service sẽ kiểm tra transaction có thuộc Payment
+     * của user đang đăng nhập hay không.
+     */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<PaymentTransactionResponse> getById(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long id) {
 
-        return ResponseEntity.ok(paymentTransactionService.getById(userDetails.getId(), id));
+        return ResponseEntity.ok(
+                paymentTransactionService.getById(
+                        userDetails.getId(),
+                        id));
     }
 
+    /**
+     * Lấy toàn bộ các lần giao dịch của một Payment.
+     *
+     * Một Payment có thể có nhiều transaction
+     * nếu user thanh toán thất bại rồi thử lại.
+     */
     @GetMapping("/payment/{paymentId}")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<List<PaymentTransactionResponse>> getByPaymentId(

@@ -56,13 +56,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler)
-                )
+                        .accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/api/v1/auth/**", "/api/v1/ai/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**", "/api/v1/brands/**", "/api/v1/categories/**", "/api/v1/reviews/**").permitAll()
-                        .requestMatchers("/api/v1/payments/callback/**", "/api/v1/payments/vnpay-callback/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/products/**", "/api/v1/brands/**",
+                                "/api/v1/categories/**", "/api/v1/reviews/**")
+                        .permitAll()
+                        // VNPay không có JWT của user trong hệ thống
+                        .requestMatchers(
+                                "/api/v1/payments/vnpay/ipn",
+                                "/api/v1/payments/vnpay/return")
+                        .permitAll()
                         .requestMatchers("/error").permitAll()
                         // Staff endpoints
                         .requestMatchers("/api/v1/staff/**").hasAnyRole("STAFF", "ADMIN")
@@ -71,8 +76,7 @@ public class SecurityConfig {
                         // Authenticated endpoints
                         .requestMatchers("/api/v1/me/**").authenticated()
                         .requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -81,7 +85,8 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOriginPatterns(List.of("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:*"));
+        config.setAllowedOriginPatterns(
+                List.of("http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
