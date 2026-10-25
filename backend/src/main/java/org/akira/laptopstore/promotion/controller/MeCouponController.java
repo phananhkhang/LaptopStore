@@ -14,32 +14,47 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller cung cấp chức năng coupon
+ * liên quan đến user đang đăng nhập.
+ */
 @RestController
 @RequestMapping("/api/v1/me/coupons")
 @RequiredArgsConstructor
 public class MeCouponController {
 
-    private final CouponService couponService;
-    private final CouponUsageService couponUsageService;
+        private final CouponService couponService;
+        private final CouponUsageService couponUsageService;
 
-    // Chỉ xem trước, không giữ lượt; lượt được ghi khi đặt hàng (reserveForOrder).
-    @PostMapping("/preview")
-    public ResponseEntity<CouponEvaluation> preview(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @Valid @RequestBody PreviewCouponRequest request) {
+        /**
+         * Kiểm tra thử coupon tại bước checkout.
+         *
+         * Chỉ kiểm tra điều kiện và tính số tiền giảm,
+         * KHÔNG tạo CouponUsage và KHÔNG chiếm lượt coupon.
+         *
+         * Lượt coupon chỉ được giữ khi user thực sự đặt hàng.
+         */
+        @PostMapping("/preview")
+        public ResponseEntity<CouponEvaluation> preview(
+                        @AuthenticationPrincipal CustomUserDetails userDetails,
+                        @Valid @RequestBody PreviewCouponRequest request) {
 
-        return ResponseEntity.ok(
-                couponService.evaluateForCheckout(
-                        request.getCode(),
-                        userDetails.getId(),
-                        request.getSubtotal()));
-    }
+                return ResponseEntity.ok(
+                                couponService.evaluateForCheckout(
+                                                request.getCode(),
+                                                userDetails.getId(),
+                                                request.getSubtotal()));
+        }
 
-    @GetMapping("/usages")
-    public ResponseEntity<List<CouponUsageResponse>> getMyUsages(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        /**
+         * Lấy lịch sử sử dụng coupon của user hiện tại.
+         */
+        @GetMapping("/usages")
+        public ResponseEntity<List<CouponUsageResponse>> getMyUsages(
+                        @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        return ResponseEntity.ok(
-                couponUsageService.getByUserId(userDetails.getId()));
-    }
+                return ResponseEntity.ok(
+                                couponUsageService.getByUserId(
+                                                userDetails.getId()));
+        }
 }
