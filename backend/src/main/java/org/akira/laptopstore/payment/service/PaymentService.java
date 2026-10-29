@@ -7,6 +7,7 @@ import org.akira.laptopstore.payment.dto.response.PaymentSessionResponse;
 import org.akira.laptopstore.payment.entity.Payment;
 
 public interface PaymentService {
+    PaymentResponse getForStaff(Long orderId);
 
     /**
      * Khởi tạo một Payment cho đơn hàng.

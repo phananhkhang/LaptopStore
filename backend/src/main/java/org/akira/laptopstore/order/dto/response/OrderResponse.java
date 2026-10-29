@@ -43,4 +43,5 @@ public class OrderResponse {
     public void setPaymentMethod(String value) { paymentMethod = value; }
     private String paymentMethod;
     private String customerNote;
+    private List<OrderStatus> allowedTransitions = List.of();
 }

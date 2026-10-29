@@ -31,9 +31,11 @@ public class OrderController {
     @GetMapping("/me/orders")
     public ResponseEntity<OrderPageResponse<OrderSummaryResponse>> getOwnOrders(
             @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam(required = false) org.akira.laptopstore.order.entity.enums.OrderStatus status,
+            @RequestParam(required = false) String search,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(OrderPageResponse.from(orderService.getOwnOrders(userDetails.getId(), pageable)));
+        return ResponseEntity.ok(OrderPageResponse.from(status == null && search == null ? orderService.getOwnOrders(userDetails.getId(), pageable) : orderService.searchOrders(userDetails.getId(), status, search, pageable)));
     }
 
     // Lấy thông tin một đơn hàng cụ thể của chính họ
@@ -49,9 +51,11 @@ public class OrderController {
     @GetMapping("/staff/orders")
     @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
     public ResponseEntity<OrderPageResponse<OrderSummaryResponse>> getAllOrders(
+            @RequestParam(required = false) org.akira.laptopstore.order.entity.enums.OrderStatus status,
+            @RequestParam(required = false) String search,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return ResponseEntity.ok(OrderPageResponse.from(orderService.getAllOrders(pageable)));
+        return ResponseEntity.ok(OrderPageResponse.from(status == null && search == null ? orderService.getAllOrders(pageable) : orderService.searchOrders(null, status, search, pageable)));
     }
 
     @GetMapping("/staff/orders/{orderId}")

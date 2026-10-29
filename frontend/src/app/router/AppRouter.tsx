@@ -1,49 +1,73 @@
-import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
-import { ProtectedRoute } from './ProtectedRoute';
-import { RoleBasedRoute } from './RoleBasedRoute';
-import { ROLES } from '@/constants/roles';
+import React from "react";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
+import { ProtectedRoute } from "./ProtectedRoute";
+import { RoleBasedRoute } from "./RoleBasedRoute";
+import { ROLES } from "@/constants/roles";
 
 // Auth & User Pages
-import { LoginPage } from '@/modules/auth/pages/LoginPage';
-import { RegisterPage } from '@/modules/auth/pages/RegisterPage';
-import { ProfilePage } from '@/modules/user/pages/ProfilePage';
+import { LoginPage } from "@/modules/auth/pages/LoginPage";
+import { RegisterPage } from "@/modules/auth/pages/RegisterPage";
+import { ProfilePage } from "@/modules/user/pages/ProfilePage";
 
 // AI Pages & Widget
-import { AIChatPage } from '@/modules/ai/pages/AIChatPage';
-import { AIChatWidget } from '@/modules/ai/components/AIChatWidget';
+import { AIChatPage } from "@/modules/ai/pages/AIChatPage";
+import { AIChatWidget } from "@/modules/ai/components/AIChatWidget";
 
 // Cart & Order Pages
-import { CartPage } from '@/modules/cart/pages/CartPage';
-import { CheckoutPage } from '@/modules/order/pages/checkout/CheckoutPage';
-import { StaffOrderListPage } from '@/modules/order/pages/admin/StaffOrderListPage';
-import { OrderDetailPage } from '@/modules/order/pages/user/OrderDetailPage';
-import { OrderHistoryPage } from '@/modules/order/pages/user/OrderHistoryPage';
+import { CartPage } from "@/modules/cart/pages/CartPage";
+import { CheckoutPage } from "@/modules/order/pages/checkout/CheckoutPage";
+import { StaffOrderListPage } from "@/modules/order/pages/admin/StaffOrderListPage";
+import { OrderDetailPage } from "@/modules/order/pages/user/OrderDetailPage";
+import { OrderHistoryPage } from "@/modules/order/pages/user/OrderHistoryPage";
+import { OrderSuccessPage } from "@/modules/order/pages/user/OrderSuccessPage";
+import { StaffOrderDetailPage } from "@/modules/order/pages/admin/StaffOrderDetailPage";
+import { PaymentReturnPage } from "@/modules/order/pages/checkout/PaymentReturnPage";
 
 // Catalog
-import { CatalogRoutes } from '@/modules/catalog/routes/CatalogRoutes';
+import { CatalogRoutes } from "@/modules/catalog/routes/CatalogRoutes";
 
 // Placeholders for remaining admin/staff dashboards
 const StaffDashboard = () => (
   <div className="max-w-7xl mx-auto p-6">
-    <h1 className="text-2xl font-bold text-gray-800">Bàn Làm Việc Nhân Viên (Staff Protected)</h1>
-    <p className="text-gray-500 mt-2">Khu vực xử lý đơn hàng và điều phối kho bãi.</p>
+    <h1 className="text-2xl font-bold text-gray-800">
+      Bàn Làm Việc Nhân Viên (Staff Protected)
+    </h1>
+    <p className="text-gray-500 mt-2">
+      Khu vực xử lý đơn hàng và điều phối kho bãi.
+    </p>
   </div>
 );
 
 const AdminDashboard = () => (
   <div className="max-w-7xl mx-auto p-6">
-    <h1 className="text-2xl font-bold text-gray-800">Trang Quản Trị Hệ Thống (Admin Protected)</h1>
-    <p className="text-gray-500 mt-2">Khu vực quản lý cấu hình, người dùng và báo cáo doanh thu toàn hệ thống.</p>
+    <h1 className="text-2xl font-bold text-gray-800">
+      Trang Quản Trị Hệ Thống (Admin Protected)
+    </h1>
+    <p className="text-gray-500 mt-2">
+      Khu vực quản lý cấu hình, người dùng và báo cáo doanh thu toàn hệ thống.
+    </p>
   </div>
 );
 
 const ForbiddenPage = () => (
   <div className="max-w-md mx-auto mt-20 p-8 text-center bg-white rounded-xl shadow-md border border-red-100">
     <h1 className="text-4xl font-extrabold text-red-600 mb-2">403</h1>
-    <h2 className="text-xl font-bold text-gray-800 mb-2">Truy cập bị từ chối</h2>
-    <p className="text-gray-600 mb-6">Bạn không có quyền truy cập vào tài nguyên hoặc trang này.</p>
-    <a href="/products" className="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+    <h2 className="text-xl font-bold text-gray-800 mb-2">
+      Truy cập bị từ chối
+    </h2>
+    <p className="text-gray-600 mb-6">
+      Bạn không có quyền truy cập vào tài nguyên hoặc trang này.
+    </p>
+    <a
+      href="/products"
+      className="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
+    >
       Về trang sản phẩm
     </a>
   </div>
@@ -52,13 +76,27 @@ const ForbiddenPage = () => (
 const NotFoundPage = () => (
   <div className="max-w-md mx-auto mt-20 p-8 text-center bg-white rounded-xl shadow-md border border-gray-100">
     <h1 className="text-4xl font-extrabold text-gray-800 mb-2">404</h1>
-    <h2 className="text-xl font-bold text-gray-700 mb-2">Không tìm thấy trang</h2>
-    <p className="text-gray-500 mb-6">Đường dẫn bạn yêu cầu không tồn tại hoặc đã bị di chuyển.</p>
-    <a href="/products" className="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+    <h2 className="text-xl font-bold text-gray-700 mb-2">
+      Không tìm thấy trang
+    </h2>
+    <p className="text-gray-500 mb-6">
+      Đường dẫn bạn yêu cầu không tồn tại hoặc đã bị di chuyển.
+    </p>
+    <a
+      href="/products"
+      className="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition"
+    >
       Về trang chủ
     </a>
   </div>
 );
+
+const FloatingAssistant = () => {
+  const { pathname } = useLocation();
+  const commercePage =
+    /^\/(cart|checkout|orders|payment|staff\/orders)(\/|$)/.test(pathname);
+  return commercePage ? null : <AIChatWidget />;
+};
 
 export const AppRouter: React.FC = () => {
   return (
@@ -83,11 +121,27 @@ export const AppRouter: React.FC = () => {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/orders" element={<OrderHistoryPage />} />
             <Route path="/orders/:orderId" element={<OrderDetailPage />} />
+            <Route
+              path="/orders/:orderId/success"
+              element={<OrderSuccessPage />}
+            />
+            <Route
+              path="/payment/vnpay-return"
+              element={<PaymentReturnPage />}
+            />
           </Route>
 
           {/* Staff & Admin Protected Routes */}
-          <Route element={<RoleBasedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]} />}>
+          <Route
+            element={
+              <RoleBasedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]} />
+            }
+          >
             <Route path="/staff/orders" element={<StaffOrderListPage />} />
+            <Route
+              path="/staff/orders/:orderId"
+              element={<StaffOrderDetailPage />}
+            />
             <Route path="/staff/*" element={<StaffDashboard />} />
           </Route>
 
@@ -101,7 +155,7 @@ export const AppRouter: React.FC = () => {
         </Routes>
 
         {/* Floating AI Consultant Assistant Widget on all pages */}
-        <AIChatWidget />
+        <FloatingAssistant />
       </div>
     </BrowserRouter>
   );

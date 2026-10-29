@@ -109,7 +109,7 @@ class OrderServiceImplTest {
         Order order = order(10L, 42L);
         when(orders.findByUserId(42L, PageRequest.of(0, 20))).thenReturn(new PageImpl<>(List.of(order)));
         when(orderItems.findByOrderId(10L)).thenReturn(List.of(
-                OrderItem.builder().quantity(2).build(), OrderItem.builder().quantity(1).build()));
+                OrderItem.builder().quantity(2).unitPrice(BigDecimal.TEN).build(), OrderItem.builder().quantity(1).unitPrice(BigDecimal.TEN).build()));
 
         var result = service.getOwnOrders(42L, PageRequest.of(0, 20));
 

@@ -32,6 +32,13 @@ import org.akira.laptopstore.common.exception.InvalidPaymentStatusException;
 @RequiredArgsConstructor
 public class PaymentImpl implements PaymentService {
 
+        @Override
+        @Transactional(readOnly = true)
+        public PaymentResponse getForStaff(Long orderId) {
+                return toResponse(paymentRepository.findByOrderId(orderId)
+                        .orElseThrow(() -> new PaymentNotFoundException("Payment not found")));
+        }
+
         private final PaymentRepository paymentRepository;
         private final OrderQueryService orderQueryService;
         private final PaymentTransactionService paymentTransactionService;

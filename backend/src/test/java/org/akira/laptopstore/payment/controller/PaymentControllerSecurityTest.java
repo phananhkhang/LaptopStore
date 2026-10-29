@@ -51,6 +51,14 @@ class PaymentControllerSecurityTest {
     @MockitoBean private CustomUserDetailsService userDetailsService;
 
     @Test
+    void userCannotReadStaffPaymentEndpoint() throws Exception {
+        mockMvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .get("/api/v1/payments/staff/order/10").with(user(principal(42L, "ROLE_USER"))))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(paymentService);
+    }
+
+    @Test
     @DisplayName("TDD RED: POST /api/v1/payments yêu cầu đăng nhập, ẩn danh trả về 401")
     void startPayment_whenAnonymous_shouldReturn401() throws Exception {
         StartPaymentRequest request = new StartPaymentRequest();

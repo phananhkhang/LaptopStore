@@ -50,6 +50,15 @@ class OrderControllerTest {
     @MockitoBean private CustomUserDetailsService userDetailsService;
 
     @Test
+    void userSearchAlwaysScopesToPrincipal() throws Exception {
+        when(orderService.searchOrders(eq(42L), eq(OrderStatus.PACKING), eq("LS"), any()))
+                .thenReturn(new PageImpl<>(List.of()));
+        mockMvc.perform(get("/api/v1/me/orders?search=LS&status=PACKING").with(user(principal(42L, "ROLE_USER"))))
+                .andExpect(status().isOk());
+        verify(orderService).searchOrders(eq(42L), eq(OrderStatus.PACKING), eq("LS"), any());
+    }
+
+    @Test
     void staffDetailEndpointRejectsRegularUser() throws Exception {
         mockMvc.perform(get("/api/v1/staff/orders/10").with(user(principal(42L, "ROLE_USER"))))
                 .andExpect(status().isForbidden());

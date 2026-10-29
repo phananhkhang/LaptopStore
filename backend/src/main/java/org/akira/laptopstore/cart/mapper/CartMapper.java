@@ -25,7 +25,7 @@ public final class CartMapper {
                     String variantName = variant.getVariantName();
                     BigDecimal unitPrice = variant.getUnitPrice();
                     BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(item.getQuantity()));
-                    return new CartItemResponse(
+                    CartItemResponse response = new CartItemResponse(
                             item.getId(),
                             item.getVariantId(),
                             productName,
@@ -35,6 +35,10 @@ public final class CartMapper {
                             unitPrice,
                             lineTotal
                     );
+                    response.setProductId(variant.getProductId());
+                    response.setAvailableQuantity(variant.getQuantity());
+                    response.setSellable(variant.isSellable());
+                    return response;
                 }).toList();
         int totalItems = itemResponses.stream()
                 .mapToInt(CartItemResponse::getQuantity)

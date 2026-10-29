@@ -73,3 +73,7 @@ Các ca cần chứng minh: quantity 0/âm; hai lần thêm cùng SKU không t�
 ## Quy tắc các tầng và liên kết kiến trúc
 
 Quy tắc và ràng buộc chi tiết cho từng tầng (`controller`, `service`, `repository`, `entity`, `dto`, `mapper`) tuân thủ theo [luật tầng](../../../../../../../docs/architecture/02-structure-and-layers.md) và [luồng nghiệp vụ](../../../../../../../docs/architecture/06-business-flows.md).
+
+## Contract giao diện
+
+CartItemResponse bổ sung productId, availableQuantity và sellable từ CatalogCartQueryService. Order summary bổ sung items và paymentMethod; GET me/orders và staff/orders hỗ trợ search/status bên cạnh page/size. Truy vấn của USER luôn gắn principal.userId. Staff detail trả allowedTransitions tính từ state machine, giới hạn giao lại và điều kiện thanh toán. GET /api/v1/payments/staff/order/{orderId} yêu cầu STAFF/ADMIN. Giao diện chỉ hiển thị thao tác khả dụng; API tiếp tục kiểm lại dưới khóa.

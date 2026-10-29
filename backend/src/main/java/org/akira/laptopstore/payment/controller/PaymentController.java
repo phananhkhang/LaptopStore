@@ -28,6 +28,12 @@ public class PaymentController {
 
         private final PaymentService paymentService;
 
+        @GetMapping("/staff/order/{orderId}")
+        @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+        public ResponseEntity<PaymentResponse> getForStaff(@PathVariable Long orderId) {
+                return ResponseEntity.ok(paymentService.getForStaff(orderId));
+        }
+
         /**
          * Khởi tạo thanh toán cho một đơn hàng của user hiện tại.
          *

@@ -1,0 +1,20 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="300" height="240" viewBox="0 0 300 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Original illustration/cart">
+<path id="Vector" d="M150 230C219.036 230 275 183.438 275 126C275 68.5624 219.036 22 150 22C80.9644 22 25 68.5624 25 126C25 183.438 80.9644 230 150 230Z" fill="#FFF1E8"/>
+<path id="Vector_2" d="M248 60C254.075 60 259 55.0751 259 49C259 42.9249 254.075 38 248 38C241.925 38 237 42.9249 237 49C237 55.0751 241.925 60 248 60Z" fill="#FFD9C5"/>
+<path id="Vector_3" d="M46 192C49.866 192 53 188.866 53 185C53 181.134 49.866 178 46 178C42.134 178 39 181.134 39 185C39 188.866 42.134 192 46 192Z" fill="#FFB68E"/>
+<g id="Group">
+<path id="Vector_4" d="M64 63H88L108 162H205L227 89H94" fill="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke="#E65319"/>
+<path id="Vector_5" d="M123 196C127.971 196 132 191.971 132 187C132 182.029 127.971 178 123 178C118.029 178 114 182.029 114 187C114 191.971 118.029 196 123 196Z" fill="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke="#E65319"/>
+<path id="Vector_6" d="M194 196C198.971 196 203 191.971 203 187C203 182.029 198.971 178 194 178C189.029 178 185 182.029 185 187C185 191.971 189.029 196 194 196Z" fill="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke="#E65319"/>
+<g id="Vector_7">
+<path d="M136 116H178ZM157 96V136Z" fill="white"/>
+<path d="M136 116H178M157 96V136" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" stroke="#E65319"/>
+</g>
+</g>
+<g id="Vector_8">
+<path d="M42 56H58ZM50 48V64ZM245 218H257ZM251 212V224Z" fill="black"/>
+<path d="M42 56H58M50 48V64M245 218H257M251 212V224" stroke-width="3" stroke-linecap="round" stroke="#E65319"/>
+</g>
+</g>
+</svg>

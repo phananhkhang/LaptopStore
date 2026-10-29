@@ -36,7 +36,7 @@ public class CatalogCartQueryServiceImpl implements CatalogCartQueryService {
         String productName = variant.getProduct().getName();
         boolean sellable = "ACTIVE".equalsIgnoreCase(variant.getStatus())
                 && "ACTIVE".equalsIgnoreCase(variant.getProduct().getStatus());
-        return new CartVariantSnapshot(variant.getId(), productName,
+        return new CartVariantSnapshot(variant.getProduct().getId(), variant.getId(), productName,
                 VariantUtils.formatFullProductName(productName, variant.getRam(), variant.getStorage(), variant.getColor()),
                 variant.getSku(), variant.getPrice(), variant.getQuantity(), sellable);
     }

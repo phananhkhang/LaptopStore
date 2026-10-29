@@ -12,6 +12,13 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderSummaryResponse {
+    public OrderSummaryResponse(Long id, String orderCode, OrderStatus status, int totalItems,
+            BigDecimal totalAmount, String recipientName, Instant createdAt) {
+        this.id=id; this.orderCode=orderCode; this.status=status; this.totalItems=totalItems;
+        this.totalAmount=totalAmount; this.recipientName=recipientName; this.createdAt=createdAt;
+    }
+    private java.util.List<OrderItemResponse> items = java.util.List.of();
+    private String paymentMethod;
     private Long id;
     private String orderCode;
     private OrderStatus status;
