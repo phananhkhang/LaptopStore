@@ -47,4 +47,13 @@ public class OrderPaymentServiceImpl implements OrderPaymentService {
         }
         return true;
     }
+
+    public BigDecimal lockDeliveredCodOrder(Long orderId) {
+        Order order = orders.findByIdForUpdate(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        if (order.getCheckoutPaymentMethod() != CheckoutPaymentMethod.COD || order.getStatus() != OrderStatus.DELIVERED) {
+            throw new ValidationException("COD can only be collected for a delivered COD order");
+        }
+        return order.getTotalAmount();
+    }
 }

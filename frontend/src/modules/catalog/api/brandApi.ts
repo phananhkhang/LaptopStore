@@ -3,7 +3,7 @@ import { Brand, CreateBrandRequest, UpdateBrandRequest } from '../types';
 
 export const brandApi = {
     getAllBrands: async (): Promise<Brand[]> => {
-        const response = await apiClient.get<Brand[]>('/api/v1/brands');
+        const response = await apiClient.get<Brand[]>('/brands');
         return response.data;
     },
 

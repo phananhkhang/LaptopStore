@@ -90,15 +90,17 @@ export function PaymentReturnPage() {
               </span>
             )}
             <span className={"badge " + (paid ? "green" : failed ? "red" : "")}>
-              {paid
-                ? "Đã thanh toán"
-                : reconcile
-                  ? "Cần đối soát"
-                  : failed
-                    ? "Chưa thành công"
-                    : cancelled
-                      ? "Đã hủy"
-                      : "Chờ ngân hàng xác nhận"}
+              {!id
+                ? "Chưa có thông tin"
+                : paid
+                  ? "Đã thanh toán"
+                  : reconcile
+                    ? "Cần đối soát"
+                    : failed
+                      ? "Chưa thành công"
+                      : cancelled
+                        ? "Đã hủy"
+                        : "Chờ ngân hàng xác nhận"}
             </span>
             <h2>{title}</h2>
             {error && <Alert>{error}</Alert>}

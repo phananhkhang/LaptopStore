@@ -1,10 +1,10 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { env } from '@/config/env';
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+import { env } from "@/config/env";
 
 export const apiClient = axios.create({
   baseURL: env.apiBaseUrl,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   withCredentials: true,
 });
@@ -19,6 +19,28 @@ export const getAccessToken = (): string | null => {
   return inMemoryAccessToken;
 };
 
+let refreshRequest: Promise<{ accessToken: string }> | null = null;
+
+// A rotating refresh cookie must only be consumed once, including React StrictMode bootstrap.
+export const refreshAccessToken = (): Promise<{ accessToken: string }> => {
+  if (!refreshRequest) {
+    refreshRequest = axios
+      .post<{ accessToken: string }>(
+        `${env.apiBaseUrl}/auth/refresh`,
+        {},
+        { withCredentials: true },
+      )
+      .then(({ data }) => {
+        setAccessToken(data.accessToken);
+        return data;
+      })
+      .finally(() => {
+        refreshRequest = null;
+      });
+  }
+  return refreshRequest;
+};
+
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (inMemoryAccessToken && config.headers) {
@@ -26,7 +48,7 @@ apiClient.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 let isRefreshing = false;
@@ -35,7 +57,10 @@ let failedQueue: Array<{
   reject: (reason?: unknown) => void;
 }> = [];
 
-const processQueue = (error: AxiosError | null, token: string | null = null) => {
+const processQueue = (
+  error: AxiosError | null,
+  token: string | null = null,
+) => {
   failedQueue.forEach((prom) => {
     if (error) {
       prom.reject(error);
@@ -49,14 +74,16 @@ const processQueue = (error: AxiosError | null, token: string | null = null) => 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     if (
       error.response?.status === 401 &&
       originalRequest &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes('/auth/login') &&
-      !originalRequest.url?.includes('/auth/refresh')
+      !originalRequest.url?.includes("/auth/login") &&
+      !originalRequest.url?.includes("/auth/refresh")
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -75,13 +102,9 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await axios.post<{ accessToken: string }>(
-          `${env.apiBaseUrl}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        const response = await refreshAccessToken();
 
-        const newAccessToken = response.data.accessToken;
+        const newAccessToken = response.accessToken;
         setAccessToken(newAccessToken);
 
         if (originalRequest.headers) {
@@ -93,7 +116,7 @@ apiClient.interceptors.response.use(
       } catch (refreshError) {
         processQueue(refreshError as AxiosError, null);
         setAccessToken(null);
-        window.dispatchEvent(new Event('auth:unauthorized'));
+        window.dispatchEvent(new Event("auth:unauthorized"));
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -101,5 +124,5 @@ apiClient.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );

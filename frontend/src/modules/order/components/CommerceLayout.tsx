@@ -4,14 +4,20 @@ import { useAuth } from "@/app/providers/AuthProvider";
 import "./commerce.css";
 
 export const Icon = ({ name }: { name: string }) => (
-  <span className="commerce-icon" aria-hidden="true">
+  <span className={`commerce-icon commerce-icon-${name}`} aria-hidden="true">
     <img src={`/commerce/${name}.svg`} alt="" />
   </span>
 );
-export const Brand = ({ shop = false }: { shop?: boolean }) => (
+export const Brand = ({
+  shop = false,
+  staff = false,
+}: {
+  shop?: boolean;
+  staff?: boolean;
+}) => (
   <Link className="commerce-brand" to="/products">
     <span className={shop ? "commerce-mark" : ""}>
-      <Icon name={shop ? "brand" : "laptop"} />
+      <Icon name={shop ? "brand" : staff ? "staff-laptop" : "laptop"} />
     </span>
     laptopstore
   </Link>
@@ -67,7 +73,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
               mới.
             </p>
             <span className="trust">
-              <Icon name="shield" />
+              <Icon name="footer-shield" />
               Chính hãng · Tư vấn tận tâm
             </span>
           </div>
@@ -114,7 +120,7 @@ export function StaffLayout({ children }: { children: ReactNode }) {
   return (
     <div className="commerce staff">
       <aside className="staff-sidebar">
-        <Brand />
+        <Brand staff />
         <p className="eyebrow muted">VẬN HÀNH CỬA HÀNG</p>
         <nav aria-label="Vận hành">
           {links.map(([icon, label, to]) => (

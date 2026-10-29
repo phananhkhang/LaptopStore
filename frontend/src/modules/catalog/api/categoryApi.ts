@@ -3,7 +3,7 @@ import { Category, CreateCategoryRequest, UpdateCategoryRequest } from '../types
 
 export const categoryApi = {
   getAllCategories: async (): Promise<Category[]> => {
-    const response = await apiClient.get<Category[]>('/api/v1/categories');
+    const response = await apiClient.get<Category[]>('/categories');
     return response.data;
   },
 
