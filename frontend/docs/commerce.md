@@ -12,7 +12,7 @@ Các màn có loading, empty, lỗi/retry và responsive. Số liệu Staff ghi 
 
 ## Kiểm thử UI
 
-Chạy backend Spring Boot ở cổng mặc định 8081, rồi `npm run dev:commerce` để proxy `/api` và `/uploads` đúng backend. Có thể đặt `API_PROXY_TARGET` khi dùng Docker/cổng khác. Lệnh này kế thừa config Vite chung và không cần thay đổi config đang dùng cho các module khác. Catalog product API dùng path `/products/...`, vì `/api/v1` đã nằm trong apiClient.baseURL.
+Chạy backend Spring Boot ở cổng mặc định 8081, rồi `npm run dev` (hoặc `npm run dev:commerce`) để proxy `/api` và `/uploads` đúng backend. Có thể đặt `API_PROXY_TARGET` khi dùng Docker/cổng khác. Hai lệnh dùng chung config Vite; mặc định proxy tới 127.0.0.1:8081. Sau khi đổi biến môi trường cần khởi động lại Vite. Catalog product API dùng path `/products/...`, vì `/api/v1` đã nằm trong apiClient.baseURL.
 
 npm run test:e2e -- --workers=2 chạy Playwright desktop/mobile; Windows dùng Edge, Linux dùng Chromium đã cài bằng npx playwright install --with-deps chromium. API stub chỉ dùng trong test. CI lưu screenshot và trace vào commerce-ui-results. Bộ kiểm thử DB và giới hạn xác minh VNPay ghi trong backend/docs/testing/order-flow.md.
 
