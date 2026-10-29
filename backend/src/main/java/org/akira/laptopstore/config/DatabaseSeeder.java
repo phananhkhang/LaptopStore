@@ -51,8 +51,8 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         if (userRepository.findByEmailIgnoreCase(adminEmail).isEmpty()) {
             // 1. Tìm Role ADMIN trong DB, nếu chưa có thì tự động tạo mới
-            Role adminRole = roleRepository.findByName("ADMIN")
-                    .orElseGet(() -> roleRepository.save(Role.builder().name("ADMIN").build()));
+            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+                    .orElseGet(() -> roleRepository.save(Role.builder().name("ROLE_ADMIN").build()));
 
             // 2. Khởi tạo tài khoản với Set<Role> và trường passwordHash chuẩn xác
             User admin = User.builder()
