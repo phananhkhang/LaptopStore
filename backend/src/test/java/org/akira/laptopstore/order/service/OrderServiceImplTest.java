@@ -272,12 +272,13 @@ class OrderServiceImplTest {
     void staffCanUpdateStatusToPackedWhenOrderIsConfirmed() {
         Order order = order(10L, 42L);
         order.setStatus(OrderStatus.CONFIRMED);
+        when(orders.findByIdForUpdate(10L)).thenReturn(Optional.of(order));
         when(orders.findById(10L)).thenReturn(Optional.of(order));
         when(histories.findByOrderIdOrderByChangedAtDesc(10L)).thenReturn(List.of());
 
-        var response = service.updateOrderStatus(99L, 10L, new UpdateOrderStatusRequest(OrderStatus.PACKED, "Packed by staff"));
+        var response = service.updateOrderStatus(99L, 10L, new UpdateOrderStatusRequest(OrderStatus.PACKING, "Packed by staff"));
 
-        assertEquals(OrderStatus.PACKED, order.getStatus());
+        assertEquals(OrderStatus.PACKING, order.getStatus());
         verify(orders).save(order);
         verify(histories).save(any(OrderStatusHistory.class));
     }
@@ -287,6 +288,7 @@ class OrderServiceImplTest {
         Order order = order(10L, 42L);
         order.setStatus(OrderStatus.WAITING_CONFIRMATION);
         order.setCouponCodeSnapshot("DISCOUNT10");
+        when(orders.findByIdForUpdate(10L)).thenReturn(Optional.of(order));
         when(orders.findById(10L)).thenReturn(Optional.of(order));
         when(orderItems.findByOrderId(10L)).thenReturn(List.of(OrderItem.builder()
                 .id(20L).productId(1L).variantId(5L).quantity(2).unitPrice(BigDecimal.TEN).build()));
@@ -331,6 +333,40 @@ class OrderServiceImplTest {
         assertEquals(0, cancelledCount);
         verify(orders, never()).save(any());
         verifyNoInteractions(inventoryService);
+    }
+
+    @Test
+    void duplicateCancellationDoesNotRestoreTwice() {
+        Order order = order(10L, 42L);
+        order.setStatus(OrderStatus.CANCELLED);
+        when(orders.findByIdForUpdate(10L)).thenReturn(Optional.of(order));
+        when(orders.findById(10L)).thenReturn(Optional.of(order));
+        assertEquals(OrderStatus.CANCELLED, service.cancelOrder(42L, 10L, null).getStatus());
+        verifyNoInteractions(inventoryService, couponService);
+        verify(histories, never()).save(any());
+    }
+
+    @Test
+    void expirationPropagatesRestoreFailureForTransactionRollback() {
+        Order order = order(10L, 42L);
+        order.setStatus(OrderStatus.PENDING_PAYMENT);
+        when(orders.findByStatusAndCreatedAtBefore(eq(OrderStatus.PENDING_PAYMENT), any()))
+                .thenReturn(List.of(order));
+        when(orderItems.findByOrderId(10L)).thenReturn(List.of(OrderItem.builder()
+                .variantId(7L).quantity(1).build()));
+        doThrow(new IllegalStateException("stock unavailable")).when(inventoryService)
+                .restoreForOrder(eq(10L), isNull(), any());
+        assertThrows(IllegalStateException.class, () -> service.expirePendingOrders());
+    }
+
+    @Test
+    void staffCannotConfirmAnUnpaidOnlineOrder() {
+        Order order = order(10L, 42L);
+        order.setStatus(OrderStatus.PENDING_PAYMENT);
+        when(orders.findByIdForUpdate(10L)).thenReturn(Optional.of(order));
+        assertThrows(ValidationException.class, () -> service.updateOrderStatus(99L, 10L,
+                new UpdateOrderStatusRequest(OrderStatus.CONFIRMED, null)));
+        verify(orders, never()).save(any());
     }
 
     private Order order(Long id, Long userId) {

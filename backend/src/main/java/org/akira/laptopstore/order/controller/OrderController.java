@@ -54,6 +54,12 @@ public class OrderController {
         return ResponseEntity.ok(OrderPageResponse.from(orderService.getAllOrders(pageable)));
     }
 
+    @GetMapping("/staff/orders/{orderId}")
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ResponseEntity<OrderResponse> getStaffOrder(@PathVariable Long orderId) {
+        return ResponseEntity.ok(orderService.getStaffOrder(orderId));
+    }
+
     // Xem trước thông tin checkout (địa chỉ, phương thức thanh toán, subtotal, discount, shipping, total)
     @PostMapping("/me/orders/preview")
     public ResponseEntity<CheckoutPreviewResponse> previewCheckout(

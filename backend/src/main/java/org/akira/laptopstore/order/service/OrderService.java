@@ -17,6 +17,8 @@ public interface OrderService {
 
     OrderResponse createOrder(Long userId, CreateOrderRequest request);
 
+    OrderResponse getStaffOrder(Long orderId);
+
     OrderResponse getOwnOrder(Long userId, Long orderId);
 
     Page<OrderSummaryResponse> getOwnOrders(Long userId, Pageable pageable);

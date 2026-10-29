@@ -50,6 +50,20 @@ class OrderControllerTest {
     @MockitoBean private CustomUserDetailsService userDetailsService;
 
     @Test
+    void staffDetailEndpointRejectsRegularUser() throws Exception {
+        mockMvc.perform(get("/api/v1/staff/orders/10").with(user(principal(42L, "ROLE_USER"))))
+                .andExpect(status().isForbidden());
+        verifyNoInteractions(orderService);
+    }
+
+    @Test
+    void staffCanReadOrderDetail() throws Exception {
+        mockMvc.perform(get("/api/v1/staff/orders/10").with(user(principal(99L, "ROLE_STAFF"))))
+                .andExpect(status().isOk());
+        verify(orderService).getStaffOrder(10L);
+    }
+
+    @Test
     void userCanReadOnlyTheirOrderEndpoints() throws Exception {
         CustomUserDetails principal = principal(42L, "ROLE_USER");
         OrderSummaryResponse summary = new OrderSummaryResponse(10L, "ORD-10", OrderStatus.CONFIRMED,
