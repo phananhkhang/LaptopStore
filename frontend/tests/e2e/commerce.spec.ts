@@ -427,3 +427,29 @@ test("preview and removal API errors remain visible and retryable", async ({
   await expect(page.getByRole("dialog")).not.toBeVisible();
   await expect(page.getByRole("alert")).toContainText("Chưa xóa được sản phẩm");
 });
+
+test("StrictMode session bootstrap refreshes a rotating cookie once per page load", async ({
+  page,
+}) => {
+  await mockShop(page);
+  let refreshes = 0;
+  await page.route("**/api/v1/auth/refresh", async (route) => {
+    refreshes++;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    return route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ accessToken: "rotated-test-token" }),
+    });
+  });
+  await page.goto("/orders/1");
+  await expect(
+    page.getByRole("heading", { name: "Chi tiết đơn hàng", exact: true }),
+  ).toBeVisible();
+  expect(refreshes).toBe(1);
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Chi tiết đơn hàng", exact: true }),
+  ).toBeVisible();
+  expect(refreshes).toBe(2);
+});

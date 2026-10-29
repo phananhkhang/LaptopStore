@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:commerce": "vite --config vite.commerce.config.ts",
     "build": "tsc -b && vite build",
     "test:e2e": "playwright test",
     "preview": "vite preview"

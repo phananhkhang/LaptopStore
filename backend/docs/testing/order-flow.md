@@ -6,7 +6,7 @@
 
 - Full Maven verify: 185 tests tổng, 184 đạt, 1 test contextLoads bị @Disabled từ trước.
 - Sau khi bổ sung retry thanh toán và race callback/expire: OrderFlowPersistenceTest 17/17 đạt, CartUnavailableItemTest 1/1 đạt trên DB trống mới.
-- Frontend build TypeScript/Vite đạt. 20/20 kịch bản Playwright đạt, chạy cả desktop 1440×1000 và mobile 390×844; ảnh và trace nằm trong artifact commerce-ui-results của CI.
+- Frontend build TypeScript/Vite đạt. 22/22 kịch bản Playwright đạt, chạy cả desktop 1440×1000 và mobile 390×844; ảnh và trace nằm trong artifact commerce-ui-results của CI.
 
 ## Coverage có giá trị
 
@@ -48,3 +48,9 @@ Playwright dùng API stub để kiểm tra tương tác/contract và kết quả
 - Thu COD khóa delivered COD order, khởi tạo payment còn thiếu rồi ghi PAID trong cùng transaction; request lặp không tạo payment thứ hai.
 - Thời hạn VNPay chuẩn hóa giây để response lần đầu và lần retry khớp độ chính xác lưu DB/provider.
 - Lỗi xóa giỏ được hiển thị sau khi đóng dialog; preview checkout có nút Kiểm tra lại khi API lỗi.
+
+## Smoke-test qua API thật
+
+Đã chạy frontend qua dev:commerce → backend Spring Boot → PostgreSQL disposable (không mock): đăng nhập, Catalog → Cart (quantity 2), coupon SMOKESAVE500 → Checkout → tạo đơn COD → tải lại phiên → Staff xác nhận/đóng gói/giao/thu COD. Đối chiếu DB: DELIVERED, COD/PAID, tổng 49.500.000 VND, ghi chú được giữ, một SALE movement cho đơn.
+
+Regression bổ sung: apiClient và AuthProvider dùng chung refreshAccessToken single-flight để React StrictMode không dùng lại refresh cookie đã rotate. Catalog public query dùng path tương đối với baseURL; dev:commerce proxy đúng backend 8081 hoặc API_PROXY_TARGET.
