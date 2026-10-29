@@ -23,6 +23,8 @@ public interface OrderService {
 
     Page<OrderSummaryResponse> getOwnOrders(Long userId, Pageable pageable);
 
+    Page<OrderSummaryResponse> searchOrders(Long userId, org.akira.laptopstore.order.entity.enums.OrderStatus status, String search, Pageable pageable);
+
     Page<OrderSummaryResponse> getAllOrders(Pageable pageable);
 
     OrderResponse updateOrderStatus(Long actorId, Long orderId, UpdateOrderStatusRequest request);

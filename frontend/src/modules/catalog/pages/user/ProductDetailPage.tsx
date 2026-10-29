@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ProductResponse, VariantSnapshot } from '../../types';
 import { productApi } from '../../api/productApi';
 
+import { cartApi } from '@/modules/cart/api/cartApi';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { errorMessage } from '@/modules/order/components/OrderUI';
+
 const ProductDetailPage: React.FC = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
+    const [adding, setAdding] = useState(false);
+    const [cartMessage, setCartMessage] = useState('');
     const { id } = useParams<{ id: string }>();
     const [product, setProduct] = useState<ProductResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -44,33 +52,13 @@ const ProductDetailPage: React.FC = () => {
         }
     };
 
-    const handleAddToCart = () => {
-        if (!product || !selectedVariant || selectedVariant.quantity === 0) return;
-
-        const cartKey = 'laptopstore_cart';
-        const existingCart = JSON.parse(localStorage.getItem(cartKey) || '[]');
-
-        const existingItemIndex = existingCart.findIndex((item: any) => item.variantId === selectedVariant.id);
-
-        if (existingItemIndex >= 0) {
-            existingCart[existingItemIndex].quantity += 1;
-        } else {
-            existingCart.push({
-                productId: product.id,
-                productName: product.name,
-                variantId: selectedVariant.id,
-                sku: selectedVariant.sku,
-                ram: selectedVariant.ram,
-                storage: selectedVariant.storage,
-                color: selectedVariant.color,
-                price: selectedVariant.price,
-                quantity: 1,
-                thumbnail: mainImage
-            });
-        }
-
-        localStorage.setItem(cartKey, JSON.stringify(existingCart));
-        alert('Đã thêm sản phẩm vào giỏ hàng thành công!'); // Tạm thời dùng alert, có thể thay bằng Toast UI sau
+    const handleAddToCart = async () => {
+        if (!product || !selectedVariant || selectedVariant.quantity === 0 || adding) return;
+        if (!isAuthenticated) { navigate('/login', { state: { from: { pathname: '/products/' + product.id } } }); return; }
+        setAdding(true); setCartMessage('');
+        try { await cartApi.addItem(selectedVariant.id, 1); setCartMessage('Đã thêm vào giỏ hàng.'); }
+        catch (err) { setCartMessage(errorMessage(err)); }
+        finally { setAdding(false); }
     };
 
     if (loading) {return <div className="max-w-7xl mx-auto p-4 mt-10 text-center text-gray-500">Đang tải thông tin sản phẩm...</div>;}
@@ -159,12 +147,13 @@ const ProductDetailPage: React.FC = () => {
                                     </span>
                                 </p>
                                 <button
-                                    disabled={!selectedVariant || selectedVariant.quantity === 0}
-                                    onClick={handleAddToCart}
+                                    disabled={adding || !selectedVariant || selectedVariant.quantity === 0}
+                                    onClick={() => void handleAddToCart()}
                                     className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 w-full md:w-auto font-medium transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    {selectedVariant?.quantity && selectedVariant.quantity > 0 ? 'Thêm vào giỏ hàng' : 'Tạm hết hàng'}
+                                    {adding ? 'Đang thêm...' : selectedVariant?.quantity && selectedVariant.quantity > 0 ? 'Thêm vào giỏ hàng' : 'Tạm hết hàng'}
                                 </button>
+                                {cartMessage && <p role="status" className="mt-4">{cartMessage} <Link to="/cart" className="text-orange-700 underline">Xem giỏ hàng</Link></p>}
                             </div>
                         </div>
                     ) : (

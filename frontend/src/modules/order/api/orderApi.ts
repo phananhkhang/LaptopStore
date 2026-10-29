@@ -1,4 +1,4 @@
-import { apiClient } from '@/services/api/apiClient';
+import { apiClient } from "@/services/api/apiClient";
 import {
   CheckoutPreviewRequest,
   CheckoutPreviewResponse,
@@ -6,28 +6,60 @@ import {
   OrderDetail,
   OrderSummary,
   PageResponse,
-} from '../types';
+  OrderStatus,
+} from "../types";
 
 export const orderApi = {
-  getMine: async (): Promise<PageResponse<OrderSummary>> => (
-    await apiClient.get<PageResponse<OrderSummary>>('/me/orders')
-  ).data,
+  getMine: async (params?: {
+    page?: number;
+    size?: number;
+    status?: string;
+    search?: string;
+  }): Promise<PageResponse<OrderSummary>> =>
+    (await apiClient.get<PageResponse<OrderSummary>>("/me/orders", { params }))
+      .data,
 
-  getMineById: async (orderId: string): Promise<OrderDetail> => (
-    await apiClient.get<OrderDetail>(`/me/orders/${orderId}`)
-  ).data,
+  getMineById: async (orderId: string): Promise<OrderDetail> =>
+    (await apiClient.get<OrderDetail>(`/me/orders/${orderId}`)).data,
 
-  getAllForStaff: async (): Promise<PageResponse<OrderSummary>> => (
-    await apiClient.get<PageResponse<OrderSummary>>('/staff/orders')
-  ).data,
+  getAllForStaff: async (params?: {
+    page?: number;
+    size?: number;
+    status?: string;
+    search?: string;
+  }): Promise<PageResponse<OrderSummary>> =>
+    (
+      await apiClient.get<PageResponse<OrderSummary>>("/staff/orders", {
+        params,
+      })
+    ).data,
 
-  previewCheckout: async (payload: CheckoutPreviewRequest): Promise<CheckoutPreviewResponse> => (
-    await apiClient.post<CheckoutPreviewResponse>('/me/orders/preview', payload)
-  ).data,
+  getStaffById: async (id: string): Promise<OrderDetail> =>
+    (await apiClient.get(`/staff/orders/${id}`)).data,
+  updateStatus: async (id: number, status: OrderStatus): Promise<OrderDetail> =>
+    (await apiClient.put(`/staff/orders/${id}/status`, { status })).data,
+  cancel: async (id: number): Promise<OrderDetail> =>
+    (await apiClient.post(`/me/orders/${id}/cancel`)).data,
 
-  createOrder: async (payload: CreateOrderRequest, idempotencyKey?: string): Promise<OrderDetail> => (
-    await apiClient.post<OrderDetail>('/me/orders', payload, {
-      headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : undefined,
-    })
-  ).data,
+  previewCheckout: async (
+    payload: CheckoutPreviewRequest,
+  ): Promise<CheckoutPreviewResponse> =>
+    (
+      await apiClient.post<CheckoutPreviewResponse>(
+        "/me/orders/preview",
+        payload,
+      )
+    ).data,
+
+  createOrder: async (
+    payload: CreateOrderRequest,
+    idempotencyKey?: string,
+  ): Promise<OrderDetail> =>
+    (
+      await apiClient.post<OrderDetail>("/me/orders", payload, {
+        headers: idempotencyKey
+          ? { "Idempotency-Key": idempotencyKey }
+          : undefined,
+      })
+    ).data,
 };

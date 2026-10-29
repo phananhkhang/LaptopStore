@@ -349,14 +349,33 @@ public class OrderServiceImpl implements OrderService {
         requireOrderId(orderId);
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
-        return getOwnOrder(order.getUserId(), orderId);
+        OrderResponse response = getOwnOrder(order.getUserId(), orderId);
+        int attempts = (int) response.getStatusHistories().stream().filter(h -> h.getToStatus() == OrderStatus.DELIVERY_FAILED).count();
+        response.setAllowedTransitions(java.util.Arrays.stream(OrderStatus.values()).filter(target -> {
+            if (order.getStatus() == target) return false;
+            if (order.getStatus() == OrderStatus.PENDING_PAYMENT && target == OrderStatus.CONFIRMED) return false;
+            if (order.getCheckoutPaymentMethod() == CheckoutPaymentMethod.VNPAY && order.getStatus() != OrderStatus.PENDING_PAYMENT
+                    && (target == OrderStatus.CANCELLED || target == OrderStatus.RETURNED)) return false;
+            try { OrderStateMachine.validateTransition(order.getStatus(), target, true, attempts); return true; }
+            catch (ValidationException exception) { return false; }
+        }).toList());
+        return response;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderSummaryResponse> searchOrders(Long userId, OrderStatus status, String search, Pageable pageable) {
+        return orderRepository.search(userId, status, search == null ? "" : search.trim().toLowerCase(Locale.ROOT), pageable)
+                .map(this::toSummaryResponse);
     }
 
     private OrderSummaryResponse toSummaryResponse(Order order) {
-        int totalItems = orderItemRepository.findByOrderId(order.getId()).stream()
-                .mapToInt(OrderItem::getQuantity)
-                .sum();
-        return orderMapper.toSummaryResponse(order, totalItems);
+        List<OrderItem> items = orderItemRepository.findByOrderId(order.getId());
+        int totalItems = items.stream().mapToInt(OrderItem::getQuantity).sum();
+        OrderSummaryResponse response = orderMapper.toSummaryResponse(order, totalItems);
+        response.setItems(items.stream().map(orderMapper::toItemResponse).toList());
+        response.setPaymentMethod(order.getCheckoutPaymentMethod().name());
+        return response;
     }
 
     private void requireUserId(Long userId) {

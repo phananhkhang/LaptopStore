@@ -1,5 +1,8 @@
 export interface CartItem {
   cartItemId: number;
+  productId?: number;
+  availableQuantity?: number;
+  sellable?: boolean;
   variantId: number;
   productName: string;
   sku: string;

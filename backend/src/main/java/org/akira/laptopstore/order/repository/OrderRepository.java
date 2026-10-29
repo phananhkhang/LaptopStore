@@ -22,6 +22,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("select o from Order o where o.id = :id")
     Optional<Order> findByIdForUpdate(@Param("id") Long id);
 
+    @Query("select o from Order o where (:userId is null or o.userId = :userId) "
+            + "and (:status is null or o.status = :status) "
+            + "and (lower(o.orderCode) like concat('%', :search, '%') or lower(o.recipientName) like concat('%', :search, '%'))")
+    Page<Order> search(@Param("userId") Long userId, @Param("status") OrderStatus status,
+                       @Param("search") String search, Pageable pageable);
+
     Optional<Order> findByOrderCode(String orderCode);
 
     Page<Order> findByUserId(Long userId, Pageable pageable);

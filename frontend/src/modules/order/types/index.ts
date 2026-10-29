@@ -1,18 +1,20 @@
 export type OrderStatus =
-  | 'CREATED'
-  | 'PENDING_PAYMENT'
-  | 'WAITING_CONFIRMATION'
-  | 'CONFIRMED'
-  | 'PACKING'
-  | 'SHIPPING'
-  | 'DELIVERED'
-  | 'DELIVERY_FAILED'
-  | 'CANCELLED'
-  | 'RETURNED';
+  | "CREATED"
+  | "PENDING_PAYMENT"
+  | "WAITING_CONFIRMATION"
+  | "CONFIRMED"
+  | "PACKING"
+  | "SHIPPING"
+  | "DELIVERED"
+  | "DELIVERY_FAILED"
+  | "CANCELLED"
+  | "RETURNED";
 
-export type CheckoutPaymentMethod = 'COD' | 'VNPAY';
+export type CheckoutPaymentMethod = "COD" | "VNPAY";
 
 export interface OrderSummary {
+  items: OrderItem[];
+  paymentMethod: CheckoutPaymentMethod;
   id: number;
   orderCode: string;
   status: OrderStatus;
@@ -42,7 +44,8 @@ export interface OrderStatusHistory {
   changedBy: number | null;
 }
 
-export interface OrderDetail extends Omit<OrderSummary, 'totalItems'> {
+export interface OrderDetail extends Omit<OrderSummary, "totalItems"> {
+  allowedTransitions: OrderStatus[];
   paymentMethod: CheckoutPaymentMethod;
   customerNote: string | null;
   userId: number;
