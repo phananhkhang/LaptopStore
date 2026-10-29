@@ -6,6 +6,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,6 +17,10 @@ import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select o from Order o where o.id = :id")
+    Optional<Order> findByIdForUpdate(@Param("id") Long id);
 
     Optional<Order> findByOrderCode(String orderCode);
 
@@ -24,5 +32,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     Optional<Order> findByIdempotencyKeyAndUserId(String idempotencyKey, Long userId);
 
-    List<Order> findByStatusAndCreatedAtBefore(OrderStatus status, Instant cutoffTime);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select o from Order o where o.status = :status and o.createdAt < :cutoffTime order by o.id")
+    List<Order> findByStatusAndCreatedAtBefore(@Param("status") OrderStatus status,
+                                               @Param("cutoffTime") Instant cutoffTime);
 }

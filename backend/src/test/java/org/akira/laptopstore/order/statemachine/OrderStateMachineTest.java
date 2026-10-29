@@ -18,10 +18,10 @@ class OrderStateMachineTest {
     }
 
     @Test
-    @DisplayName("Staff chuyển đơn từ CONFIRMED sang PACKED rồi SHIPPING thành công")
+    @DisplayName("Staff chuyển đơn từ CONFIRMED sang PACKING rồi SHIPPING thành công")
     void validHappyFlowTransitions() {
-        assertDoesNotThrow(() -> stateMachine.validateTransition(OrderStatus.CONFIRMED, OrderStatus.PACKED, true, 0));
-        assertDoesNotThrow(() -> stateMachine.validateTransition(OrderStatus.PACKED, OrderStatus.SHIPPING, true, 0));
+        assertDoesNotThrow(() -> stateMachine.validateTransition(OrderStatus.CONFIRMED, OrderStatus.PACKING, true, 0));
+        assertDoesNotThrow(() -> stateMachine.validateTransition(OrderStatus.PACKING, OrderStatus.SHIPPING, true, 0));
         assertDoesNotThrow(() -> stateMachine.validateTransition(OrderStatus.SHIPPING, OrderStatus.DELIVERED, true, 0));
     }
 
@@ -41,10 +41,10 @@ class OrderStateMachineTest {
     }
 
     @Test
-    @DisplayName("Khách hàng không thể tự hủy đơn khi đơn đã PACKED")
+    @DisplayName("Khách hàng không thể tự hủy đơn khi đơn đã PACKING")
     void userCannotCancelWhenPacked() {
         assertThrows(ValidationException.class, () ->
-                stateMachine.validateTransition(OrderStatus.PACKED, OrderStatus.CANCELLED, false, 0)
+                stateMachine.validateTransition(OrderStatus.PACKING, OrderStatus.CANCELLED, false, 0)
         );
     }
 

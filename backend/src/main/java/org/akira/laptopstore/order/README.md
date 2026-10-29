@@ -40,3 +40,12 @@
 - Validate phương thức thanh toán (`COD`, `VNPAY`), kiểm tra tồn kho khả dụng (`availableQuantity`) của từng biến thể và hiệu lực/điều kiện mã giảm giá (`CouponService.evaluateForCheckout`) trước khi lưu `Order`.
 - Giá, phí vận chuyển, giảm giá và tổng thanh toán được tính hoàn toàn ở server.
 - Hỗ trợ `Idempotency-Key` ràng buộc theo user; cùng key và cùng payload trả lại đơn đã tạo, khác payload trả lỗi.
+
+## Lifecycle và API xử lý đơn
+
+- Trạng thái đóng gói là `PACKING`; V6 chuyển dữ liệu `PACKED` cũ trong orders/history.
+- STAFF/ADMIN đọc chi tiết qua GET /api/v1/staff/orders/{orderId}.
+- PUT /api/v1/staff/orders/{orderId}/status chỉ cho bước kế tiếp hợp lệ; đơn online chỉ xác nhận sau payment đã xác minh. DELIVERY_FAILED giao lại dưới 3 lần thất bại.
+- Hủy và cập nhật trạng thái khóa hàng order. Lặp cùng trạng thái/hủy trả kết quả hiện tại, không ghi lại lịch sử hoặc hoàn kho/coupon.
+- Quét hết hạn khóa các đơn PENDING_PAYMENT, xử lý status/history/stock/coupon cùng transaction; lỗi bất kỳ rollback cả đợt và được báo ra scheduler.
+- UI flow theo Figma: /cart → /checkout → /orders/:id; /orders; /staff/orders → /staff/orders/:id. Các trạng thái loading, rỗng, lỗi, hết hạn và giao thất bại được xử lý trên từng màn.

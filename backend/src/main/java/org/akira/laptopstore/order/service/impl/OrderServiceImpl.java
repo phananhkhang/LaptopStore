@@ -337,6 +337,15 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findAll(pageable).map(this::toSummaryResponse);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public OrderResponse getStaffOrder(Long orderId) {
+        requireOrderId(orderId);
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
+        return getOwnOrder(order.getUserId(), orderId);
+    }
+
     private OrderSummaryResponse toSummaryResponse(Order order) {
         int totalItems = orderItemRepository.findByOrderId(order.getId()).stream()
                 .mapToInt(OrderItem::getQuantity)
@@ -423,16 +432,23 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public OrderResponse updateOrderStatus(Long actorId, Long orderId, UpdateOrderStatusRequest request) {
+        requireUserId(actorId);
         requireOrderId(orderId);
         if (request == null || request.getStatus() == null) {
             throw new ValidationException("Order status is required");
         }
 
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByIdForUpdate(orderId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found: " + orderId));
 
         OrderStatus currentStatus = order.getStatus();
         OrderStatus targetStatus = request.getStatus();
+
+        // Repeated status commands return the existing result without a second history or restore.
+        if (currentStatus == targetStatus) return getOwnOrder(order.getUserId(), orderId);
+        if (currentStatus == OrderStatus.PENDING_PAYMENT && targetStatus == OrderStatus.CONFIRMED) {
+            throw new ValidationException("Đơn online phải được xác nhận qua kết quả thanh toán");
+        }
 
         int deliveryAttempts = (int) orderStatusHistoryRepository.findByOrderIdOrderByChangedAtDesc(orderId).stream()
                 .filter(h -> h.getToStatus() == OrderStatus.DELIVERY_FAILED)
@@ -464,12 +480,13 @@ public class OrderServiceImpl implements OrderService {
         requireUserId(userId);
         requireOrderId(orderId);
 
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByIdForUpdate(orderId)
                 .filter(candidate -> userId.equals(candidate.getUserId()))
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found"));
 
         OrderStatus currentStatus = order.getStatus();
 
+        if (currentStatus == OrderStatus.CANCELLED) return getOwnOrder(userId, orderId);
         orderStateMachine.validateTransition(currentStatus, OrderStatus.CANCELLED, false, 0);
 
         order.setStatus(OrderStatus.CANCELLED);
@@ -499,23 +516,14 @@ public class OrderServiceImpl implements OrderService {
         int count = 0;
 
         for (Order order : expiredOrders) {
-            try {
-                order.setStatus(OrderStatus.CANCELLED);
-                orderRepository.save(order);
-
-                orderStatusHistoryRepository.save(OrderStatusHistory.builder()
-                        .order(order)
-                        .fromStatus(OrderStatus.PENDING_PAYMENT)
-                        .toStatus(OrderStatus.CANCELLED)
-                        .changedAt(Instant.now())
-                        .changedByUserId(null)
-                        .build());
-
-                handleOrderCancellationSideEffects(order, null);
-                count++;
-            } catch (Exception ignored) {
-                // Tiếp tục xử lý các đơn quá hạn khác nếu 1 đơn gặp lỗi
-            }
+            order.setStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+            orderStatusHistoryRepository.save(OrderStatusHistory.builder()
+                    .order(order).fromStatus(OrderStatus.PENDING_PAYMENT).toStatus(OrderStatus.CANCELLED)
+                    .changedAt(Instant.now()).changedByUserId(null).build());
+            // Never swallow errors: status, history, stock and coupon must roll back together.
+            handleOrderCancellationSideEffects(order, null);
+            count++;
         }
 
         return count;
