@@ -23,6 +23,12 @@ import { OrderHistoryPage } from '@/modules/order/pages/user/OrderHistoryPage';
 // Catalog
 import { CatalogRoutes } from '@/modules/catalog/routes/CatalogRoutes';
 
+// Promotion
+import { PromotionRoutes } from '@/modules/promotion/routes/PromotionRoutes';
+
+// Review
+import { ProductReviewsPage, StaffReviewPage, WriteReviewPage } from '@/modules/review/routes/ReviewRoutes';
+
 // Placeholders for remaining admin/staff dashboards
 const StaffDashboard = () => (
   <div className="max-w-7xl mx-auto p-6">
@@ -72,6 +78,8 @@ export const AppRouter: React.FC = () => {
           <Route path="/ai-assistant" element={<AIChatPage />} />
           <Route path="/403" element={<ForbiddenPage />} />
 
+          <Route path="/products/:productId/reviews" element={<ProductReviewsPage />} />
+
           {/* Catalog Module Routes */}
           <Route path="/*" element={<CatalogRoutes />} />
 
@@ -83,16 +91,19 @@ export const AppRouter: React.FC = () => {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/orders" element={<OrderHistoryPage />} />
             <Route path="/orders/:orderId" element={<OrderDetailPage />} />
+            <Route path="/me/order-items/:orderItemId/review" element={<WriteReviewPage />} />
           </Route>
 
           {/* Staff & Admin Protected Routes */}
           <Route element={<RoleBasedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]} />}>
             <Route path="/staff/orders" element={<StaffOrderListPage />} />
+            <Route path="/staff/reviews" element={<StaffReviewPage />} />
             <Route path="/staff/*" element={<StaffDashboard />} />
           </Route>
 
           {/* Admin Only Routes */}
           <Route element={<RoleBasedRoute allowedRoles={[ROLES.ADMIN]} />}>
+            <Route path="/admin/promotions/*" element={<PromotionRoutes />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
           </Route>
 
