@@ -26,6 +26,7 @@ public class VnPayCallbackServiceImpl
         implements VnPayCallbackService {
 
     private final VnPayGateway vnPayGateway;
+    private final org.akira.laptopstore.order.service.OrderPaymentService orderPaymentService;
 
     private final PaymentRepository paymentRepository;
 
@@ -134,7 +135,8 @@ public class VnPayCallbackServiceImpl
                     PaymentTransactionStatus.SUCCESS);
 
             payment.setStatus(
-                    PaymentStatus.PAID);
+                    orderPaymentService.recordVerifiedPayment(payment.getOrderId())
+                            ? PaymentStatus.PAID : PaymentStatus.REQUIRES_RECONCILIATION);
 
             payment.setUpdatedAt(
                     Instant.now());
@@ -144,7 +146,7 @@ public class VnPayCallbackServiceImpl
             transaction.setStatus(
                     PaymentTransactionStatus.FAILED);
 
-            if (payment.getStatus() != PaymentStatus.PAID) {
+            if (payment.getStatus() != PaymentStatus.PAID && payment.getStatus() != PaymentStatus.REQUIRES_RECONCILIATION) {
 
                 payment.setStatus(
                         PaymentStatus.FAILED);

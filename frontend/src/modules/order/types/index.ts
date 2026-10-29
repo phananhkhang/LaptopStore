@@ -3,7 +3,7 @@ export type OrderStatus =
   | 'PENDING_PAYMENT'
   | 'WAITING_CONFIRMATION'
   | 'CONFIRMED'
-  | 'PACKED'
+  | 'PACKING'
   | 'SHIPPING'
   | 'DELIVERED'
   | 'DELIVERY_FAILED'
@@ -42,7 +42,9 @@ export interface OrderStatusHistory {
   changedBy: number | null;
 }
 
-export interface OrderDetail extends OrderSummary {
+export interface OrderDetail extends Omit<OrderSummary, 'totalItems'> {
+  paymentMethod: CheckoutPaymentMethod;
+  customerNote: string | null;
   userId: number;
   subtotal: number;
   discountAmount: number;

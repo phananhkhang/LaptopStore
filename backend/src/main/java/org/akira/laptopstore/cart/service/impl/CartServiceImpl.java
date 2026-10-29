@@ -130,6 +130,13 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
+    public void lockForCheckout(Long userId) {
+        requireUserId(userId);
+        lockedCart(userId);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
     public CartSnapshot lockAndGetCheckoutCart(Long userId) {
         requireUserId(userId);
         Cart cart = lockedCart(userId);

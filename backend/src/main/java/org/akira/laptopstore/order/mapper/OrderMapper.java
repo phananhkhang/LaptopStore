@@ -17,7 +17,7 @@ public class OrderMapper {
 
     public OrderResponse toResponse(Order order, List<OrderItem> items,
                                     List<OrderStatusHistory> statusHistories) {
-        return new OrderResponse(
+        OrderResponse response = new OrderResponse(
                 order.getId(), order.getUserId(), order.getOrderCode(), order.getStatus(),
                 order.getSubtotal(), order.getDiscountAmount(), order.getShippingFee(), order.getTotalAmount(),
                 order.getRecipientName(), order.getRecipientPhone(), order.getShippingAddress(),
@@ -26,6 +26,9 @@ public class OrderMapper {
                 statusHistories.stream().map(this::toStatusHistoryResponse).toList(),
                 order.getCreatedAt(), order.getUpdatedAt()
         );
+        response.setPaymentMethod(order.getCheckoutPaymentMethod().name());
+        response.setCustomerNote(order.getCustomerNote());
+        return response;
     }
 
     public OrderSummaryResponse toSummaryResponse(Order order, int totalItems) {

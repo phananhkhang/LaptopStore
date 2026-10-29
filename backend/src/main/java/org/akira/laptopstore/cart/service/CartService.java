@@ -19,6 +19,8 @@ public interface CartService {
     void clearCart(Long userId);
 
     // Method nay dc dung de phuc vu checkout
+    void lockForCheckout(Long userId);
+
     CartSnapshot lockAndGetCheckoutCart(Long userId);
 
     void clearPurchasedItems(Long userId, Collection<Long> cartItemIds);
