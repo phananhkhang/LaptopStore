@@ -53,6 +53,9 @@ jobs:
           -Dcart.test.jdbc-url=jdbc:postgresql://localhost:5432/laptop_store
           -Dcart.test.username=postgres
           -Dcart.test.password=postgres
+          -Dorder.test.jdbc-url=jdbc:postgresql://localhost:5432/laptop_store
+          -Dorder.test.username=postgres
+          -Dorder.test.password=postgres
 
       - name: Upload test reports
         if: always()
@@ -84,3 +87,17 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+
+      - name: Install test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Test commerce UI
+        run: npm run test:e2e -- --workers=2
+
+      - name: Upload UI test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: commerce-ui-results
+          path: frontend/test-results/
+          if-no-files-found: ignore

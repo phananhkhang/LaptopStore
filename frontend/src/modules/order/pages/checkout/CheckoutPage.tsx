@@ -42,6 +42,7 @@ export function CheckoutPage() {
   const [previewBusy, setPreviewBusy] = useState(false);
   const [error, setError] = useState("");
   const [previewError, setPreviewError] = useState("");
+  const [previewRetry, setPreviewRetry] = useState(0);
   const [reload, setReload] = useState(0);
   const lock = useRef(false);
   useEffect(() => {
@@ -103,7 +104,7 @@ export function CheckoutPage() {
       active = false;
       clearTimeout(timer);
     };
-  }, [payload, loading, cart]);
+  }, [payload, loading, cart, previewRetry]);
   async function submit(e: FormEvent) {
     e.preventDefault();
     if (lock.current || !preview || previewBusy) return;
@@ -357,7 +358,18 @@ export function CheckoutPage() {
               totalAmount={preview?.totalAmount ?? cart.totalAmount}
               couponCode={preview?.couponCode}
             >
-              {previewError && <Alert>{previewError}</Alert>}
+              {previewError && (
+                <Alert>
+                  {previewError}
+                  <button
+                    type="button"
+                    className="text-button"
+                    onClick={() => setPreviewRetry((n) => n + 1)}
+                  >
+                    Kiểm tra lại
+                  </button>
+                </Alert>
+              )}
               {previewBusy && (
                 <p role="status" className="muted">
                   Đang kiểm tra giỏ hàng và ưu đãi...

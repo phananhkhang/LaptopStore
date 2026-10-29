@@ -1036,3 +1036,16 @@
     min-height: 600px;
   }
 }
+
+.commerce-icon-laptop {
+  width: 28px;
+  height: 28px;
+}
+.commerce-icon-staff-laptop {
+  width: 26px;
+  height: 26px;
+}
+.commerce-icon-footer-shield {
+  width: 18px;
+  height: 18px;
+}

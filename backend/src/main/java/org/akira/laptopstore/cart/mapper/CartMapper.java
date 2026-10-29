@@ -4,7 +4,6 @@ import org.akira.laptopstore.cart.dto.response.CartItemResponse;
 import org.akira.laptopstore.cart.dto.response.CartResponse;
 import org.akira.laptopstore.cart.entity.Cart;
 import org.akira.laptopstore.catalog.dto.response.CartVariantSnapshot;
-import org.akira.laptopstore.exception.ResourceNotFoundException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,7 +18,12 @@ public final class CartMapper {
                 .map(item -> {
                     CartVariantSnapshot variant = variantsById.get(item.getVariantId());
                     if (variant == null) {
-                        throw new ResourceNotFoundException("Product variant not found: " + item.getVariantId());
+                        // Deleted/inactive catalog entries must remain removable from the cart.
+                        CartItemResponse unavailable = new CartItemResponse(item.getId(), item.getVariantId(),
+                                "Sản phẩm không còn bán", "", "", item.getQuantity(), BigDecimal.ZERO, BigDecimal.ZERO);
+                        unavailable.setSellable(false);
+                        unavailable.setAvailableQuantity(0);
+                        return unavailable;
                     }
                     String productName = variant.getProductName();
                     String variantName = variant.getVariantName();

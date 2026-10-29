@@ -9,3 +9,7 @@ Cart dùng cartItemId cho PATCH/DELETE, nhận sellable/availableQuantity từ s
 Order list hỗ trợ search/status/page trên server; summary có items/paymentMethod. Staff detail trả allowedTransitions và UI chỉ hiện các bước đó. Hủy, giao thất bại/trả hàng và thu COD có dialog xác nhận. Kết quả VNPay chỉ tin GET payment từ backend, không tin query trả về browser; pending được kiểm tra có giới hạn rồi cho kiểm tra thủ công.
 
 Các màn có loading, empty, lỗi/retry và responsive. Số liệu Staff ghi rõ là trong trang hiện tại. Widget AI không đè các màn checkout/order. Những module Catalog/Account/Inventory ngoài luồng mua và xử lý đơn giữ thiết kế hiện có.
+
+## Kiểm thử UI
+
+npm run test:e2e -- --workers=2 chạy Playwright desktop/mobile; Windows dùng Edge, Linux dùng Chromium đã cài bằng npx playwright install --with-deps chromium. API stub chỉ dùng trong test. CI lưu screenshot và trace vào commerce-ui-results. Bộ kiểm thử DB và giới hạn xác minh VNPay ghi trong backend/docs/testing/order-flow.md.

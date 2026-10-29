@@ -75,6 +75,7 @@ export function CartPage() {
       setRemoving(null);
       await refreshTotals(data, applied);
     } catch (err) {
+      setRemoving(null);
       setError(errorMessage(err));
     } finally {
       lock.current = false;

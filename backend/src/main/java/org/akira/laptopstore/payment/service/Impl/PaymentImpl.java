@@ -102,13 +102,13 @@ public class PaymentImpl implements PaymentService {
         @Transactional
         @Override
         public PaymentResponse recordCodPayment(RecordCodPaymentRequest request) {
+                BigDecimal amount = orderPaymentService.lockDeliveredCodOrder(request.getOrderId());
                 Payment payment = paymentRepository
 
                                 .findByOrderIdForUpdate(request.getOrderId())
-                                .orElseThrow(
-                                                () -> new PaymentNotFoundException(
-                                                                "Payment not found for order: "
-                                                                                + request.getOrderId()));
+                                .orElseGet(() -> paymentRepository.save(Payment.builder()
+                                        .orderId(request.getOrderId()).method(PaymentMethod.COD)
+                                        .amount(amount).status(PaymentStatus.PENDING).build()));
 
                 if (payment.getMethod() != PaymentMethod.COD) {
 
@@ -213,6 +213,7 @@ public class PaymentImpl implements PaymentService {
                                 .replace("-", "");
 
                 Instant expiresAt = Instant.now()
+                                .truncatedTo(java.time.temporal.ChronoUnit.SECONDS)
                                 .plusSeconds(15 * 60);
 
                 paymentTransactionService
