@@ -556,3 +556,9 @@ Database dự án đã ghi nhận V1 identity cũ thành công và chưa đượ
 ## Kết luận
 
 ERD hiện tại mô tả đầy đủ các miền Identity, Catalog, Cart, Ordering, Payment, Promotion, Inventory, Procurement và Review của LaptopStore. Điểm đáng chú ý nhất là quan hệ `users ↔ roles` được triển khai N:N qua `user_roles`, còn các quan hệ 1:1/0..1 được biểu diễn bằng `FK + UQ` ở `carts.user_id`, `payments.order_id`, `coupon_usages.order_id` và `reviews.order_item_id`.
+
+## Checkout/payment integration
+
+V7 bổ sung metadata request ngoài ERD gốc: orders.checkout_payment_method (COD/VNPAY) và customer_note (500 ký tự); đây là snapshot lựa chọn checkout, không phải trạng thái payment. Idempotency key UNIQUE(user_id, idempotency_key), tối đa 200 ký tự qua API. Checkout khóa cart trước khi kiểm tra key để serialize request đồng thời, gồm method và note trong so sánh payload.
+
+Payment → OrderPaymentService (cạnh đã có trong allowlist): lockPayableOrder khóa đơn, kiểm quyền/method và trả tổng tiền; recordVerifiedPayment xác nhận PENDING_PAYMENT → CONFIRMED, trả false với đơn đã hủy/trả. IPN lưu SUCCESS và payments.status=REQUIRES_RECONCILIATION khi tiền về sau hủy. Trạng thái payment vẫn do payments sở hữu. Hủy đơn VNPAY đã xác nhận cần quy trình đối soát/hoàn tiền, endpoint hiện tại từ chối. POST payments lặp trả payment hiện có; tạo VNPay session lặp tái dùng reference và thời hạn của attempt còn hiệu lực.

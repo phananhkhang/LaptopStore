@@ -164,12 +164,16 @@ public class OrderServiceImpl implements OrderService {
         ResolvedShippingAddress resolvedShipping = resolveRequiredShippingAddress(userId, request);
         String requestedCouponCode = normalizeUpper(request.getCouponCode());
 
+        requireCheckoutDependencies();
+        // Serialize retries before checking the key; a committed checkout may have emptied the cart.
+        cartService.lockForCheckout(userId);
         // 2. Kiểm tra Idempotency-Key chống tạo đơn trùng.
         String idempotencyKey = normalize(request.getIdempotencyKey());
+        if (idempotencyKey != null && idempotencyKey.length() > 200) throw new ValidationException("Idempotency-Key must not exceed 200 characters");
         if (idempotencyKey != null) {
             Order previous = orderRepository.findByIdempotencyKeyAndUserId(idempotencyKey, userId).orElse(null);
             if (previous != null) {
-                if (!sameCheckoutPayload(previous, resolvedShipping, requestedCouponCode)) {
+                if (!sameCheckoutPayload(previous, resolvedShipping, requestedCouponCode, request)) {
                     throw new ValidationException("Idempotency-Key was already used with a different checkout payload");
                 }
                 return orderMapper.toResponse(
@@ -238,6 +242,8 @@ public class OrderServiceImpl implements OrderService {
                 .recipientPhone(resolvedShipping.recipientPhone())
                 .shippingAddress(resolvedShipping.shippingAddress())
                 .couponCodeSnapshot(couponCodeSnapshot)
+                .checkoutPaymentMethod(paymentMethod)
+                .customerNote(normalize(request.getNote()))
                 .idempotencyKey(idempotencyKey)
                 .build());
 
@@ -454,6 +460,11 @@ public class OrderServiceImpl implements OrderService {
                 .filter(h -> h.getToStatus() == OrderStatus.DELIVERY_FAILED)
                 .count();
 
+        if ((targetStatus == OrderStatus.CANCELLED || targetStatus == OrderStatus.RETURNED)
+                && order.getCheckoutPaymentMethod() == CheckoutPaymentMethod.VNPAY
+                && currentStatus != OrderStatus.PENDING_PAYMENT) {
+            throw new ValidationException("Đơn online đã thanh toán cần đối soát/hoàn tiền trước khi hủy hoặc trả hàng");
+        }
         orderStateMachine.validateTransition(currentStatus, targetStatus, true, deliveryAttempts);
 
         order.setStatus(targetStatus);
@@ -663,12 +674,14 @@ public class OrderServiceImpl implements OrderService {
     private boolean sameCheckoutPayload(
             Order order,
             ResolvedShippingAddress resolvedShipping,
-            String requestedCouponCode
+            String requestedCouponCode, CreateOrderRequest request
     ) {
         return Objects.equals(order.getRecipientName(), resolvedShipping.recipientName())
                 && Objects.equals(order.getRecipientPhone(), resolvedShipping.recipientPhone())
                 && Objects.equals(order.getShippingAddress(), resolvedShipping.shippingAddress())
-                && Objects.equals(normalizeUpper(order.getCouponCodeSnapshot()), requestedCouponCode);
+                && Objects.equals(normalizeUpper(order.getCouponCodeSnapshot()), requestedCouponCode)
+                && order.getCheckoutPaymentMethod() == CheckoutPaymentMethod.fromValue(request.getPaymentMethod())
+                && Objects.equals(normalize(order.getCustomerNote()), normalize(request.getNote()));
     }
 
     private String normalize(String value) {

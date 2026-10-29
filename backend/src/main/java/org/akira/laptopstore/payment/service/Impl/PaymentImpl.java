@@ -38,20 +38,18 @@ public class PaymentImpl implements PaymentService {
         private final PaymentTransactionRepository paymentTransactionRepository;
 
         private final VnPayGateway vnPayGateway;
+        private final org.akira.laptopstore.order.service.OrderPaymentService orderPaymentService;
 
         @Override
         @Transactional
         public PaymentResponse startPayment(Long userId, StartPaymentRequest request) {
-                orderQueryService.validateOrderOwner(request.getOrderId(), userId);
-                orderQueryService.validateOrderPayable(request.getOrderId());
-                if (paymentRepository.existsByOrderId(request.getOrderId())) {
-                        throw new PaymentAlreadyExistsException(
-                                        "Payment already exists for this order");
+                BigDecimal amount = orderPaymentService.lockPayableOrder(request.getOrderId(), userId,
+                        org.akira.laptopstore.order.entity.enums.CheckoutPaymentMethod.valueOf(request.getMethod().name()));
+                Payment existing = paymentRepository.findByOrderId(request.getOrderId()).orElse(null);
+                if (existing != null) {
+                    if (existing.getMethod() != request.getMethod()) throw new InvalidPaymentException("Payment method mismatch");
+                    return toResponse(existing);
                 }
-
-                // contract to orderservice
-                BigDecimal amount = orderQueryService.getOrderTotalAmount(
-                                request.getOrderId());
 
                 Payment payment = Payment.builder()
                                 .orderId(request.getOrderId())
@@ -111,6 +109,7 @@ public class PaymentImpl implements PaymentService {
                                         "Payment method is not COD");
                 }
 
+                if (payment.getStatus() == PaymentStatus.PAID) return toResponse(payment);
                 if (payment.getStatus() != PaymentStatus.PENDING) {
 
                         throw new InvalidPaymentStatusException(
@@ -156,8 +155,8 @@ public class PaymentImpl implements PaymentService {
                                 payment.getOrderId(),
                                 userId);
 
-                orderQueryService.validateOrderPayable(
-                                payment.getOrderId());
+                orderPaymentService.lockPayableOrder(payment.getOrderId(), userId,
+                        org.akira.laptopstore.order.entity.enums.CheckoutPaymentMethod.VNPAY);
 
                 if (payment.getMethod() != PaymentMethod.VNPAY) {
 
@@ -171,7 +170,7 @@ public class PaymentImpl implements PaymentService {
                                         "Payment is already paid");
                 }
 
-                if (payment.getStatus() == PaymentStatus.CANCELLED) {
+                if (payment.getStatus() == PaymentStatus.CANCELLED || payment.getStatus() == PaymentStatus.REQUIRES_RECONCILIATION) {
 
                         throw new InvalidPaymentStatusException(
                                         "Payment is cancelled");
@@ -182,8 +181,13 @@ public class PaymentImpl implements PaymentService {
                                                 paymentId,
                                                 PaymentTransactionStatus.PENDING)) {
 
-                        throw new InvalidPaymentStatusException(
-                                        "A payment attempt is already pending");
+                        var pending = paymentTransactionRepository.findTopByPaymentIdOrderByCreatedAtDesc(paymentId)
+                                .orElseThrow(() -> new InvalidPaymentStatusException("Pending attempt unavailable"));
+                        if (payment.getExpiresAt() != null && payment.getExpiresAt().isAfter(Instant.now())) {
+                            return PaymentSessionResponse.builder().paymentId(paymentId).expiresAt(payment.getExpiresAt())
+                                    .paymentUrl(vnPayGateway.createPaymentUrl(payment.getAmount(), pending.getProviderReference(), clientIp, payment.getExpiresAt())).build();
+                        }
+                        throw new InvalidPaymentStatusException("Phiên thanh toán đã hết hạn; vui lòng kiểm tra đơn hàng");
                 }
 
                 var latest = paymentTransactionRepository

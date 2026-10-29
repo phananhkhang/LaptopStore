@@ -49,3 +49,9 @@
 - Hủy và cập nhật trạng thái khóa hàng order. Lặp cùng trạng thái/hủy trả kết quả hiện tại, không ghi lại lịch sử hoặc hoàn kho/coupon.
 - Quét hết hạn khóa các đơn PENDING_PAYMENT, xử lý status/history/stock/coupon cùng transaction; lỗi bất kỳ rollback cả đợt và được báo ra scheduler.
 - UI flow theo Figma: /cart → /checkout → /orders/:id; /orders; /staff/orders → /staff/orders/:id. Các trạng thái loading, rỗng, lỗi, hết hạn và giao thất bại được xử lý trên từng màn.
+
+## Checkout/payment integration
+
+V7 bổ sung metadata request ngoài ERD gốc: orders.checkout_payment_method (COD/VNPAY) và customer_note (500 ký tự); đây là snapshot lựa chọn checkout, không phải trạng thái payment. Idempotency key UNIQUE(user_id, idempotency_key), tối đa 200 ký tự qua API. Checkout khóa cart trước khi kiểm tra key để serialize request đồng thời, gồm method và note trong so sánh payload.
+
+Payment → OrderPaymentService (cạnh đã có trong allowlist): lockPayableOrder khóa đơn, kiểm quyền/method và trả tổng tiền; recordVerifiedPayment xác nhận PENDING_PAYMENT → CONFIRMED, trả false với đơn đã hủy/trả. IPN lưu SUCCESS và payments.status=REQUIRES_RECONCILIATION khi tiền về sau hủy. Trạng thái payment vẫn do payments sở hữu. Hủy đơn VNPAY đã xác nhận cần quy trình đối soát/hoàn tiền, endpoint hiện tại từ chối. POST payments lặp trả payment hiện có; tạo VNPay session lặp tái dùng reference và thời hạn của attempt còn hiệu lực.

@@ -28,6 +28,7 @@ public class CreateOrderRequest {
     @Size(max = 500, message = "Note must not exceed 500 characters")
     private String note;
 
+    @Size(max = 200, message = "Idempotency-Key must not exceed 200 characters")
     private String idempotencyKey;
 
     public CreateOrderRequest(

@@ -78,3 +78,9 @@ Phải gọi phương thức transactional qua Spring bean proxy; gọi `this.ot
 ## Đọc dữ liệu và báo cáo
 
 Mặc định lấy dữ liệu module khác bằng query service/DTO. Chưa cho phép repository tùy ý join entity module khác. Khi báo cáo cần join SQL xuyên bảng, viết proposal về quyền đọc, owner, trường nhạy cảm và truy vấn cụ thể; thống nhất với nhóm nếu mở ngoại lệ. Không thêm một “common repository” toàn hệ thống.
+
+## Checkout/payment integration
+
+V7 bổ sung metadata request ngoài ERD gốc: orders.checkout_payment_method (COD/VNPAY) và customer_note (500 ký tự); đây là snapshot lựa chọn checkout, không phải trạng thái payment. Idempotency key UNIQUE(user_id, idempotency_key), tối đa 200 ký tự qua API. Checkout khóa cart trước khi kiểm tra key để serialize request đồng thời, gồm method và note trong so sánh payload.
+
+Payment → OrderPaymentService (cạnh đã có trong allowlist): lockPayableOrder khóa đơn, kiểm quyền/method và trả tổng tiền; recordVerifiedPayment xác nhận PENDING_PAYMENT → CONFIRMED, trả false với đơn đã hủy/trả. IPN lưu SUCCESS và payments.status=REQUIRES_RECONCILIATION khi tiền về sau hủy. Trạng thái payment vẫn do payments sở hữu. Hủy đơn VNPAY đã xác nhận cần quy trình đối soát/hoàn tiền, endpoint hiện tại từ chối. POST payments lặp trả payment hiện có; tạo VNPay session lặp tái dùng reference và thời hạn của attempt còn hiệu lực.

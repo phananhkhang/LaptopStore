@@ -5,6 +5,7 @@ import { Cart } from '@/modules/cart/types';
 import { userApi } from '@/modules/user/api/userApi';
 import { Address } from '@/modules/user/types';
 import { orderApi } from '../../api/orderApi';
+import { paymentApi } from '../../api/paymentApi';
 import { CheckoutPaymentMethod, CheckoutPreviewResponse } from '../../types';
 
 const formatMoney = (amount: number) =>
@@ -134,6 +135,11 @@ export const CheckoutPage: React.FC = () => {
         },
         idempotencyKey
       );
+      try {
+        await paymentApi.start(createdOrder.id, paymentMethod);
+      } catch {
+        // The order is committed. Its detail page can resume payment initialization.
+      }
       navigate(`/orders/${createdOrder.id}`);
     } catch {
       setError('Không thể tạo đơn hàng. Vui lòng kiểm tra lại tồn kho, địa chỉ hoặc mã giảm giá.');

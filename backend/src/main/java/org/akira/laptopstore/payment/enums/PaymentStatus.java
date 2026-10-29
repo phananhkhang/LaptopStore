@@ -8,5 +8,6 @@ public enum PaymentStatus {
     // thanh toán thất bại
     FAILED,
     // payment bị hủy
+    REQUIRES_RECONCILIATION,
     CANCELLED
 }

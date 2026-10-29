@@ -8,7 +8,7 @@ import java.time.Instant;
 import org.akira.laptopstore.order.entity.enums.OrderStatus;
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", uniqueConstraints = @UniqueConstraint(name = "uq_orders_user_idempotency", columnNames = {"user_id", "idempotency_key"}))
 @Getter
 @Setter
 @Builder
@@ -55,8 +55,16 @@ public class Order {
     @Column(name = "coupon_code_snapshot")
     private String couponCodeSnapshot;
 
-    @Column(name = "idempotency_key", unique = true)
+    @Column(name = "idempotency_key")
     private String idempotencyKey;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "checkout_payment_method", nullable = false, length = 10)
+    @Builder.Default
+    private org.akira.laptopstore.order.entity.enums.CheckoutPaymentMethod checkoutPaymentMethod = org.akira.laptopstore.order.entity.enums.CheckoutPaymentMethod.COD;
+
+    @Column(name = "customer_note", length = 500)
+    private String customerNote;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;

@@ -284,3 +284,9 @@ Danh sách bảng/cột ở mục 1–9 khớp ảnh ERD hiện có; **không c�
 | [V1 init](../../src/main/resources/db/migration/V1__init_schema.sql) | Baseline gồm 25 bảng, 30 FK | V1 mới khởi tạo đủ 25 bảng/192 cột/30 FK/14 UQ, seed 3 role | Đã kiểm Flyway và Hibernate validate trên PostgreSQL 17 mới. Database đã chạy V1 identity cũ cần giữ V1 cũ và migration nâng cấp riêng, không thay checksum. |
 
 Bootstrap V1 mới và ánh xạ actor trong OrderStatusHistory đã được triển khai/kiểm thử trên database riêng. Các điểm lệch specification, UQ cart item, JPA xuyên module và state machine vẫn cần đồng bộ; kiểm thử schema không chứng minh các use case đó đã hoàn tất. Xem [quyết định V1 và database cũ](../../src/main/resources/db/migration/README.md).
+
+## Checkout/payment integration
+
+V7 bổ sung metadata request ngoài ERD gốc: orders.checkout_payment_method (COD/VNPAY) và customer_note (500 ký tự); đây là snapshot lựa chọn checkout, không phải trạng thái payment. Idempotency key UNIQUE(user_id, idempotency_key), tối đa 200 ký tự qua API. Checkout khóa cart trước khi kiểm tra key để serialize request đồng thời, gồm method và note trong so sánh payload.
+
+Payment → OrderPaymentService (cạnh đã có trong allowlist): lockPayableOrder khóa đơn, kiểm quyền/method và trả tổng tiền; recordVerifiedPayment xác nhận PENDING_PAYMENT → CONFIRMED, trả false với đơn đã hủy/trả. IPN lưu SUCCESS và payments.status=REQUIRES_RECONCILIATION khi tiền về sau hủy. Trạng thái payment vẫn do payments sở hữu. Hủy đơn VNPAY đã xác nhận cần quy trình đối soát/hoàn tiền, endpoint hiện tại từ chối. POST payments lặp trả payment hiện có; tạo VNPay session lặp tái dùng reference và thời hạn của attempt còn hiệu lực.
