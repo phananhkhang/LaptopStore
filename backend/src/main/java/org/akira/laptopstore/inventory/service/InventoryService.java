@@ -32,5 +32,6 @@ public interface InventoryService {
     void adjustStock(Long variantId, Integer delta, String reason, Long actorId);
 
     // Hợp đồng cho module procurement gọi sang khi xác nhận nhận hàng
-    void receivePurchase(Long purchaseOrderId, Long actorId, List<PurchaseStockReceipt> lines);
+    // Thêm tham số String idempotencyKey
+    void receivePurchase(Long purchaseOrderId, Long actorId, String idempotencyKey, List<PurchaseStockReceipt> lines);
 }

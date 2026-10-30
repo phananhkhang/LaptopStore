@@ -1,11 +1,29 @@
-// src/types/catalog.ts
+// src/modules/catalog/types/catalog.ts
+
+export interface Brand {
+  id: number;
+  name: string;
+  active: boolean;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  active: boolean;
+}
 
 export interface ProductSearchCriteria {
   keyword?: string;
   brandName?: string;
   categoryName?: string;
+  status?: string;
+  ram?: string;
+  storage?: string;
+  sortPriceDirection?: string; // "asc" hoặc "desc"
   minPrice?: number;
   maxPrice?: number;
+
+  // Các field dùng cho Pageable của Spring Boot
   sort?: string;
   page?: number;
   size?: number;
@@ -18,7 +36,8 @@ export interface ProductSummaryResponse {
   categoryName: string;
   status: string;
   thumbnailImage: string;
-  // startingPrice?: number; // Mở comment nếu sau này backend trả về
+  active: boolean;
+  startingPrice: number; // Đã map với BigDecimal bên Java
 }
 
 export interface VariantSnapshot {

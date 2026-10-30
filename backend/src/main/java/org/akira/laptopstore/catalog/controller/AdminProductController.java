@@ -25,6 +25,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/admin/products")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')") // <-- THÊM DÒNG NÀY ĐỂ BẢO VỆ TOÀN BỘ CLASS
+/*
+======================== ĐÃ XÓA CODE CŨ VÀ CẬP NHẬP CODE MỚI - Annotation @PreAuthorize =======================
+*Trong Spring Security, việc cấu hình chặn URL ở SecurityConfig (như requestMatchers("/api/v1/admin/**").hasRole("ADMIN")) là lớp khiên thứ nhất.
+*Lớp khiên thứ hai là bảo vệ trực tiếp trên hàm/class bằng @PreAuthorize (Method Security).
+Đã gắn @PreAuthorize("hasRole('ADMIN')") ở các hàm như updateProduct, createVariant... Rất tốt!
+→ NHƯNG lại quên gắn ở createProduct, getAllProducts, toggleProductStatus.
+→ Nếu sau này có ai đó lỡ tay sửa URL trong SecurityConfig, các API tạo sản phẩm này sẽ bị hổng toàn bộ.
+    + Kéo lên đầu file, thêm @PreAuthorize("hasRole('ADMIN')") ngay trước khai báo lớp `public class AdminProductController`
+    + Xóa hết các dòng @PreAuthorize("hasRole('ADMIN')") đang nằm lẻ tẻ ở các hàm bên dưới để code sạch đẹp hơn.
+*/
 public class AdminProductController {
 
     private final ProductService productService;
@@ -64,7 +75,6 @@ public class AdminProductController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // Đảm bảo chỉ Admin mới được truy cập
     public ResponseEntity<ProductResponse> updateProduct(
             @PathVariable Long id,
             @Valid @RequestBody UpdateProductRequest request) {
@@ -80,7 +90,6 @@ public class AdminProductController {
     }
 
     @PostMapping("/{productId}/variants")
-    @PreAuthorize("hasRole('ADMIN')") // Bảo vệ cẩn mật, chỉ Admin mới được tạo
     public ResponseEntity<VariantSnapshot> createVariant(
             @PathVariable Long productId,
             @Valid @RequestBody CreateVariantRequest request) {
@@ -93,7 +102,6 @@ public class AdminProductController {
     }
 
     @PutMapping("/{productId}/variants/{variantId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VariantSnapshot> updateVariant(
             @PathVariable Long productId,
             @PathVariable Long variantId,
@@ -104,36 +112,33 @@ public class AdminProductController {
     }
 
     @PatchMapping("/{productId}/variants/{variantId}/status")
-    @PreAuthorize("hasRole('ADMIN')") // Vẫn phải bảo vệ bằng khiên Admin
     public ResponseEntity<String> updateVariantStatus(
             @PathVariable Long productId,
             @PathVariable Long variantId,
             @RequestParam boolean active) {
-        
+
         // Gọi Service xử lý việc bật/tắt (nhớ gọi đúng tên biến service của em, có thể là productVariantService hoặc productService)
         productVariantService.updateVariantActiveStatus(productId, variantId, active);
-        
+
         // Tùy biến câu thông báo cho xịn xò
         String message = active ? "Kích hoạt biến thể thành công!" : "Hủy kích hoạt (Ngừng kinh doanh) biến thể thành công!";
-        
+
         // Trả về mã 200 OK kèm lời nhắn
         return ResponseEntity.ok(message);
     }
 
     @GetMapping("/{productId}/variants")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<VariantSnapshot>> getVariantsByProductId(@PathVariable Long productId) {
-        
+
         List<VariantSnapshot> response = productVariantService.getVariantsByProductId(productId);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{productId}/variants/{variantId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<VariantSnapshot> getVariantById(
-            @PathVariable Long productId, 
+            @PathVariable Long productId,
             @PathVariable Long variantId) {
-        
+
         VariantSnapshot response = productVariantService.getVariantById(productId, variantId);
         return ResponseEntity.ok(response);
     }

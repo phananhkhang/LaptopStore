@@ -1,37 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ProductResponse, VariantSnapshot } from '../../types';
-import { productApi } from '../../api/productApi';
+import { ProductResponse, VariantSnapshot } from '../../types/catalog';
+import { catalogApi } from '../../api/catalogApi';
 
 const ProductDetailPage: React.FC = () => {
-    const { id } = useParams<{ id: string }>();
+    const { productId } = useParams<{ productId: string }>();
     const [product, setProduct] = useState<ProductResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    // State lưu cấu hình (variant) đang được người dùng chọn
+
+    // State lưu cấu hình (variant) đang được chọn và ảnh hiển thị
     const [selectedVariant, setSelectedVariant] = useState<VariantSnapshot | null>(null);
-    // State lưu ảnh đang được chọn để hiển thị ở khung to
     const [mainImage, setMainImage] = useState<string>('');
 
     useEffect(() => {
-        if (id) {
-            fetchProductDetail(Number(id));
+        if (productId) {
+            fetchProductDetail(Number(productId));
         }
-    }, [id]);
+    }, [productId]);
 
-    const fetchProductDetail = async (productId: number) => {
+    const fetchProductDetail = async (id: number) => {
         try {
             setLoading(true);
             setError(null);
-            const data = await productApi.getProductById(productId);
+            const data = await catalogApi.getProductById(id);
             setProduct(data);
 
-            // Mặc định chọn variant đầu tiên nếu có
             if (data.variants && data.variants.length > 0) {
                 setSelectedVariant(data.variants[0]);
             }
 
-            // Mặc định lấy ảnh primary hoặc ảnh đầu tiên
             if (data.images && data.images.length > 0) {
                 const primaryImg = data.images.find(img => img.isPrimary);
                 setMainImage(primaryImg ? primaryImg.imageUrl : data.images[0].imageUrl);
@@ -49,7 +47,6 @@ const ProductDetailPage: React.FC = () => {
 
         const cartKey = 'laptopstore_cart';
         const existingCart = JSON.parse(localStorage.getItem(cartKey) || '[]');
-
         const existingItemIndex = existingCart.findIndex((item: any) => item.variantId === selectedVariant.id);
 
         if (existingItemIndex >= 0) {
@@ -70,149 +67,212 @@ const ProductDetailPage: React.FC = () => {
         }
 
         localStorage.setItem(cartKey, JSON.stringify(existingCart));
-        alert('Đã thêm sản phẩm vào giỏ hàng thành công!'); // Tạm thời dùng alert, có thể thay bằng Toast UI sau
+        alert('Đã thêm sản phẩm vào giỏ hàng thành công!');
     };
 
-    if (loading) {return <div className="max-w-7xl mx-auto p-4 mt-10 text-center text-gray-500">Đang tải thông tin sản phẩm...</div>;}
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center min-h-[600px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            </div>
+        );
+    }
 
     if (error || !product) {
         return (
-            <div className="max-w-7xl mx-auto p-4 mt-10 text-center">
+            <div className="max-w-[1280px] mx-auto p-4 mt-10 text-center">
                 <p className="text-red-500 mb-4">{error}</p>
-                <Link to="/products" className="text-blue-600 hover:underline">← Quay lại danh sách sản phẩm</Link>
+                <Link to="/products" className="text-primary hover:underline">← Quay lại danh sách sản phẩm</Link>
             </div>
         );
     }
 
     return (
-        <div className="max-w-7xl mx-auto p-4 mt-6">
-            <div className="mb-4">
-                <Link to="/products" className="text-blue-600 hover:underline text-sm font-medium">← Trở về danh mục</Link>
+        <div className="flex flex-col items-center py-7 pb-12 gap-6 w-full max-w-[1280px] mx-auto font-sans px-4 xl:px-0">
+            
+            {/* Breadcrumb */}
+            <div className="w-full flex items-center gap-2 text-[12px] mb-2">
+                <Link to="/" className="text-ink-lighter font-semibold hover:text-primary">Trang chủ</Link>
+                <span className="text-ink-lighter">/</span>
+                <Link to="/products" className="text-ink-lighter font-semibold hover:text-primary">{product.categoryName || 'Laptop'}</Link>
+                <span className="text-ink-lighter">/</span>
+                <span className="text-ink font-medium">{product.name}</span>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-8">
-                {/* Cột Trái: Hình ảnh sản phẩm */}
-                <div className="w-full md:w-1/2">
-                    <div className="bg-gray-100 aspect-video rounded-lg flex items-center justify-center shadow-inner overflow-hidden mb-4">
+            {/* Product detail */}
+            <div className="w-full flex flex-col lg:flex-row gap-12">
+                
+                {/* Left: Product gallery (600px) */}
+                <div className="w-full lg:w-[600px] flex flex-col gap-4">
+                    {/* Main visual */}
+                    <div className="w-full h-[390px] bg-white rounded-[24px] flex justify-center items-center overflow-hidden border border-surface-border">
                         {mainImage ? (
-                            <img src={mainImage} alt={product.name} className="h-full object-contain mix-blend-multiply" />
+                            <img src={`http://localhost:8081${mainImage}`} alt={product.name} className="max-h-[300px] object-contain mix-blend-multiply" />
                         ) : (
-                            <span className="text-gray-400 font-medium">Chưa có hình ảnh</span>
+                            <span className="text-ink-lighter">Chưa có hình ảnh</span>
                         )}
                     </div>
-                    {/* Thumbnail gallery */}
+                    
+                    {/* Thumbnails */}
                     {product.images && product.images.length > 0 && (
-                        <div className="flex gap-2 overflow-x-auto py-2">
+                        <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide h-[80px]">
                             {product.images.map(img => (
                                 <div
                                     key={img.id}
                                     onClick={() => setMainImage(img.imageUrl)}
-                                    className={`w-16 h-16 bg-gray-50 rounded border-2 cursor-pointer flex-shrink-0 flex items-center justify-center p-1 
-                                        ${mainImage === img.imageUrl ? 'border-blue-600' : 'border-gray-200 hover:border-blue-400'}`}
+                                    className={`w-[116px] h-full bg-white rounded-xl border flex-shrink-0 cursor-pointer flex items-center justify-center p-2 transition-colors
+                                        ${mainImage === img.imageUrl ? 'border-primary ring-1 ring-primary' : 'border-surface-border hover:border-primary/50'}`}
                                 >
-                                    <img src={img.imageUrl} alt="Thumbnail" className="max-h-full object-contain" />
+                                    <img src={`http://localhost:8081${img.imageUrl}`} alt="Thumbnail" className="max-h-full object-contain mix-blend-multiply" />
                                 </div>
                             ))}
                         </div>
                     )}
+
+                    {/* Delivery and warranty */}
+                    <div className="flex items-center gap-6 mt-2">
+                        <div className="flex items-center gap-2">
+                            <div className="w-[22px] h-[22px] rounded-full border-[1.8px] border-primary text-primary flex items-center justify-center">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            </div>
+                            <span className="text-ink text-[12px] font-semibold">Bảo hành chính hãng</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-[22px] h-[22px] rounded-full border-[1.8px] border-primary text-primary flex items-center justify-center">
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                            </div>
+                            <span className="text-ink text-[12px] font-semibold">Giao hàng miễn phí</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* Cột Phải: Thông tin & Cấu hình (Variants) */}
-                <div className="w-full md:w-1/2">
-                    <h1 className="text-2xl font-bold mb-2 text-gray-800">{product.name}</h1>
-                    <p className="text-gray-600 mb-4 text-sm">
-                        Thương hiệu: <span className="font-semibold text-gray-800">{product.brandName}</span> | 
-                        Danh mục: <span className="font-semibold text-gray-800">{product.categoryName}</span> |
-                        Trạng thái: <span className={`ml-1 font-semibold ${product.status === 'ACTIVE' ? 'text-green-600' : 'text-red-600'}`}>{product.status}</span>
+                {/* Right: Product purchase panel (632px) */}
+                <div className="w-full lg:flex-1 flex flex-col gap-4">
+                    {/* Badge */}
+                    <span className="text-primary text-[11px] font-semibold uppercase tracking-wider bg-[#FFF2E9] px-3 py-1.5 rounded-lg w-fit">
+                        {product.categoryName || 'LAPTOP'} / {product.brandName}
+                    </span>
+                    
+                    <h1 className="text-ink text-[30px] font-semibold leading-tight">{product.name}</h1>
+                    
+                    <span className="text-ink-lighter text-[12px]">★ 4.9 · 28 đánh giá · Đã bán 120</span>
+                    
+                    <p className="text-ink-lighter text-[14px] leading-relaxed line-clamp-2">
+                        {product.description || 'Sức mạnh sẵn sàng cho mọi thử thách. Hiệu năng mạnh mẽ cho lập trình, sáng tạo và những trận game mượt mà.'}
                     </p>
 
-                    {/* Khu vực chọn Variant */}
+                    {/* Variant options */}
                     {product.variants && product.variants.length > 0 ? (
-                        <div className="mb-6 p-5 bg-white rounded-xl border border-gray-200 shadow-sm">
-                            <h3 className="font-semibold mb-3 text-gray-700">Chọn cấu hình:</h3>
+                        <div className="flex flex-col gap-3 mt-2">
+                            <h3 className="text-ink text-[13px] font-semibold">Chọn cấu hình</h3>
                             <div className="flex flex-wrap gap-3">
                                 {product.variants.map((v) => (
                                     <button
                                         key={v.id}
                                         onClick={() => setSelectedVariant(v)}
-                                        className={`border rounded-lg px-4 py-2 text-sm transition text-left
+                                        className={`h-[48px] min-w-[220px] px-4 rounded-xl text-[13px] font-semibold transition-colors
                                             ${selectedVariant?.id === v.id
-                                                ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' 
-                                                : 'border-gray-300 hover:border-blue-400 bg-white'}`}
+                                                ? 'bg-primary text-white' 
+                                                : 'bg-white border border-surface-border text-ink hover:border-primary/50'}`}
                                     >
-                                        <div className={`font-semibold ${selectedVariant?.id === v.id ? 'text-blue-700' : 'text-gray-800'}`}>
-                                            {v.ram} - {v.storage}
-                                        </div>
-                                        <div className="text-xs text-gray-500 mt-1">Màu: {v.color}</div>
+                                        {v.ram} / {v.storage}
                                     </button>
                                 ))}
                             </div>
-
-                            <div className="mt-6 pt-6 border-t border-gray-100">
-                                <p className="text-3xl text-red-600 font-bold mb-1">
-                                    {selectedVariant?.price.toLocaleString('vi-VN')} đ
-                                </p>
-                                <p className="text-sm text-gray-500 mb-6">
-                                    Mã SP: <span className="font-mono">{selectedVariant?.sku}</span> | 
-                                    Tồn kho: <span className={selectedVariant?.quantity && selectedVariant.quantity > 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold'}>
-                                        {selectedVariant?.quantity && selectedVariant.quantity > 0 ? `${selectedVariant.quantity} sản phẩm` : 'Hết hàng'}
-                                    </span>
-                                </p>
-                                <button
-                                    disabled={!selectedVariant || selectedVariant.quantity === 0}
-                                    onClick={handleAddToCart}
-                                    className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 w-full md:w-auto font-medium transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {selectedVariant?.quantity && selectedVariant.quantity > 0 ? 'Thêm vào giỏ hàng' : 'Tạm hết hàng'}
-                                </button>
-                            </div>
+                            <span className="text-ink-lighter text-[12px] mt-1">
+                                {selectedVariant?.ram} · {selectedVariant?.storage} · {selectedVariant?.color} · SKU {selectedVariant?.sku}
+                            </span>
                         </div>
                     ) : (
-                        <div className="p-4 bg-yellow-50 text-yellow-700 rounded-lg border border-yellow-200">
-                            Sản phẩm này hiện chưa có phiên bản cấu hình nào.
-                        </div>
+                        <div className="p-3 bg-yellow-50 text-yellow-700 rounded-lg text-sm">Chưa có cấu hình.</div>
                     )}
+
+                    {/* Price and Stock */}
+                    <div className="flex flex-col gap-2 mt-4">
+                        <span className="text-primary text-[36px] font-semibold leading-none">
+                            {selectedVariant?.price.toLocaleString('vi-VN')}₫
+                        </span>
+                        
+                        {selectedVariant?.quantity && selectedVariant.quantity > 0 ? (
+                            <span className="bg-[#EAF7F0] text-[#16835B] px-3 py-1.5 rounded-lg text-[11px] font-semibold w-fit">
+                                Còn hàng · Sẵn sàng giao
+                            </span>
+                        ) : (
+                            <span className="bg-red-50 text-red-600 px-3 py-1.5 rounded-lg text-[11px] font-semibold w-fit">
+                                Tạm hết hàng
+                            </span>
+                        )}
+                    </div>
+
+                    {/* Purchase actions */}
+                    <div className="flex flex-col sm:flex-row gap-4 mt-2">
+                        <button
+                            disabled={!selectedVariant || selectedVariant.quantity === 0}
+                            className="flex-1 h-[48px] bg-primary text-white rounded-xl text-[13px] font-semibold hover:bg-primary-dark transition-colors disabled:opacity-50"
+                        >
+                            Mua ngay
+                        </button>
+                        <button
+                            onClick={handleAddToCart}
+                            disabled={!selectedVariant || selectedVariant.quantity === 0}
+                            className="flex-1 h-[48px] bg-white border border-surface-border text-ink rounded-xl text-[13px] font-semibold hover:bg-gray-50 hover:border-primary transition-colors disabled:opacity-50"
+                        >
+                            Thêm vào giỏ
+                        </button>
+                    </div>
+
+                    {/* Coupon offer */}
+                    <div className="w-full bg-[#FFF2E9] rounded-xl p-4 flex items-center gap-3 mt-2">
+                        <svg className="w-[22px] h-[22px] text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
+                        <span className="text-primary text-[12px] font-semibold">LAPTOP500 · Giảm 500.000₫ cho đơn từ 20 triệu</span>
+                    </div>
                 </div>
             </div>
 
-            {/* Phần dưới: Thông số kỹ thuật & Mô tả */}
-            <div className="mt-12 border-t pt-8 grid grid-cols-1 md:grid-cols-2 gap-10">
-                {product.specification ? (
-                    <div>
-                        <h2 className="text-xl font-bold mb-4 text-gray-800">Thông số kỹ thuật</h2>
-                        <div className="bg-white border rounded-lg overflow-hidden">
-                            <table className="w-full text-sm text-left text-gray-700">
-                                <tbody className="divide-y divide-gray-200">
-                                    <tr className="hover:bg-gray-50"><th className="py-3 px-4 w-1/3 bg-gray-50 text-gray-600 font-medium">CPU</th><td className="py-3 px-4">{product.specification.cpu || 'Đang cập nhật'}</td></tr>
-                                    <tr className="hover:bg-gray-50"><th className="py-3 px-4 w-1/3 bg-gray-50 text-gray-600 font-medium">GPU</th><td className="py-3 px-4">{product.specification.gpu || 'Đang cập nhật'}</td></tr>
-                                    <tr className="hover:bg-gray-50"><th className="py-3 px-4 w-1/3 bg-gray-50 text-gray-600 font-medium">Màn hình</th><td className="py-3 px-4">{product.specification.screenSize} ({product.specification.screenResolution}) - {product.specification.refreshRate}</td></tr>
-                                    <tr className="hover:bg-gray-50"><th className="py-3 px-4 w-1/3 bg-gray-50 text-gray-600 font-medium">Hệ điều hành</th><td className="py-3 px-4">{product.specification.os || 'Đang cập nhật'}</td></tr>
-                                    <tr className="hover:bg-gray-50"><th className="py-3 px-4 w-1/3 bg-gray-50 text-gray-600 font-medium">Pin</th><td className="py-3 px-4">{product.specification.battery || 'Đang cập nhật'}</td></tr>
-                                    <tr className="hover:bg-gray-50"><th className="py-3 px-4 w-1/3 bg-gray-50 text-gray-600 font-medium">Khối lượng</th><td className="py-3 px-4">{product.specification.weight || 'Đang cập nhật'}</td></tr>
-                                </tbody>
-                            </table>
+            {/* Product information (Bottom section) */}
+            <div className="w-full flex flex-col lg:flex-row gap-6 mt-6">
+                
+                {/* Specs Card (744px) */}
+                <div className="w-full lg:w-[744px] bg-white border border-surface-border rounded-[16px] p-6 flex flex-col gap-4">
+                    <h2 className="text-ink text-[20px] font-semibold mb-2">Hiểu rõ chiếc máy của bạn</h2>
+                    {product.specification ? (
+                        <div className="flex flex-col gap-4">
+                            <div className="flex gap-4">
+                                <span className="w-[180px] text-ink-lighter text-[12px]">Vi xử lý</span>
+                                <span className="flex-1 text-ink text-[12px] font-semibold">{product.specification.cpu || 'Đang cập nhật'}</span>
+                            </div>
+                            <div className="flex gap-4">
+                                <span className="w-[180px] text-ink-lighter text-[12px]">Đồ họa</span>
+                                <span className="flex-1 text-ink text-[12px] font-semibold">{product.specification.gpu || 'Đang cập nhật'}</span>
+                            </div>
+                            <div className="flex gap-4">
+                                <span className="w-[180px] text-ink-lighter text-[12px]">Màn hình</span>
+                                <span className="flex-1 text-ink text-[12px] font-semibold">{product.specification.screenSize} · {product.specification.screenResolution} · {product.specification.refreshRate}</span>
+                            </div>
+                            <div className="flex gap-4">
+                                <span className="w-[180px] text-ink-lighter text-[12px]">Bộ nhớ</span>
+                                <span className="flex-1 text-ink text-[12px] font-semibold">RAM {selectedVariant?.ram || '...'} · SSD {selectedVariant?.storage || '...'}</span>
+                            </div>
                         </div>
-                    </div>
-                ) : (
-                    <div>
-                        <h2 className="text-xl font-bold mb-4 text-gray-800">Thông số kỹ thuật</h2>
-                        <p className="text-gray-500 italic">Đang cập nhật...</p>
-                    </div>
-                )}
-
-                <div>
-                    <h2 className="text-xl font-bold mb-4 text-gray-800">Mô tả sản phẩm</h2>
-                    <div className="prose prose-sm max-w-none text-gray-600">
-                        {product.description ? (
-                            <p className="leading-relaxed whitespace-pre-wrap">{product.description}</p>
-                        ) : (
-                            <p className="italic text-gray-400">Chưa có bài viết mô tả cho sản phẩm này.</p>
-                        )}
-                    </div>
+                    ) : (
+                        <p className="text-ink-lighter text-[12px] italic">Đang cập nhật thông số kỹ thuật...</p>
+                    )}
                 </div>
+
+                {/* Customer review Card (512px) */}
+                <div className="w-full lg:flex-1 bg-white border border-surface-border rounded-[16px] p-6 flex flex-col gap-4">
+                    <h2 className="text-ink text-[20px] font-semibold">Được yêu thích bởi người dùng</h2>
+                    <div className="text-primary text-[24px] tracking-widest leading-none">★★★★★</div>
+                    <p className="text-ink-lighter text-[14px] leading-relaxed">
+                        "Máy chạy mượt, đóng gói cẩn thận. Rất phù hợp cho công việc và chơi game."
+                    </p>
+                    <Link to={`/products/${product.id}/reviews`} className="text-ink-lighter text-[12px] font-semibold hover:text-primary mt-2">
+                        Xem đánh giá
+                    </Link>
+                </div>
+
             </div>
         </div>
     );
 };
-
 export default ProductDetailPage;

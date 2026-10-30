@@ -47,33 +47,51 @@ public class CatalogCheckoutServiceImpl implements CatalogCheckoutService {
         return toSellableSnapshots(orderedIds, variants);
     }
 
+/*
+======================== ĐÃ XÓA CODE CŨ VÀ CẬP NHẬP CODE MỚI - Hàm deductStock và adjustStock =======================
+1. Ở hàm deductStock(Long variantId, int quantity) CŨ:
+    + Gọi productVariantRepository.findById(variantId) (đọc thường, KHÔNG khóa dòng) và cũng thiếu productVariantRepository.save(variant) rõ ràng.
+    + Nếu 2 luồng cùng trừ kho hoặc 1 luồng nhập hàng (adjustStock) đụng 1 luồng đặt hàng (deductStock), luồng deductStock không dùng findByIdForUpdate sẽ gây Race Condition (Lost Update).
+
+2. Ở hàm adjustStock(Long variantId, int delta) CŨ:
+    + Dùng findByIdForUpdate(variantId) rất tốt, nhưng lại để @Transactional mặc định (Propagation.REQUIRED).
+    + Theo quy tắc kiến trúc Tuần 6: "Bảo đảm không thay quantity mà thiếu StockMovement" — tức là adjustStock của Catalog bắt buộc phải được gọi bên trong một Transaction đã mở sẵn từ InventoryServiceImpl (nơi ghi StockMovement), tuyệt đối không được phép tự mở transaction chạy độc lập.
+    → Do đó, nó phải dùng @Transactional(propagation = Propagation.MANDATORY) giống hệt deductStock
+*/
+
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
     public StockChangeResult deductStock(Long variantId, int quantity) {
         if (variantId == null || variantId <= 0 || quantity <= 0) {
             throw new ValidationException("variantId and quantity must be greater than 0");
         }
-        ProductVariant variant = productVariantRepository.findById(variantId)
+        // SỬ DỤNG findByIdForUpdate ĐỂ KHÓA DÒNG DỮ LIỆU (PESSIMISTIC_WRITE) ĐỒNG NHẤT VỚI adjustStock
+        ProductVariant variant = productVariantRepository.findByIdForUpdate(variantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product variant not found: " + variantId));
         int before = variant.getQuantity() == null ? 0 : variant.getQuantity();
         if (before < quantity) {
             throw new ValidationException("Not enough stock for product variant: " + variantId);
         }
-        variant.setQuantity(before - quantity);
-        return new StockChangeResult(variantId, before, before - quantity);
+        int after = before - quantity;
+        variant.setQuantity(after);
+        productVariantRepository.save(variant);
+        return new StockChangeResult(variantId, before, after);
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.MANDATORY)
     public StockChangeResult adjustStock(Long variantId, int delta) {
+        if (variantId == null || variantId <= 0) {
+            throw new ValidationException("variantId must be greater than 0");
+        }
         // SỬ DỤNG FINDBYIDFORUPDATE ĐỂ KHÓA DÒNG DỮ LIỆU
         ProductVariant variant = productVariantRepository.findByIdForUpdate(variantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy Variant ID: " + variantId));
 
-        int quantityBefore = variant.getQuantity();
+        int quantityBefore = variant.getQuantity() == null ? 0 : variant.getQuantity();
         int quantityAfter = quantityBefore + delta;
 
-        // Chặn luồng bán hàng nếu trừ âm kho (tùy nghiệp vụ của bạn)
+        // Chặn luồng nếu trừ âm kho
         if (quantityAfter < 0) {
             throw new BusinessException(HttpStatus.BAD_REQUEST, "OUT_OF_STOCK", 
                     "Không đủ số lượng tồn kho để thực hiện giao dịch.");
