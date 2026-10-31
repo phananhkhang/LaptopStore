@@ -1,0 +1,132 @@
+{
+  "counts": {
+    "nodes": 16884,
+    "texts": 5170,
+    "clickControls": 1252,
+    "reactions": 1718
+  },
+  "rootCount": 117,
+  "missing": [],
+  "invalidDestinations": [],
+  "unreachable": [],
+  "fontIssues": [],
+  "bounds": [],
+  "boundCount": 0,
+  "deadControls": [],
+  "deadCount": 0,
+  "edgeCount": 1873,
+  "simulation": {
+    "passed": 22,
+    "total": 22,
+    "tests": [
+      {
+        "name": "ROG 32GB → giỏ hàng, tăng số lượng, tổng sau giảm giá",
+        "pass": true
+      },
+      {
+        "name": "Giới hạn tồn kho và xóa sản phẩm",
+        "pass": true
+      },
+      {
+        "name": "Đăng nhập quay về đúng bước mua ngay",
+        "pass": true
+      },
+      {
+        "name": "COD đặt đơn tạo snapshot độc lập sản phẩm đang xem",
+        "pass": true
+      },
+      {
+        "name": "Chọn VNPay tách biệt với đặt đơn và kết quả cổng thanh toán",
+        "pass": true
+      },
+      {
+        "name": "Hủy đơn chờ xác nhận có xác nhận và khóa thanh toán lại",
+        "pass": true
+      },
+      {
+        "name": "Đơn online chưa thanh toán không được xác nhận",
+        "pass": true
+      },
+      {
+        "name": "Giao thất bại 3 lần chặn giao lại",
+        "pass": true
+      },
+      {
+        "name": "Hủy sau giao thất bại yêu cầu xác nhận hàng về kho",
+        "pass": true
+      },
+      {
+        "name": "COD trước DELIVERED bị chặn, DELIVERED thu được đúng 1 lần",
+        "pass": true
+      },
+      {
+        "name": "Online không thể dùng xác nhận COD",
+        "pass": true
+      },
+      {
+        "name": "Phiếu nhập nhận một phần, mở lại, nhận đủ và chặn lặp",
+        "pass": true
+      },
+      {
+        "name": "Hủy phiếu 44 không hủy nhầm phiếu 43",
+        "pass": true
+      },
+      {
+        "name": "Nhân sự mới có định danh riêng và không cho bỏ hết vai trò",
+        "pass": true
+      },
+      {
+        "name": "Tạo nhà cung cấp quay về danh sách có bản ghi mới",
+        "pass": true
+      },
+      {
+        "name": "Tạo coupon có bản ghi mới và không giả lịch sử sử dụng",
+        "pass": true
+      },
+      {
+        "name": "Trả về VNPay không tự kết luận đã thanh toán",
+        "pass": true
+      },
+      {
+        "name": "Cần đối soát chặn thanh toán lại và hủy đơn",
+        "pass": true
+      },
+      {
+        "name": "Đơn đã thu tiền phải đối soát trước trả hàng",
+        "pass": true
+      },
+      {
+        "name": "Nhập nhiều SKU ghi nhận dòng Dell khi nhận đủ",
+        "pass": true
+      },
+      {
+        "name": "Bộ lọc staff áp dụng đúng bảng và không đổi workspace",
+        "pass": true
+      },
+      {
+        "name": "Phân quyền nhiều vai trò còn đúng khi mở lại nhân sự",
+        "pass": true
+      }
+    ]
+  },
+  "flowStartingPoints": [
+    {
+      "nodeId": "52:9809",
+      "name": "Bắt đầu · Chọn vai trò"
+    },
+    {
+      "nodeId": "10:204",
+      "name": "Khách hàng · Mua laptop"
+    },
+    {
+      "nodeId": "10:209",
+      "name": "Staff · Vận hành"
+    },
+    {
+      "nodeId": "10:213",
+      "name": "Admin · Quản trị"
+    }
+  ],
+  "method": "Figma Plugin API readback; independent evaluation of stored reactions and variables; rendered screenshot inspection. No manual Present-mode claim.",
+  "date": "2026-10-25"
+}

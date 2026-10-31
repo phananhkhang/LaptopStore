@@ -1,7 +1,8 @@
+import { resolveImageUrl } from '@/utils/image';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ProductSummaryResponse, ProductSearchCriteria } from '../../types/catalog';
 import { catalogApi } from '../../api/catalogApi';
+import { ProductSearchCriteria, ProductSummaryResponse } from '../../types/catalog';
 
 const ProductListPage: React.FC = () => {
   // State lưu trữ dữ liệu
@@ -164,7 +165,7 @@ const ProductListPage: React.FC = () => {
                 <div key={product.id} className="bg-white border border-surface-border rounded-[16px] p-4 flex flex-col gap-3 hover:shadow-md transition-shadow group">
                   <div className="w-full h-[156px] bg-surface-gray rounded-xl flex justify-center items-center overflow-hidden relative">
                     {product.thumbnailImage ? (
-                        <img src={`http://localhost:8081${product.thumbnailImage}`} alt={product.name} className="max-h-[140px] object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" />
+                        <img src={resolveImageUrl(product.thumbnailImage)} alt={product.name} className="max-h-[140px] object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" />
                     ) : (
                         <span className="text-ink-lighter text-[11px]">Chưa có ảnh</span>
                     )}

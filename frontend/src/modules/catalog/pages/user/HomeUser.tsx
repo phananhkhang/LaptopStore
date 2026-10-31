@@ -1,3 +1,4 @@
+import { resolveImageUrl } from '@/utils/image';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -20,7 +21,7 @@ export const HomeUser: React.FC = () => {
                 {/* Hero Artwork Placeholder */}
                 <div className="flex-1 flex justify-center items-center mt-10 md:mt-0 z-0">
                 <img
-                    src="http://localhost:8081/uploads/products/product-01.jpg"
+                    src={resolveImageUrl('/uploads/products/product-01.jpg')}
                     alt="Hero Laptop"
                     className="w-full max-w-[500px] object-contain drop-shadow-2xl mix-blend-multiply"
                 />
@@ -98,7 +99,7 @@ export const HomeUser: React.FC = () => {
                 ].map((item) => (
                     <div key={item.id} className="bg-white border border-surface-border rounded-[16px] p-4 flex flex-col gap-3 hover:shadow-md transition-shadow group">
                         <div className="w-full h-[172px] bg-surface-gray rounded-xl flex justify-center items-center overflow-hidden">
-                            <img src={`http://localhost:8081/uploads/products/product-${item.img}.jpg`} alt={item.name} className="max-h-[140px] object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" />
+                            <img src={resolveImageUrl(`/uploads/products/product-${item.img}.jpg`)} alt={item.name} className="max-h-[140px] object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" />
                         </div>
 
                         <div className="flex flex-col gap-1 mt-1 flex-1">
@@ -127,7 +128,7 @@ export const HomeUser: React.FC = () => {
                     </div>
 
                     <div className="w-full sm:w-[310px] flex justify-center">
-                        <img src="http://localhost:8081/uploads/products/product-06.jpg" className="max-h-[200px] object-contain mix-blend-multiply" alt="Work laptop" />
+                        <img src={resolveImageUrl('/uploads/products/product-06.jpg')} className="max-h-[200px] object-contain mix-blend-multiply" alt="Work laptop" />
                     </div>
                 </div>
 
@@ -140,7 +141,7 @@ export const HomeUser: React.FC = () => {
                     </div>
 
                     <div className="w-full sm:w-[310px] flex justify-center">
-                        <img src="http://localhost:8081/uploads/products/product-07.jpg" className="max-h-[200px] object-contain mix-blend-multiply" alt="Gaming laptop" />
+                        <img src={resolveImageUrl('/uploads/products/product-07.jpg')} className="max-h-[200px] object-contain mix-blend-multiply" alt="Gaming laptop" />
                     </div>
                 </div>
             </section>

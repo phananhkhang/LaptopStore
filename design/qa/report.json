@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-10-24T14:27:03.962Z",
+  "routes": 57,
+  "viewports": [
+    1440,
+    768,
+    390
+  ],
+  "renderChecks": 171,
+  "fonts": {
+    "body": "\"Be Vietnam Pro\", Arial, sans-serif",
+    "faces": [
+      {
+        "family": "Be Vietnam Pro",
+        "weight": "400",
+        "status": "loaded"
+      },
+      {
+        "family": "Be Vietnam Pro",
+        "weight": "500",
+        "status": "loaded"
+      },
+      {
+        "family": "Be Vietnam Pro",
+        "weight": "600",
+        "status": "loaded"
+      },
+      {
+        "family": "Be Vietnam Pro",
+        "weight": "700",
+        "status": "loaded"
+      }
+    ]
+  },
+  "errors": [],
+  "overflow": [],
+  "emptyScreens": [],
+  "brokenImages": [],
+  "unknownActions": [],
+  "flows": [
+    "variant/cart/coupon/checkout",
+    "order lifecycle/COD",
+    "partial+full receiving/ledger",
+    "stock adjustment",
+    "profile persistence",
+    "review moderation",
+    "catalog filtering",
+    "AI recommendation",
+    "VNPay failure/retry/success",
+    "mobile navigation/modal Escape"
+  ],
+  "createdOrder": "LS2852022085"
+}

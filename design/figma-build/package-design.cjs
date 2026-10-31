@@ -1,0 +1,31 @@
+'use strict';
+const fs=require('node:fs');const path=require('node:path');
+const dir=__dirname;const design=path.join(dir,'..');const plugin=path.join(design,'figma-plugin');fs.mkdirSync(plugin,{recursive:true});
+const read=f=>fs.readFileSync(path.join(dir,f),'utf8');
+// Minor composition fixes found in the offline layout audit.
+let core=read('core-screens.js').replace("1280,388,'orangePale'","1280,408,'orangePale'").replace("'ink',520","'ink',512").replace("'VERTICAL',644,330","'VERTICAL',644,356");fs.writeFileSync(path.join(dir,'core-screens.js'),core);
+let found=read('foundations.js').replace("page.name='LaptopStore · 3 vai trò & Prototype'","page.name='LaptopStore · Full website & Prototype'");fs.writeFileSync(path.join(dir,'foundations.js'),found);
+const ICONS=JSON.parse(fs.readFileSync(path.join(design,'figma-assets/icons.json'),'utf8'));
+const ASSETS=Object.fromEntries(fs.readdirSync(path.join(design,'figma-assets')).filter(f=>f.endsWith('.svg')).map(f=>[f.slice(0,-4),fs.readFileSync(path.join(design,'figma-assets',f),'utf8')]));
+const phases=['foundations.js','components.js','assets-expand.js','core-screens.js','customer-secondary.js','ops-secondary.js','prototype.js'];
+const helpers=read('helpers.js');
+const clean=s=>s.replace(/\b[a-zA-Z_$][\w$]*\.placeholder\s*=\s*(?:true|false)\s*;/g,'');
+// Native Figma runtime: createAutoLayout is the only convenience used by MCP
+// authoring scripts. Everything else remains standard Plugin API.
+const shim=`const native=figma;const F=new Proxy(native,{get(t,k){if(k==='createAutoLayout')return function(d='HORIZONTAL'){const n=t.createFrame();n.layoutMode=d;n.primaryAxisSizingMode='AUTO';n.counterAxisSizingMode='AUTO';n.fills=[];n.clipsContent=false;return n;};const v=t[k];return typeof v==='function'?v.bind(t):v;}});`;
+const functions=phases.map((f,i)=>`async function phase${i}(S){const figma=F;\n${clean(helpers)}\n${clean(read(f))}\n}`).join('\n');
+const runtime=`${shim}\nconst ICONS=${JSON.stringify(ICONS)};const ASSETS=${JSON.stringify(ASSETS)};\n${functions}\nfigma.showUI(__html__,{width:480,height:640,themeColors:true});let running=false;let lastState=null;
+figma.ui.onmessage=async msg=>{if(msg.type==='close'){figma.closePlugin();return;}if(msg.type!=='build'||running)return;running=true;try{
+const p=figma.createPage();p.name='LaptopStore · Building full website';await figma.setCurrentPageAsync(p);let S={};
+const jobs=[${phases.map((_,i)=>'phase'+i).join(',')}];
+for(let i=0;i<jobs.length;i++){figma.ui.postMessage({type:'progress',step:i+1,total:jobs.length,label:${JSON.stringify(phases)}[i]});const r=await jobs[i](S);S={...S,...r,screens:{...S.screens,...r.screens},components:{...S.components,...r.components}};}
+lastState=S;const roots=await Promise.all(Object.values(S.screens).map(id=>figma.getNodeByIdAsync(id)));const all=roots.flatMap(n=>n.findAll(()=>true));const fonts=[...new Set(all.filter(n=>n.type==='TEXT').map(n=>n.fontName.family))];const report={screens:roots.length,components:Object.keys(S.components).length,editableNodes:all.length,fonts,connections:S.connections.length,unresolved:S.unresolved,createdAt:new Date().toISOString()};
+figma.viewport.scrollAndZoomIntoView([await figma.getNodeByIdAsync(S.screens.start)]);figma.ui.postMessage({type:'done',report});
+for(const key of ['home','staff','admin']){const n=await figma.getNodeByIdAsync(S.screens[key]);const bytes=await n.exportAsync({format:'PNG',constraint:{type:'SCALE',value:.65}});figma.ui.postMessage({type:'preview',key,bytes});}
+}catch(e){figma.ui.postMessage({type:'error',message:String(e&&e.stack||e)});}finally{running=false;}};`;
+fs.writeFileSync(path.join(plugin,'code.js'),runtime);
+fs.writeFileSync(path.join(plugin,'manifest.json'),JSON.stringify({name:'LaptopStore · Full UI & Prototype',id:'laptopstore-full-ui-local',api:'1.0.0',main:'code.js',ui:'ui.html',editorType:['figma'],documentAccess:'dynamic-page',networkAccess:{allowedDomains:['none']}},null,2));
+fs.writeFileSync(path.join(plugin,'ui.html'),`<!doctype html><meta charset="utf-8"><style>body{font:13px/1.5 Inter,Arial,sans-serif;margin:24px;color:#212226}h1{font-size:22px}button{background:#e65319;color:white;border:0;border-radius:10px;padding:14px 18px;font-weight:700;cursor:pointer;width:100%}.muted{color:#74777f}#status{margin:20px 0;padding:16px;background:#fff1e8;border-radius:10px}img{max-width:100%;border:1px solid #e9eaed;border-radius:8px}pre{white-space:pre-wrap;font-size:11px}progress{width:100%;accent-color:#e65319}</style><h1>LaptopStore / Full website</h1><p class="muted">53 màn hình cho Khách hàng, Staff và Admin. Assets vector nguyên bản, components và prototype có thể chỉnh sửa.</p><p>Tạo một page mới trong file hiện tại. Các page hiện có được giữ lại. Plugin hoạt động cục bộ, không gọi mạng.</p><button id="build">Dựng toàn bộ giao diện & prototype</button><div id="status">Sẵn sàng. Thời gian phụ thuộc hiệu năng Figma.</div><progress id="progress" max="7" value="0"></progress><div id="previews"></div><script>document.getElementById('build').onclick=()=>{parent.postMessage({pluginMessage:{type:'build'}},'*');document.getElementById('build').disabled=true};onmessage=e=>{const m=e.data.pluginMessage;if(!m)return;if(m.type==='progress'){document.getElementById('progress').value=m.step;document.getElementById('status').textContent=m.step+'/'+m.total+' · '+m.label;}if(m.type==='done'){document.getElementById('status').textContent='Đã dựng '+m.report.screens+' màn / '+m.report.connections+' liên kết prototype.';const p=document.createElement('pre');p.textContent=JSON.stringify(m.report,null,2);document.getElementById('previews').appendChild(p);}if(m.type==='error'){document.getElementById('status').textContent=m.message;document.getElementById('build').disabled=false;}if(m.type==='preview'){const h=document.createElement('h3');h.textContent=m.key;const i=document.createElement('img');i.src=URL.createObjectURL(new Blob([m.bytes],{type:'image/png'}));document.getElementById('previews').append(h,i);}};</script>`);
+// Parse bundle before handing it off. This does not execute Figma operations.
+new Function(runtime);
+console.log('Native Figma plugin bundle: '+Buffer.byteLength(runtime)+' bytes / '+phases.length+' phases');

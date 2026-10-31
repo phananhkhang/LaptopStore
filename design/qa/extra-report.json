@@ -1,0 +1,18 @@
+{
+  "passed": true,
+  "errors": [],
+  "flows": [
+    "address create/delete",
+    "product editor save",
+    "category create",
+    "coupon validation/create",
+    "multi-role user save",
+    "protect own admin",
+    "supplier create",
+    "purchase create/cancel",
+    "reject negative inventory",
+    "cancel order restores stock",
+    "CSV export",
+    "localStorage persists after reload"
+  ]
+}

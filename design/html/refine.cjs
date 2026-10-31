@@ -1,0 +1,16 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),p=path.join(__dirname,'app.js');
+let s=fs.readFileSync(p,'utf8');
+s=s.replace("src=\"${ASSETS[key]||ASSETS['product-silver']}\"","src=\"${/^data:image\\/(png|jpeg|webp);base64,/.test(key)?key:ASSETS[key]||ASSETS['product-silver']}\"");
+s=s.replace('Chiếc laptop cho<br>mọi <em>ý tưởng.</em>','Chiếc laptop cho <span class="hero-line">mọi <em>ý tưởng.</em></span>');
+s=s.replaceAll('min="1" step="1000"','min="1" step="1"');
+s=s.replace('const selected=ui.address||','const selected=(state.addresses.some(a=>a.id===ui.address)?ui.address:null)||');
+s=s.replace("link(icon('search'),'catalog','icon-btn mobile-only')","link(icon('search')+'<span class=\"sr-only\">Tìm kiếm</span>','catalog','icon-btn mobile-only')").replace("link(icon('user'),'profile','icon-btn')","link(icon('user')+'<span class=\"sr-only\">Tài khoản</span>','profile','icon-btn')").replace("link(icon('cart')+(count?","link(icon('cart')+'<span class=\"sr-only\">Giỏ hàng</span>'+(count?");
+s=s.replaceAll('image(p.asset,','image(p.customImage||p.asset,').replaceAll('image(i.p.asset,','image(i.p.customImage||i.p.asset,').replaceAll("ui.thumb===1?'product-silver':p.asset","ui.thumb===1?'product-silver':p.customImage||p.asset");
+s=s.replace("max:500000,limit:100,perUser:1","max:500000,limit:100,perUser:3");
+s=s.replace("id:'LS24102601',name:","id:'LS24102601',customerId:'u1',name:").replace("id:'LS23102618',name:","id:'LS23102618',customerId:'u2',name:").replace("id:'LS20102612',name:","id:'LS20102612',customerId:'u1',name:");
+s=s.replace("o.name===state.profile.name||o.id==='LS24102601'","o.customerId==='u1'").replace("used.filter(o=>o.name===state.profile.name)","used.filter(o=>o.customerId==='u1')");
+fs.writeFileSync(p,s);
+const r=path.join(__dirname,'runtime.js');s=fs.readFileSync(r,'utf8').replace("const o={id,name:a.name","const o={id,customerId:'u1',name:a.name").replace('asset:i.p.asset','asset:i.p.customImage||i.p.asset');fs.writeFileSync(r,s);
+fs.writeFileSync(path.join(__dirname,'../figma-build/render-preview.cjs'),"// Build the responsive HTML with embedded fonts and local demo state.\nrequire('../html/build.cjs');\n");
+console.log('Refined source and regeneration entry point.');

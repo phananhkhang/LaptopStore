@@ -1,0 +1,7064 @@
+{
+  "pageId": "page:2",
+  "libraryId": "frame:95",
+  "screens": {
+    "start": "frame:81",
+    "home": "frame:82",
+    "detail": "frame:83",
+    "cart": "frame:84",
+    "checkout": "frame:85",
+    "success": "frame:86",
+    "staff": "frame:87",
+    "staffDetail": "frame:88",
+    "staffConfirmed": "frame:89",
+    "inventory": "frame:90",
+    "admin": "frame:91",
+    "products": "frame:92",
+    "productEdit": "frame:93",
+    "users": "frame:94",
+    "catalog": "frame:315",
+    "login": "frame:316",
+    "register": "frame:317",
+    "orders": "frame:318",
+    "tracking": "frame:319",
+    "review": "frame:320",
+    "profile": "frame:321",
+    "addresses": "frame:322",
+    "addressEdit": "frame:323",
+    "password": "frame:324",
+    "ai": "frame:325",
+    "payPending": "frame:326",
+    "payFail": "frame:327",
+    "emptyCart": "frame:328",
+    "emptySearch": "frame:329",
+    "forbidden": "frame:330",
+    "notFound": "frame:331",
+    "staffOverview": "frame:332",
+    "stockHistory": "frame:333",
+    "purchaseOrders": "frame:334",
+    "purchaseEdit": "frame:335",
+    "purchaseReceive": "frame:336",
+    "purchaseDone": "frame:337",
+    "staffSuppliers": "frame:338",
+    "payments": "frame:339",
+    "paymentDetail": "frame:340",
+    "codConfirmed": "frame:341",
+    "moderation": "frame:342",
+    "moderationHidden": "frame:343",
+    "categories": "frame:344",
+    "brands": "frame:345",
+    "couponList": "frame:346",
+    "couponEdit": "frame:347",
+    "couponUsage": "frame:348",
+    "suppliers": "frame:349",
+    "supplierEdit": "frame:350",
+    "userDetail": "frame:351",
+    "stockAdjust": "frame:352",
+    "report": "frame:353",
+    "staffProcessing": "frame:6343",
+    "staffShipping": "frame:6453",
+    "staffDelivered": "frame:6563",
+    "paySuccess": "frame:6673"
+  },
+  "variables": {
+    "color/orange": "variable:10",
+    "color/orangeDark": "variable:12",
+    "color/orangeSoft": "variable:14",
+    "color/orangePale": "variable:16",
+    "color/ink": "variable:18",
+    "color/muted": "variable:20",
+    "color/line": "variable:22",
+    "color/white": "variable:24",
+    "color/canvas": "variable:26",
+    "color/green": "variable:28",
+    "color/greenSoft": "variable:30",
+    "color/blue": "variable:32",
+    "color/blueSoft": "variable:34",
+    "color/red": "variable:36",
+    "color/redSoft": "variable:38",
+    "color/dark": "variable:40",
+    "space/0": "variable:41",
+    "space/4": "variable:42",
+    "space/8": "variable:43",
+    "space/12": "variable:44",
+    "space/16": "variable:45",
+    "space/20": "variable:46",
+    "space/24": "variable:47",
+    "space/32": "variable:48",
+    "space/40": "variable:49",
+    "space/48": "variable:50",
+    "space/64": "variable:51",
+    "radius/8": "variable:52",
+    "radius/12": "variable:53",
+    "radius/16": "variable:54",
+    "radius/20": "variable:55",
+    "radius/24": "variable:56",
+    "radius/32": "variable:57"
+  },
+  "textStyles": {
+    "LaptopStore/11/Regular": "style:58",
+    "LaptopStore/11/SemiBold": "style:59",
+    "LaptopStore/12/Regular": "style:60",
+    "LaptopStore/12/SemiBold": "style:61",
+    "LaptopStore/12/Bold": "style:62",
+    "LaptopStore/13/Regular": "style:63",
+    "LaptopStore/13/Medium": "style:64",
+    "LaptopStore/13/SemiBold": "style:65",
+    "LaptopStore/14/Regular": "style:66",
+    "LaptopStore/14/Medium": "style:67",
+    "LaptopStore/14/SemiBold": "style:68",
+    "LaptopStore/14/Bold": "style:69",
+    "LaptopStore/16/Regular": "style:70",
+    "LaptopStore/16/SemiBold": "style:71",
+    "LaptopStore/18/Bold": "style:72",
+    "LaptopStore/20/Bold": "style:73",
+    "LaptopStore/22/Bold": "style:74",
+    "LaptopStore/24/Bold": "style:75",
+    "LaptopStore/28/Bold": "style:76",
+    "LaptopStore/30/Bold": "style:77",
+    "LaptopStore/36/Bold": "style:78",
+    "LaptopStore/52/Bold": "style:79",
+    "LaptopStore/56/Bold": "style:80"
+  },
+  "collections": [
+    "collection:4",
+    "collection:6",
+    "collection:8"
+  ],
+  "createdNodeIds": [
+    "frame:6343",
+    "frame:6344",
+    "instance:6345",
+    "frame:6346",
+    "frame:6347",
+    "text:6348",
+    "frame:6349",
+    "text:6350",
+    "instance:6351",
+    "frame:6352",
+    "text:6353",
+    "instance:6354",
+    "frame:6355",
+    "text:6356",
+    "instance:6357",
+    "frame:6358",
+    "text:6359",
+    "instance:6360",
+    "frame:6361",
+    "text:6362",
+    "instance:6363",
+    "frame:6364",
+    "text:6365",
+    "instance:6366",
+    "frame:6367",
+    "text:6368",
+    "instance:6369",
+    "frame:6370",
+    "text:6371",
+    "frame:6372",
+    "frame:6373",
+    "frame:6374",
+    "text:6375",
+    "text:6376",
+    "instance:6377",
+    "frame:6378",
+    "text:6379",
+    "frame:6380",
+    "frame:6381",
+    "text:6382",
+    "frame:6383",
+    "frame:6384",
+    "frame:6385",
+    "frame:6386",
+    "text:6387",
+    "text:6388",
+    "frame:6389",
+    "frame:6390",
+    "frame:6391",
+    "text:6392",
+    "text:6393",
+    "text:6394",
+    "frame:6395",
+    "instance:6396",
+    "text:6397",
+    "frame:6398",
+    "frame:6399",
+    "text:6400",
+    "frame:6401",
+    "frame:6402",
+    "frame:6403",
+    "text:6404",
+    "frame:6405",
+    "instance:6406",
+    "frame:6407",
+    "frame:6408",
+    "text:6409",
+    "text:6410",
+    "text:6411",
+    "frame:6412",
+    "text:6413",
+    "text:6414",
+    "text:6415",
+    "frame:6416",
+    "frame:6417",
+    "text:6418",
+    "frame:6419",
+    "text:6420",
+    "frame:6421",
+    "text:6422",
+    "frame:6423",
+    "text:6424",
+    "frame:6425",
+    "text:6426",
+    "frame:6427",
+    "text:6428",
+    "frame:6429",
+    "text:6430",
+    "frame:6431",
+    "text:6432",
+    "frame:6433",
+    "instance:6434",
+    "text:6435",
+    "text:6436",
+    "text:6437",
+    "text:6438",
+    "text:6439",
+    "text:6440",
+    "text:6441",
+    "text:6442",
+    "text:6443",
+    "text:6444",
+    "text:6445",
+    "text:6446",
+    "frame:6447",
+    "text:6448",
+    "instance:6449",
+    "text:6450",
+    "instance:6451",
+    "text:6452",
+    "frame:6453",
+    "frame:6454",
+    "instance:6455",
+    "frame:6456",
+    "frame:6457",
+    "text:6458",
+    "frame:6459",
+    "text:6460",
+    "instance:6461",
+    "frame:6462",
+    "text:6463",
+    "instance:6464",
+    "frame:6465",
+    "text:6466",
+    "instance:6467",
+    "frame:6468",
+    "text:6469",
+    "instance:6470",
+    "frame:6471",
+    "text:6472",
+    "instance:6473",
+    "frame:6474",
+    "text:6475",
+    "instance:6476",
+    "frame:6477",
+    "text:6478",
+    "instance:6479",
+    "frame:6480",
+    "text:6481",
+    "frame:6482",
+    "frame:6483",
+    "frame:6484",
+    "text:6485",
+    "text:6486",
+    "instance:6487",
+    "frame:6488",
+    "text:6489",
+    "frame:6490",
+    "frame:6491",
+    "text:6492",
+    "frame:6493",
+    "frame:6494",
+    "frame:6495",
+    "frame:6496",
+    "text:6497",
+    "text:6498",
+    "frame:6499",
+    "frame:6500",
+    "frame:6501",
+    "text:6502",
+    "text:6503",
+    "text:6504",
+    "frame:6505",
+    "instance:6506",
+    "text:6507",
+    "frame:6508",
+    "frame:6509",
+    "text:6510",
+    "frame:6511",
+    "frame:6512",
+    "frame:6513",
+    "text:6514",
+    "frame:6515",
+    "instance:6516",
+    "frame:6517",
+    "frame:6518",
+    "text:6519",
+    "text:6520",
+    "text:6521",
+    "frame:6522",
+    "text:6523",
+    "text:6524",
+    "text:6525",
+    "frame:6526",
+    "frame:6527",
+    "text:6528",
+    "frame:6529",
+    "text:6530",
+    "frame:6531",
+    "text:6532",
+    "frame:6533",
+    "text:6534",
+    "frame:6535",
+    "text:6536",
+    "frame:6537",
+    "text:6538",
+    "frame:6539",
+    "text:6540",
+    "frame:6541",
+    "text:6542",
+    "frame:6543",
+    "instance:6544",
+    "text:6545",
+    "text:6546",
+    "text:6547",
+    "text:6548",
+    "text:6549",
+    "text:6550",
+    "text:6551",
+    "text:6552",
+    "text:6553",
+    "text:6554",
+    "text:6555",
+    "text:6556",
+    "frame:6557",
+    "text:6558",
+    "instance:6559",
+    "text:6560",
+    "instance:6561",
+    "text:6562",
+    "frame:6563",
+    "frame:6564",
+    "instance:6565",
+    "frame:6566",
+    "frame:6567",
+    "text:6568",
+    "frame:6569",
+    "text:6570",
+    "instance:6571",
+    "frame:6572",
+    "text:6573",
+    "instance:6574",
+    "frame:6575",
+    "text:6576",
+    "instance:6577",
+    "frame:6578",
+    "text:6579",
+    "instance:6580",
+    "frame:6581",
+    "text:6582",
+    "instance:6583",
+    "frame:6584",
+    "text:6585",
+    "instance:6586",
+    "frame:6587",
+    "text:6588",
+    "instance:6589",
+    "frame:6590",
+    "text:6591",
+    "frame:6592",
+    "frame:6593",
+    "frame:6594",
+    "text:6595",
+    "text:6596",
+    "instance:6597",
+    "frame:6598",
+    "text:6599",
+    "frame:6600",
+    "frame:6601",
+    "text:6602",
+    "frame:6603",
+    "frame:6604",
+    "frame:6605",
+    "frame:6606",
+    "text:6607",
+    "text:6608",
+    "frame:6609",
+    "frame:6610",
+    "frame:6611",
+    "text:6612",
+    "text:6613",
+    "text:6614",
+    "frame:6615",
+    "instance:6616",
+    "text:6617",
+    "frame:6618",
+    "frame:6619",
+    "text:6620",
+    "frame:6621",
+    "frame:6622",
+    "frame:6623",
+    "text:6624",
+    "frame:6625",
+    "instance:6626",
+    "frame:6627",
+    "frame:6628",
+    "text:6629",
+    "text:6630",
+    "text:6631",
+    "frame:6632",
+    "text:6633",
+    "text:6634",
+    "text:6635",
+    "frame:6636",
+    "frame:6637",
+    "text:6638",
+    "frame:6639",
+    "text:6640",
+    "frame:6641",
+    "text:6642",
+    "frame:6643",
+    "text:6644",
+    "frame:6645",
+    "text:6646",
+    "frame:6647",
+    "text:6648",
+    "frame:6649",
+    "text:6650",
+    "frame:6651",
+    "text:6652",
+    "frame:6653",
+    "instance:6654",
+    "text:6655",
+    "text:6656",
+    "text:6657",
+    "text:6658",
+    "text:6659",
+    "text:6660",
+    "text:6661",
+    "text:6662",
+    "text:6663",
+    "text:6664",
+    "text:6665",
+    "text:6666",
+    "frame:6667",
+    "text:6668",
+    "instance:6669",
+    "text:6670",
+    "instance:6671",
+    "text:6672",
+    "frame:6673",
+    "instance:6674",
+    "frame:6675",
+    "text:6676",
+    "frame:6677",
+    "text:6678",
+    "text:6679",
+    "frame:6680",
+    "frame:6681",
+    "frame:6682",
+    "frame:6683",
+    "text:6684",
+    "frame:6685",
+    "text:6686",
+    "text:6687",
+    "text:6688",
+    "frame:6689",
+    "frame:6690",
+    "text:6691",
+    "frame:6692",
+    "frame:6693",
+    "frame:6694",
+    "frame:6695",
+    "frame:6696",
+    "instance:6697",
+    "frame:6698",
+    "instance:6699",
+    "text:6700",
+    "text:6701",
+    "text:6702",
+    "text:6703",
+    "frame:6704",
+    "frame:6705",
+    "text:6706",
+    "text:6707",
+    "frame:6708",
+    "text:6709",
+    "text:6710",
+    "frame:6711",
+    "instance:6712",
+    "text:6713",
+    "instance:6714",
+    "text:6715",
+    "instance:366",
+    "instance:372",
+    "instance:378",
+    "frame:81",
+    "text:393",
+    "text:394",
+    "text:395",
+    "frame:396",
+    "frame:400",
+    "frame:401",
+    "instance:410",
+    "text:412",
+    "instance:442",
+    "instance:445",
+    "instance:447",
+    "instance:449",
+    "instance:451",
+    "instance:453",
+    "instance:456",
+    "instance:468",
+    "instance:470",
+    "instance:482",
+    "instance:484",
+    "instance:496",
+    "instance:498",
+    "instance:510",
+    "instance:518",
+    "frame:82",
+    "text:532",
+    "text:533",
+    "text:534",
+    "frame:535",
+    "frame:539",
+    "frame:540",
+    "text:543",
+    "text:545",
+    "instance:576",
+    "instance:578",
+    "instance:585",
+    "instance:587",
+    "text:611",
+    "frame:83",
+    "text:624",
+    "text:625",
+    "text:626",
+    "frame:627",
+    "frame:631",
+    "frame:632",
+    "instance:639",
+    "instance:656",
+    "text:658",
+    "instance:666",
+    "instance:687",
+    "frame:84",
+    "text:704",
+    "text:705",
+    "text:706",
+    "frame:707",
+    "frame:711",
+    "frame:712",
+    "instance:719",
+    "instance:728",
+    "frame:737",
+    "frame:740",
+    "instance:771",
+    "frame:85",
+    "text:788",
+    "text:789",
+    "text:790",
+    "frame:791",
+    "frame:795",
+    "frame:796",
+    "instance:814",
+    "instance:816",
+    "frame:86",
+    "instance:825",
+    "instance:828",
+    "instance:831",
+    "instance:834",
+    "instance:837",
+    "instance:840",
+    "instance:843",
+    "instance:851",
+    "frame:890",
+    "instance:893",
+    "instance:895",
+    "frame:906",
+    "frame:921",
+    "frame:936",
+    "frame:951",
+    "frame:966",
+    "frame:87",
+    "instance:989",
+    "instance:992",
+    "instance:995",
+    "instance:998",
+    "instance:1001",
+    "instance:1004",
+    "instance:1007",
+    "instance:1015",
+    "instance:1036",
+    "instance:1088",
+    "frame:88",
+    "instance:1097",
+    "instance:1100",
+    "instance:1103",
+    "instance:1106",
+    "instance:1109",
+    "instance:1112",
+    "instance:1115",
+    "instance:1123",
+    "instance:1144",
+    "instance:1199",
+    "frame:89",
+    "instance:1208",
+    "instance:1211",
+    "instance:1214",
+    "instance:1217",
+    "instance:1220",
+    "instance:1223",
+    "instance:1226",
+    "instance:1234",
+    "instance:1255",
+    "frame:1275",
+    "instance:1278",
+    "instance:1280",
+    "frame:1290",
+    "frame:1303",
+    "frame:1316",
+    "frame:1329",
+    "frame:90",
+    "instance:1349",
+    "instance:1352",
+    "instance:1355",
+    "instance:1358",
+    "instance:1361",
+    "instance:1364",
+    "instance:1367",
+    "instance:1370",
+    "instance:1373",
+    "instance:1376",
+    "instance:1384",
+    "instance:1405",
+    "instance:1495",
+    "instance:1513",
+    "frame:91",
+    "instance:1522",
+    "instance:1525",
+    "instance:1528",
+    "instance:1531",
+    "instance:1534",
+    "instance:1537",
+    "instance:1540",
+    "instance:1543",
+    "instance:1546",
+    "instance:1549",
+    "instance:1557",
+    "instance:1578",
+    "frame:1581",
+    "instance:1584",
+    "instance:1586",
+    "frame:1597",
+    "frame:1612",
+    "frame:1627",
+    "frame:1642",
+    "frame:92",
+    "instance:1665",
+    "instance:1668",
+    "instance:1671",
+    "instance:1674",
+    "instance:1677",
+    "instance:1680",
+    "instance:1683",
+    "instance:1686",
+    "instance:1689",
+    "instance:1692",
+    "instance:1700",
+    "instance:1721",
+    "instance:1777",
+    "instance:1786",
+    "frame:93",
+    "instance:1795",
+    "instance:1798",
+    "instance:1801",
+    "instance:1804",
+    "instance:1807",
+    "instance:1810",
+    "instance:1813",
+    "instance:1816",
+    "instance:1819",
+    "instance:1822",
+    "instance:1830",
+    "frame:1869",
+    "instance:1872",
+    "instance:1874",
+    "frame:1884",
+    "frame:1897",
+    "frame:1910",
+    "frame:1923",
+    "frame:94",
+    "text:1948",
+    "text:1949",
+    "text:1950",
+    "frame:1951",
+    "frame:1955",
+    "frame:1956",
+    "text:1959",
+    "instance:2026",
+    "instance:2034",
+    "text:2047",
+    "text:2058",
+    "text:2069",
+    "text:2081",
+    "text:2092",
+    "text:2103",
+    "instance:2106",
+    "instance:2108",
+    "instance:2110",
+    "frame:315",
+    "text:2125",
+    "text:2126",
+    "text:2127",
+    "frame:2128",
+    "frame:2132",
+    "frame:2133",
+    "instance:2157",
+    "text:2161",
+    "text:2162",
+    "frame:316",
+    "text:2175",
+    "text:2176",
+    "text:2177",
+    "frame:2178",
+    "frame:2182",
+    "frame:2183",
+    "instance:2220",
+    "text:2224",
+    "text:2225",
+    "frame:317",
+    "text:2238",
+    "text:2239",
+    "text:2240",
+    "frame:2241",
+    "frame:2245",
+    "frame:2246",
+    "text:2260",
+    "text:2262",
+    "text:2264",
+    "text:2266",
+    "text:2268",
+    "text:2270",
+    "text:2274",
+    "text:2276",
+    "text:2278",
+    "text:2280",
+    "text:2282",
+    "instance:2310",
+    "instance:2332",
+    "instance:2354",
+    "instance:2356",
+    "frame:318",
+    "text:2370",
+    "text:2371",
+    "text:2372",
+    "frame:2373",
+    "frame:2377",
+    "frame:2378",
+    "text:2381",
+    "instance:2391",
+    "text:2440",
+    "instance:2479",
+    "text:2481",
+    "frame:319",
+    "text:2494",
+    "text:2495",
+    "text:2496",
+    "frame:2497",
+    "frame:2501",
+    "frame:2502",
+    "text:2505",
+    "instance:2540",
+    "instance:2543",
+    "frame:320",
+    "text:2557",
+    "text:2558",
+    "text:2559",
+    "frame:2560",
+    "frame:2564",
+    "frame:2565",
+    "text:2579",
+    "text:2581",
+    "text:2583",
+    "text:2585",
+    "text:2587",
+    "text:2589",
+    "instance:2624",
+    "instance:2633",
+    "frame:321",
+    "text:2647",
+    "text:2648",
+    "text:2649",
+    "frame:2650",
+    "frame:2654",
+    "frame:2655",
+    "text:2669",
+    "text:2671",
+    "text:2673",
+    "text:2675",
+    "text:2677",
+    "text:2679",
+    "instance:2684",
+    "text:2693",
+    "text:2697",
+    "text:2703",
+    "text:2706",
+    "text:2708",
+    "frame:322",
+    "text:2726",
+    "text:2727",
+    "text:2728",
+    "frame:2729",
+    "frame:2733",
+    "frame:2734",
+    "text:2748",
+    "text:2750",
+    "text:2752",
+    "text:2754",
+    "text:2756",
+    "text:2758",
+    "instance:2801",
+    "instance:2804",
+    "frame:323",
+    "text:2818",
+    "text:2819",
+    "text:2820",
+    "frame:2821",
+    "frame:2825",
+    "frame:2826",
+    "text:2840",
+    "text:2842",
+    "text:2844",
+    "text:2846",
+    "text:2848",
+    "text:2850",
+    "instance:2871",
+    "instance:2874",
+    "frame:324",
+    "text:2888",
+    "text:2889",
+    "text:2890",
+    "frame:2891",
+    "frame:2895",
+    "frame:2896",
+    "text:2910",
+    "text:2912",
+    "text:2914",
+    "text:2916",
+    "text:2927",
+    "text:2948",
+    "instance:2953",
+    "frame:325",
+    "text:2967",
+    "text:2968",
+    "text:2969",
+    "frame:2970",
+    "frame:2974",
+    "frame:2975",
+    "text:2978",
+    "instance:2996",
+    "text:2998",
+    "text:3035",
+    "frame:326",
+    "text:3048",
+    "text:3049",
+    "text:3050",
+    "frame:3051",
+    "frame:3055",
+    "frame:3056",
+    "text:3059",
+    "instance:3074",
+    "text:3076",
+    "text:3113",
+    "frame:327",
+    "text:3126",
+    "text:3127",
+    "text:3128",
+    "frame:3129",
+    "frame:3133",
+    "frame:3134",
+    "instance:3142",
+    "instance:3144",
+    "frame:328",
+    "text:3159",
+    "text:3160",
+    "text:3161",
+    "frame:3162",
+    "frame:3166",
+    "frame:3167",
+    "instance:3175",
+    "instance:3177",
+    "frame:329",
+    "text:3192",
+    "text:3193",
+    "text:3194",
+    "frame:3195",
+    "frame:3199",
+    "frame:3200",
+    "instance:3208",
+    "instance:3210",
+    "frame:330",
+    "text:3225",
+    "text:3226",
+    "text:3227",
+    "frame:3228",
+    "frame:3232",
+    "frame:3233",
+    "instance:3241",
+    "frame:331",
+    "instance:3251",
+    "instance:3254",
+    "instance:3257",
+    "instance:3260",
+    "instance:3263",
+    "instance:3266",
+    "instance:3269",
+    "instance:3277",
+    "instance:3298",
+    "text:3328",
+    "text:3334",
+    "text:3340",
+    "instance:3345",
+    "instance:3352",
+    "frame:3361",
+    "frame:3374",
+    "frame:3387",
+    "frame:332",
+    "instance:3407",
+    "instance:3410",
+    "instance:3413",
+    "instance:3416",
+    "instance:3419",
+    "instance:3422",
+    "instance:3425",
+    "instance:3433",
+    "instance:3454",
+    "frame:3486",
+    "frame:3501",
+    "frame:3516",
+    "frame:3531",
+    "frame:3546",
+    "instance:3564",
+    "instance:3572",
+    "text:3582",
+    "frame:333",
+    "instance:3590",
+    "instance:3593",
+    "instance:3596",
+    "instance:3599",
+    "instance:3602",
+    "instance:3605",
+    "instance:3608",
+    "instance:3616",
+    "instance:3637",
+    "frame:3685",
+    "frame:3698",
+    "frame:3711",
+    "frame:3724",
+    "instance:3740",
+    "instance:3748",
+    "frame:334",
+    "instance:3757",
+    "instance:3760",
+    "instance:3763",
+    "instance:3766",
+    "instance:3769",
+    "instance:3772",
+    "instance:3775",
+    "instance:3783",
+    "instance:3831",
+    "frame:3840",
+    "instance:3865",
+    "instance:3867",
+    "frame:335",
+    "instance:3876",
+    "instance:3879",
+    "instance:3882",
+    "instance:3885",
+    "instance:3888",
+    "instance:3891",
+    "instance:3894",
+    "instance:3902",
+    "frame:3943",
+    "instance:3982",
+    "instance:3984",
+    "frame:336",
+    "instance:3993",
+    "instance:3996",
+    "instance:3999",
+    "instance:4002",
+    "instance:4005",
+    "instance:4008",
+    "instance:4011",
+    "instance:4019",
+    "frame:4065",
+    "instance:4094",
+    "instance:4096",
+    "frame:337",
+    "instance:4105",
+    "instance:4108",
+    "instance:4111",
+    "instance:4114",
+    "instance:4117",
+    "instance:4120",
+    "instance:4123",
+    "instance:4131",
+    "frame:4167",
+    "frame:4180",
+    "frame:4193",
+    "frame:4206",
+    "instance:4232",
+    "frame:338",
+    "instance:4522",
+    "instance:4525",
+    "instance:4528",
+    "instance:4531",
+    "instance:4534",
+    "instance:4537",
+    "instance:4540",
+    "instance:4548",
+    "frame:4616",
+    "frame:4631",
+    "frame:4646",
+    "frame:4661",
+    "instance:4679",
+    "instance:4687",
+    "frame:339",
+    "instance:4696",
+    "instance:4699",
+    "instance:4702",
+    "instance:4705",
+    "instance:4708",
+    "instance:4711",
+    "instance:4714",
+    "instance:4722",
+    "instance:4785",
+    "instance:4800",
+    "instance:4802",
+    "frame:340",
+    "instance:4811",
+    "instance:4814",
+    "instance:4817",
+    "instance:4820",
+    "instance:4823",
+    "instance:4826",
+    "instance:4829",
+    "instance:4837",
+    "instance:4886",
+    "instance:4888",
+    "frame:341",
+    "instance:4897",
+    "instance:4900",
+    "instance:4903",
+    "instance:4906",
+    "instance:4909",
+    "instance:4912",
+    "instance:4915",
+    "instance:4923",
+    "instance:4978",
+    "frame:4987",
+    "frame:5000",
+    "frame:342",
+    "instance:5020",
+    "instance:5023",
+    "instance:5026",
+    "instance:5029",
+    "instance:5032",
+    "instance:5035",
+    "instance:5038",
+    "instance:5046",
+    "instance:5106",
+    "frame:5115",
+    "frame:5128",
+    "frame:343",
+    "instance:5148",
+    "instance:5151",
+    "instance:5154",
+    "instance:5157",
+    "instance:5160",
+    "instance:5163",
+    "instance:5166",
+    "instance:5169",
+    "instance:5172",
+    "instance:5175",
+    "instance:5183",
+    "instance:5204",
+    "frame:5221",
+    "frame:5234",
+    "frame:5247",
+    "frame:5260",
+    "instance:5294",
+    "instance:5296",
+    "frame:344",
+    "instance:5305",
+    "instance:5308",
+    "instance:5311",
+    "instance:5314",
+    "instance:5317",
+    "instance:5320",
+    "instance:5323",
+    "instance:5326",
+    "instance:5329",
+    "instance:5332",
+    "instance:5340",
+    "instance:5361",
+    "frame:5378",
+    "frame:5391",
+    "frame:5404",
+    "frame:5417",
+    "instance:5451",
+    "instance:5453",
+    "frame:345",
+    "instance:5462",
+    "instance:5465",
+    "instance:5468",
+    "instance:5471",
+    "instance:5474",
+    "instance:5477",
+    "instance:5480",
+    "instance:5483",
+    "instance:5486",
+    "instance:5489",
+    "instance:5497",
+    "instance:5518",
+    "frame:5558",
+    "frame:5573",
+    "frame:5588",
+    "frame:5603",
+    "instance:5621",
+    "instance:5629",
+    "frame:346",
+    "instance:5638",
+    "instance:5641",
+    "instance:5644",
+    "instance:5647",
+    "instance:5650",
+    "instance:5653",
+    "instance:5656",
+    "instance:5659",
+    "instance:5662",
+    "instance:5665",
+    "instance:5673",
+    "instance:5756",
+    "instance:5758",
+    "instance:5763",
+    "instance:5765",
+    "frame:347",
+    "instance:5774",
+    "instance:5777",
+    "instance:5780",
+    "instance:5783",
+    "instance:5786",
+    "instance:5789",
+    "instance:5792",
+    "instance:5795",
+    "instance:5798",
+    "instance:5801",
+    "instance:5809",
+    "instance:5830",
+    "frame:5863",
+    "frame:5876",
+    "frame:5889",
+    "frame:5902",
+    "frame:5915",
+    "instance:5931",
+    "instance:5939",
+    "frame:348",
+    "instance:4241",
+    "instance:4244",
+    "instance:4247",
+    "instance:4250",
+    "instance:4253",
+    "instance:4256",
+    "instance:4259",
+    "instance:4262",
+    "instance:4265",
+    "instance:4268",
+    "instance:4276",
+    "instance:4297",
+    "frame:4327",
+    "frame:4340",
+    "frame:4353",
+    "frame:4366",
+    "instance:4382",
+    "instance:4390",
+    "frame:349",
+    "instance:4399",
+    "instance:4402",
+    "instance:4405",
+    "instance:4408",
+    "instance:4411",
+    "instance:4414",
+    "instance:4417",
+    "instance:4420",
+    "instance:4423",
+    "instance:4426",
+    "instance:4434",
+    "instance:4485",
+    "instance:4487",
+    "instance:4495",
+    "frame:350",
+    "instance:5948",
+    "instance:5951",
+    "instance:5954",
+    "instance:5957",
+    "instance:5960",
+    "instance:5963",
+    "instance:5966",
+    "instance:5969",
+    "instance:5972",
+    "instance:5975",
+    "instance:5983",
+    "instance:6022",
+    "instance:6048",
+    "instance:6056",
+    "frame:351",
+    "instance:6075",
+    "instance:6078",
+    "instance:6081",
+    "instance:6084",
+    "instance:6087",
+    "instance:6090",
+    "instance:6093",
+    "instance:6096",
+    "instance:6099",
+    "instance:6102",
+    "instance:6110",
+    "instance:6166",
+    "instance:6168",
+    "instance:6173",
+    "frame:352",
+    "instance:6182",
+    "instance:6185",
+    "instance:6188",
+    "instance:6191",
+    "instance:6194",
+    "instance:6197",
+    "instance:6200",
+    "instance:6203",
+    "instance:6206",
+    "instance:6209",
+    "instance:6217",
+    "instance:6238",
+    "instance:6294",
+    "frame:6303",
+    "frame:6315",
+    "frame:6327",
+    "frame:353",
+    "instance:6351",
+    "instance:6354",
+    "instance:6357",
+    "instance:6360",
+    "instance:6363",
+    "instance:6366",
+    "instance:6369",
+    "instance:6377",
+    "instance:6396",
+    "instance:6451",
+    "frame:6343",
+    "instance:6461",
+    "instance:6464",
+    "instance:6467",
+    "instance:6470",
+    "instance:6473",
+    "instance:6476",
+    "instance:6479",
+    "instance:6487",
+    "instance:6506",
+    "instance:6561",
+    "frame:6453",
+    "instance:6571",
+    "instance:6574",
+    "instance:6577",
+    "instance:6580",
+    "instance:6583",
+    "instance:6586",
+    "instance:6589",
+    "instance:6597",
+    "instance:6616",
+    "instance:6671",
+    "frame:6563",
+    "text:6686",
+    "text:6687",
+    "text:6688",
+    "frame:6689",
+    "frame:6693",
+    "frame:6694",
+    "instance:6712",
+    "instance:6714",
+    "frame:6673"
+  ],
+  "scope": "14 desktop frames: role launcher, 5 customer, 4 staff, 4 admin; reusable components; original SVG assets; clickable journeys",
+  "discovery": {
+    "codeConnect": "none",
+    "existingScreens": "empty file",
+    "productFont": "no explicit source font; Be Vietnam Pro chosen for redesign",
+    "libraryDecision": "SDS not compatible with custom orange semantic model and requested original assets; build local component system"
+  },
+  "font": "Be Vietnam Pro",
+  "components": {
+    "Button/Primary": "component:98",
+    "Button/Secondary": "component:101",
+    "Button/Ghost": "component:104",
+    "Button/Disabled": "component:107",
+    "Badge/Orange": "component:112",
+    "Badge/Green": "component:115",
+    "Badge/Blue": "component:118",
+    "Badge/Red": "component:121",
+    "Badge/Neutral": "component:124",
+    "Input": "component:127",
+    "Metric": "component:133",
+    "Nav/Default": "component:140",
+    "Nav/Active": "component:144",
+    "Shop header": "component:149",
+    "Sidebar/Staff": "component:170",
+    "Sidebar/Admin": "component:205",
+    "Asset/hero-laptop": "component:250",
+    "Asset/product-dark": "component:252",
+    "Asset/product-silver": "component:254",
+    "Asset/workspace-box": "component:256",
+    "ProductCard/rog": "component:259",
+    "ProductCard/dell": "component:273",
+    "ProductCard/rog32": "component:287",
+    "ProductCard/office": "component:301"
+  },
+  "counts": {
+    "newScreens": 39,
+    "assets": 4,
+    "productCards": 4
+  },
+  "libraryBounds": {
+    "x": 0,
+    "y": 18500,
+    "width": 1440,
+    "height": 4319
+  },
+  "bindings": {
+    "buttonFill": {
+      "color": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:10"
+      }
+    },
+    "buttonRadius": {
+      "itemSpacing": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:43"
+      },
+      "paddingTop": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:45"
+      },
+      "paddingBottom": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:45"
+      },
+      "paddingLeft": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:45"
+      },
+      "paddingRight": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:45"
+      },
+      "topLeftRadius": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:53"
+      },
+      "topRightRadius": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:53"
+      },
+      "bottomLeftRadius": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:53"
+      },
+      "bottomRightRadius": {
+        "type": "VARIABLE_ALIAS",
+        "id": "variable:53"
+      }
+    }
+  },
+  "completedScreens": [
+    "staffOverview",
+    "stockHistory",
+    "purchaseOrders",
+    "purchaseEdit",
+    "purchaseReceive",
+    "purchaseDone",
+    "staffSuppliers",
+    "suppliers",
+    "supplierEdit",
+    "payments",
+    "paymentDetail",
+    "codConfirmed",
+    "moderation",
+    "moderationHidden",
+    "categories",
+    "brands",
+    "couponList",
+    "couponEdit",
+    "couponUsage",
+    "userDetail",
+    "stockAdjust",
+    "report"
+  ],
+  "mutatedNodeIds": [
+    "frame:6343",
+    "frame:6344",
+    "instance:6345",
+    "frame:6346",
+    "frame:6347",
+    "text:6348",
+    "frame:6349",
+    "text:6350",
+    "instance:6351",
+    "frame:6352",
+    "text:6353",
+    "instance:6354",
+    "frame:6355",
+    "text:6356",
+    "instance:6357",
+    "frame:6358",
+    "text:6359",
+    "instance:6360",
+    "frame:6361",
+    "text:6362",
+    "instance:6363",
+    "frame:6364",
+    "text:6365",
+    "instance:6366",
+    "frame:6367",
+    "text:6368",
+    "instance:6369",
+    "frame:6370",
+    "text:6371",
+    "frame:6372",
+    "frame:6373",
+    "frame:6374",
+    "text:6375",
+    "text:6376",
+    "instance:6377",
+    "frame:6378",
+    "text:6379",
+    "frame:6380",
+    "frame:6381",
+    "text:6382",
+    "frame:6383",
+    "frame:6384",
+    "frame:6385",
+    "frame:6386",
+    "text:6387",
+    "text:6388",
+    "frame:6389",
+    "frame:6390",
+    "frame:6391",
+    "text:6392",
+    "text:6393",
+    "text:6394",
+    "frame:6395",
+    "instance:6396",
+    "text:6397",
+    "frame:6398",
+    "frame:6399",
+    "text:6400",
+    "frame:6401",
+    "frame:6402",
+    "frame:6403",
+    "text:6404",
+    "frame:6405",
+    "instance:6406",
+    "frame:6407",
+    "frame:6408",
+    "text:6409",
+    "text:6410",
+    "text:6411",
+    "frame:6412",
+    "text:6413",
+    "text:6414",
+    "text:6415",
+    "frame:6416",
+    "frame:6417",
+    "text:6418",
+    "frame:6419",
+    "text:6420",
+    "frame:6421",
+    "text:6422",
+    "frame:6423",
+    "text:6424",
+    "frame:6425",
+    "text:6426",
+    "frame:6427",
+    "text:6428",
+    "frame:6429",
+    "text:6430",
+    "frame:6431",
+    "text:6432",
+    "frame:6433",
+    "instance:6434",
+    "text:6435",
+    "text:6436",
+    "text:6437",
+    "text:6438",
+    "text:6439",
+    "text:6440",
+    "text:6441",
+    "text:6442",
+    "text:6443",
+    "text:6444",
+    "text:6445",
+    "text:6446",
+    "frame:6447",
+    "text:6448",
+    "instance:6449",
+    "text:6450",
+    "instance:6451",
+    "text:6452",
+    "frame:6453",
+    "frame:6454",
+    "instance:6455",
+    "frame:6456",
+    "frame:6457",
+    "text:6458",
+    "frame:6459",
+    "text:6460",
+    "instance:6461",
+    "frame:6462",
+    "text:6463",
+    "instance:6464",
+    "frame:6465",
+    "text:6466",
+    "instance:6467",
+    "frame:6468",
+    "text:6469",
+    "instance:6470",
+    "frame:6471",
+    "text:6472",
+    "instance:6473",
+    "frame:6474",
+    "text:6475",
+    "instance:6476",
+    "frame:6477",
+    "text:6478",
+    "instance:6479",
+    "frame:6480",
+    "text:6481",
+    "frame:6482",
+    "frame:6483",
+    "frame:6484",
+    "text:6485",
+    "text:6486",
+    "instance:6487",
+    "frame:6488",
+    "text:6489",
+    "frame:6490",
+    "frame:6491",
+    "text:6492",
+    "frame:6493",
+    "frame:6494",
+    "frame:6495",
+    "frame:6496",
+    "text:6497",
+    "text:6498",
+    "frame:6499",
+    "frame:6500",
+    "frame:6501",
+    "text:6502",
+    "text:6503",
+    "text:6504",
+    "frame:6505",
+    "instance:6506",
+    "text:6507",
+    "frame:6508",
+    "frame:6509",
+    "text:6510",
+    "frame:6511",
+    "frame:6512",
+    "frame:6513",
+    "text:6514",
+    "frame:6515",
+    "instance:6516",
+    "frame:6517",
+    "frame:6518",
+    "text:6519",
+    "text:6520",
+    "text:6521",
+    "frame:6522",
+    "text:6523",
+    "text:6524",
+    "text:6525",
+    "frame:6526",
+    "frame:6527",
+    "text:6528",
+    "frame:6529",
+    "text:6530",
+    "frame:6531",
+    "text:6532",
+    "frame:6533",
+    "text:6534",
+    "frame:6535",
+    "text:6536",
+    "frame:6537",
+    "text:6538",
+    "frame:6539",
+    "text:6540",
+    "frame:6541",
+    "text:6542",
+    "frame:6543",
+    "instance:6544",
+    "text:6545",
+    "text:6546",
+    "text:6547",
+    "text:6548",
+    "text:6549",
+    "text:6550",
+    "text:6551",
+    "text:6552",
+    "text:6553",
+    "text:6554",
+    "text:6555",
+    "text:6556",
+    "frame:6557",
+    "text:6558",
+    "instance:6559",
+    "text:6560",
+    "instance:6561",
+    "text:6562",
+    "frame:6563",
+    "frame:6564",
+    "instance:6565",
+    "frame:6566",
+    "frame:6567",
+    "text:6568",
+    "frame:6569",
+    "text:6570",
+    "instance:6571",
+    "frame:6572",
+    "text:6573",
+    "instance:6574",
+    "frame:6575",
+    "text:6576",
+    "instance:6577",
+    "frame:6578",
+    "text:6579",
+    "instance:6580",
+    "frame:6581",
+    "text:6582",
+    "instance:6583",
+    "frame:6584",
+    "text:6585",
+    "instance:6586",
+    "frame:6587",
+    "text:6588",
+    "instance:6589",
+    "frame:6590",
+    "text:6591",
+    "frame:6592",
+    "frame:6593",
+    "frame:6594",
+    "text:6595",
+    "text:6596",
+    "instance:6597",
+    "frame:6598",
+    "text:6599",
+    "frame:6600",
+    "frame:6601",
+    "text:6602",
+    "frame:6603",
+    "frame:6604",
+    "frame:6605",
+    "frame:6606",
+    "text:6607",
+    "text:6608",
+    "frame:6609",
+    "frame:6610",
+    "frame:6611",
+    "text:6612",
+    "text:6613",
+    "text:6614",
+    "frame:6615",
+    "instance:6616",
+    "text:6617",
+    "frame:6618",
+    "frame:6619",
+    "text:6620",
+    "frame:6621",
+    "frame:6622",
+    "frame:6623",
+    "text:6624",
+    "frame:6625",
+    "instance:6626",
+    "frame:6627",
+    "frame:6628",
+    "text:6629",
+    "text:6630",
+    "text:6631",
+    "frame:6632",
+    "text:6633",
+    "text:6634",
+    "text:6635",
+    "frame:6636",
+    "frame:6637",
+    "text:6638",
+    "frame:6639",
+    "text:6640",
+    "frame:6641",
+    "text:6642",
+    "frame:6643",
+    "text:6644",
+    "frame:6645",
+    "text:6646",
+    "frame:6647",
+    "text:6648",
+    "frame:6649",
+    "text:6650",
+    "frame:6651",
+    "text:6652",
+    "frame:6653",
+    "instance:6654",
+    "text:6655",
+    "text:6656",
+    "text:6657",
+    "text:6658",
+    "text:6659",
+    "text:6660",
+    "text:6661",
+    "text:6662",
+    "text:6663",
+    "text:6664",
+    "text:6665",
+    "text:6666",
+    "frame:6667",
+    "text:6668",
+    "instance:6669",
+    "text:6670",
+    "instance:6671",
+    "text:6672",
+    "frame:6673",
+    "instance:6674",
+    "frame:6675",
+    "text:6676",
+    "frame:6677",
+    "text:6678",
+    "text:6679",
+    "frame:6680",
+    "frame:6681",
+    "frame:6682",
+    "frame:6683",
+    "text:6684",
+    "frame:6685",
+    "text:6686",
+    "text:6687",
+    "text:6688",
+    "frame:6689",
+    "frame:6690",
+    "text:6691",
+    "frame:6692",
+    "frame:6693",
+    "frame:6694",
+    "frame:6695",
+    "frame:6696",
+    "instance:6697",
+    "frame:6698",
+    "instance:6699",
+    "text:6700",
+    "text:6701",
+    "text:6702",
+    "text:6703",
+    "frame:6704",
+    "frame:6705",
+    "text:6706",
+    "text:6707",
+    "frame:6708",
+    "text:6709",
+    "text:6710",
+    "frame:6711",
+    "instance:6712",
+    "text:6713",
+    "instance:6714",
+    "text:6715",
+    "instance:366",
+    "instance:372",
+    "instance:378",
+    "frame:81",
+    "text:393",
+    "text:394",
+    "text:395",
+    "frame:396",
+    "frame:400",
+    "frame:401",
+    "instance:410",
+    "text:412",
+    "instance:442",
+    "instance:445",
+    "instance:447",
+    "instance:449",
+    "instance:451",
+    "instance:453",
+    "instance:456",
+    "instance:468",
+    "instance:470",
+    "instance:482",
+    "instance:484",
+    "instance:496",
+    "instance:498",
+    "instance:510",
+    "instance:518",
+    "frame:82",
+    "text:532",
+    "text:533",
+    "text:534",
+    "frame:535",
+    "frame:539",
+    "frame:540",
+    "text:543",
+    "text:545",
+    "instance:576",
+    "instance:578",
+    "instance:585",
+    "instance:587",
+    "text:611",
+    "frame:83",
+    "text:624",
+    "text:625",
+    "text:626",
+    "frame:627",
+    "frame:631",
+    "frame:632",
+    "instance:639",
+    "instance:656",
+    "text:658",
+    "instance:666",
+    "instance:687",
+    "frame:84",
+    "text:704",
+    "text:705",
+    "text:706",
+    "frame:707",
+    "frame:711",
+    "frame:712",
+    "instance:719",
+    "instance:728",
+    "frame:737",
+    "frame:740",
+    "instance:771",
+    "frame:85",
+    "text:788",
+    "text:789",
+    "text:790",
+    "frame:791",
+    "frame:795",
+    "frame:796",
+    "instance:814",
+    "instance:816",
+    "frame:86",
+    "instance:825",
+    "instance:828",
+    "instance:831",
+    "instance:834",
+    "instance:837",
+    "instance:840",
+    "instance:843",
+    "instance:851",
+    "frame:890",
+    "instance:893",
+    "instance:895",
+    "frame:906",
+    "frame:921",
+    "frame:936",
+    "frame:951",
+    "frame:966",
+    "frame:87",
+    "instance:989",
+    "instance:992",
+    "instance:995",
+    "instance:998",
+    "instance:1001",
+    "instance:1004",
+    "instance:1007",
+    "instance:1015",
+    "instance:1036",
+    "instance:1088",
+    "frame:88",
+    "instance:1097",
+    "instance:1100",
+    "instance:1103",
+    "instance:1106",
+    "instance:1109",
+    "instance:1112",
+    "instance:1115",
+    "instance:1123",
+    "instance:1144",
+    "instance:1199",
+    "frame:89",
+    "instance:1208",
+    "instance:1211",
+    "instance:1214",
+    "instance:1217",
+    "instance:1220",
+    "instance:1223",
+    "instance:1226",
+    "instance:1234",
+    "instance:1255",
+    "frame:1275",
+    "instance:1278",
+    "instance:1280",
+    "frame:1290",
+    "frame:1303",
+    "frame:1316",
+    "frame:1329",
+    "frame:90",
+    "instance:1349",
+    "instance:1352",
+    "instance:1355",
+    "instance:1358",
+    "instance:1361",
+    "instance:1364",
+    "instance:1367",
+    "instance:1370",
+    "instance:1373",
+    "instance:1376",
+    "instance:1384",
+    "instance:1405",
+    "instance:1495",
+    "instance:1513",
+    "frame:91",
+    "instance:1522",
+    "instance:1525",
+    "instance:1528",
+    "instance:1531",
+    "instance:1534",
+    "instance:1537",
+    "instance:1540",
+    "instance:1543",
+    "instance:1546",
+    "instance:1549",
+    "instance:1557",
+    "instance:1578",
+    "frame:1581",
+    "instance:1584",
+    "instance:1586",
+    "frame:1597",
+    "frame:1612",
+    "frame:1627",
+    "frame:1642",
+    "frame:92",
+    "instance:1665",
+    "instance:1668",
+    "instance:1671",
+    "instance:1674",
+    "instance:1677",
+    "instance:1680",
+    "instance:1683",
+    "instance:1686",
+    "instance:1689",
+    "instance:1692",
+    "instance:1700",
+    "instance:1721",
+    "instance:1777",
+    "instance:1786",
+    "frame:93",
+    "instance:1795",
+    "instance:1798",
+    "instance:1801",
+    "instance:1804",
+    "instance:1807",
+    "instance:1810",
+    "instance:1813",
+    "instance:1816",
+    "instance:1819",
+    "instance:1822",
+    "instance:1830",
+    "frame:1869",
+    "instance:1872",
+    "instance:1874",
+    "frame:1884",
+    "frame:1897",
+    "frame:1910",
+    "frame:1923",
+    "frame:94",
+    "text:1948",
+    "text:1949",
+    "text:1950",
+    "frame:1951",
+    "frame:1955",
+    "frame:1956",
+    "text:1959",
+    "instance:2026",
+    "instance:2034",
+    "text:2047",
+    "text:2058",
+    "text:2069",
+    "text:2081",
+    "text:2092",
+    "text:2103",
+    "instance:2106",
+    "instance:2108",
+    "instance:2110",
+    "frame:315",
+    "text:2125",
+    "text:2126",
+    "text:2127",
+    "frame:2128",
+    "frame:2132",
+    "frame:2133",
+    "instance:2157",
+    "text:2161",
+    "text:2162",
+    "frame:316",
+    "text:2175",
+    "text:2176",
+    "text:2177",
+    "frame:2178",
+    "frame:2182",
+    "frame:2183",
+    "instance:2220",
+    "text:2224",
+    "text:2225",
+    "frame:317",
+    "text:2238",
+    "text:2239",
+    "text:2240",
+    "frame:2241",
+    "frame:2245",
+    "frame:2246",
+    "text:2260",
+    "text:2262",
+    "text:2264",
+    "text:2266",
+    "text:2268",
+    "text:2270",
+    "text:2274",
+    "text:2276",
+    "text:2278",
+    "text:2280",
+    "text:2282",
+    "instance:2310",
+    "instance:2332",
+    "instance:2354",
+    "instance:2356",
+    "frame:318",
+    "text:2370",
+    "text:2371",
+    "text:2372",
+    "frame:2373",
+    "frame:2377",
+    "frame:2378",
+    "text:2381",
+    "instance:2391",
+    "text:2440",
+    "instance:2479",
+    "text:2481",
+    "frame:319",
+    "text:2494",
+    "text:2495",
+    "text:2496",
+    "frame:2497",
+    "frame:2501",
+    "frame:2502",
+    "text:2505",
+    "instance:2540",
+    "instance:2543",
+    "frame:320",
+    "text:2557",
+    "text:2558",
+    "text:2559",
+    "frame:2560",
+    "frame:2564",
+    "frame:2565",
+    "text:2579",
+    "text:2581",
+    "text:2583",
+    "text:2585",
+    "text:2587",
+    "text:2589",
+    "instance:2624",
+    "instance:2633",
+    "frame:321",
+    "text:2647",
+    "text:2648",
+    "text:2649",
+    "frame:2650",
+    "frame:2654",
+    "frame:2655",
+    "text:2669",
+    "text:2671",
+    "text:2673",
+    "text:2675",
+    "text:2677",
+    "text:2679",
+    "instance:2684",
+    "text:2693",
+    "text:2697",
+    "text:2703",
+    "text:2706",
+    "text:2708",
+    "frame:322",
+    "text:2726",
+    "text:2727",
+    "text:2728",
+    "frame:2729",
+    "frame:2733",
+    "frame:2734",
+    "text:2748",
+    "text:2750",
+    "text:2752",
+    "text:2754",
+    "text:2756",
+    "text:2758",
+    "instance:2801",
+    "instance:2804",
+    "frame:323",
+    "text:2818",
+    "text:2819",
+    "text:2820",
+    "frame:2821",
+    "frame:2825",
+    "frame:2826",
+    "text:2840",
+    "text:2842",
+    "text:2844",
+    "text:2846",
+    "text:2848",
+    "text:2850",
+    "instance:2871",
+    "instance:2874",
+    "frame:324",
+    "text:2888",
+    "text:2889",
+    "text:2890",
+    "frame:2891",
+    "frame:2895",
+    "frame:2896",
+    "text:2910",
+    "text:2912",
+    "text:2914",
+    "text:2916",
+    "text:2927",
+    "text:2948",
+    "instance:2953",
+    "frame:325",
+    "text:2967",
+    "text:2968",
+    "text:2969",
+    "frame:2970",
+    "frame:2974",
+    "frame:2975",
+    "text:2978",
+    "instance:2996",
+    "text:2998",
+    "text:3035",
+    "frame:326",
+    "text:3048",
+    "text:3049",
+    "text:3050",
+    "frame:3051",
+    "frame:3055",
+    "frame:3056",
+    "text:3059",
+    "instance:3074",
+    "text:3076",
+    "text:3113",
+    "frame:327",
+    "text:3126",
+    "text:3127",
+    "text:3128",
+    "frame:3129",
+    "frame:3133",
+    "frame:3134",
+    "instance:3142",
+    "instance:3144",
+    "frame:328",
+    "text:3159",
+    "text:3160",
+    "text:3161",
+    "frame:3162",
+    "frame:3166",
+    "frame:3167",
+    "instance:3175",
+    "instance:3177",
+    "frame:329",
+    "text:3192",
+    "text:3193",
+    "text:3194",
+    "frame:3195",
+    "frame:3199",
+    "frame:3200",
+    "instance:3208",
+    "instance:3210",
+    "frame:330",
+    "text:3225",
+    "text:3226",
+    "text:3227",
+    "frame:3228",
+    "frame:3232",
+    "frame:3233",
+    "instance:3241",
+    "frame:331",
+    "instance:3251",
+    "instance:3254",
+    "instance:3257",
+    "instance:3260",
+    "instance:3263",
+    "instance:3266",
+    "instance:3269",
+    "instance:3277",
+    "instance:3298",
+    "text:3328",
+    "text:3334",
+    "text:3340",
+    "instance:3345",
+    "instance:3352",
+    "frame:3361",
+    "frame:3374",
+    "frame:3387",
+    "frame:332",
+    "instance:3407",
+    "instance:3410",
+    "instance:3413",
+    "instance:3416",
+    "instance:3419",
+    "instance:3422",
+    "instance:3425",
+    "instance:3433",
+    "instance:3454",
+    "frame:3486",
+    "frame:3501",
+    "frame:3516",
+    "frame:3531",
+    "frame:3546",
+    "instance:3564",
+    "instance:3572",
+    "text:3582",
+    "frame:333",
+    "instance:3590",
+    "instance:3593",
+    "instance:3596",
+    "instance:3599",
+    "instance:3602",
+    "instance:3605",
+    "instance:3608",
+    "instance:3616",
+    "instance:3637",
+    "frame:3685",
+    "frame:3698",
+    "frame:3711",
+    "frame:3724",
+    "instance:3740",
+    "instance:3748",
+    "frame:334",
+    "instance:3757",
+    "instance:3760",
+    "instance:3763",
+    "instance:3766",
+    "instance:3769",
+    "instance:3772",
+    "instance:3775",
+    "instance:3783",
+    "instance:3831",
+    "frame:3840",
+    "instance:3865",
+    "instance:3867",
+    "frame:335",
+    "instance:3876",
+    "instance:3879",
+    "instance:3882",
+    "instance:3885",
+    "instance:3888",
+    "instance:3891",
+    "instance:3894",
+    "instance:3902",
+    "frame:3943",
+    "instance:3982",
+    "instance:3984",
+    "frame:336",
+    "instance:3993",
+    "instance:3996",
+    "instance:3999",
+    "instance:4002",
+    "instance:4005",
+    "instance:4008",
+    "instance:4011",
+    "instance:4019",
+    "frame:4065",
+    "instance:4094",
+    "instance:4096",
+    "frame:337",
+    "instance:4105",
+    "instance:4108",
+    "instance:4111",
+    "instance:4114",
+    "instance:4117",
+    "instance:4120",
+    "instance:4123",
+    "instance:4131",
+    "frame:4167",
+    "frame:4180",
+    "frame:4193",
+    "frame:4206",
+    "instance:4232",
+    "frame:338",
+    "instance:4522",
+    "instance:4525",
+    "instance:4528",
+    "instance:4531",
+    "instance:4534",
+    "instance:4537",
+    "instance:4540",
+    "instance:4548",
+    "frame:4616",
+    "frame:4631",
+    "frame:4646",
+    "frame:4661",
+    "instance:4679",
+    "instance:4687",
+    "frame:339",
+    "instance:4696",
+    "instance:4699",
+    "instance:4702",
+    "instance:4705",
+    "instance:4708",
+    "instance:4711",
+    "instance:4714",
+    "instance:4722",
+    "instance:4785",
+    "instance:4800",
+    "instance:4802",
+    "frame:340",
+    "instance:4811",
+    "instance:4814",
+    "instance:4817",
+    "instance:4820",
+    "instance:4823",
+    "instance:4826",
+    "instance:4829",
+    "instance:4837",
+    "instance:4886",
+    "instance:4888",
+    "frame:341",
+    "instance:4897",
+    "instance:4900",
+    "instance:4903",
+    "instance:4906",
+    "instance:4909",
+    "instance:4912",
+    "instance:4915",
+    "instance:4923",
+    "instance:4978",
+    "frame:4987",
+    "frame:5000",
+    "frame:342",
+    "instance:5020",
+    "instance:5023",
+    "instance:5026",
+    "instance:5029",
+    "instance:5032",
+    "instance:5035",
+    "instance:5038",
+    "instance:5046",
+    "instance:5106",
+    "frame:5115",
+    "frame:5128",
+    "frame:343",
+    "instance:5148",
+    "instance:5151",
+    "instance:5154",
+    "instance:5157",
+    "instance:5160",
+    "instance:5163",
+    "instance:5166",
+    "instance:5169",
+    "instance:5172",
+    "instance:5175",
+    "instance:5183",
+    "instance:5204",
+    "frame:5221",
+    "frame:5234",
+    "frame:5247",
+    "frame:5260",
+    "instance:5294",
+    "instance:5296",
+    "frame:344",
+    "instance:5305",
+    "instance:5308",
+    "instance:5311",
+    "instance:5314",
+    "instance:5317",
+    "instance:5320",
+    "instance:5323",
+    "instance:5326",
+    "instance:5329",
+    "instance:5332",
+    "instance:5340",
+    "instance:5361",
+    "frame:5378",
+    "frame:5391",
+    "frame:5404",
+    "frame:5417",
+    "instance:5451",
+    "instance:5453",
+    "frame:345",
+    "instance:5462",
+    "instance:5465",
+    "instance:5468",
+    "instance:5471",
+    "instance:5474",
+    "instance:5477",
+    "instance:5480",
+    "instance:5483",
+    "instance:5486",
+    "instance:5489",
+    "instance:5497",
+    "instance:5518",
+    "frame:5558",
+    "frame:5573",
+    "frame:5588",
+    "frame:5603",
+    "instance:5621",
+    "instance:5629",
+    "frame:346",
+    "instance:5638",
+    "instance:5641",
+    "instance:5644",
+    "instance:5647",
+    "instance:5650",
+    "instance:5653",
+    "instance:5656",
+    "instance:5659",
+    "instance:5662",
+    "instance:5665",
+    "instance:5673",
+    "instance:5756",
+    "instance:5758",
+    "instance:5763",
+    "instance:5765",
+    "frame:347",
+    "instance:5774",
+    "instance:5777",
+    "instance:5780",
+    "instance:5783",
+    "instance:5786",
+    "instance:5789",
+    "instance:5792",
+    "instance:5795",
+    "instance:5798",
+    "instance:5801",
+    "instance:5809",
+    "instance:5830",
+    "frame:5863",
+    "frame:5876",
+    "frame:5889",
+    "frame:5902",
+    "frame:5915",
+    "instance:5931",
+    "instance:5939",
+    "frame:348",
+    "instance:4241",
+    "instance:4244",
+    "instance:4247",
+    "instance:4250",
+    "instance:4253",
+    "instance:4256",
+    "instance:4259",
+    "instance:4262",
+    "instance:4265",
+    "instance:4268",
+    "instance:4276",
+    "instance:4297",
+    "frame:4327",
+    "frame:4340",
+    "frame:4353",
+    "frame:4366",
+    "instance:4382",
+    "instance:4390",
+    "frame:349",
+    "instance:4399",
+    "instance:4402",
+    "instance:4405",
+    "instance:4408",
+    "instance:4411",
+    "instance:4414",
+    "instance:4417",
+    "instance:4420",
+    "instance:4423",
+    "instance:4426",
+    "instance:4434",
+    "instance:4485",
+    "instance:4487",
+    "instance:4495",
+    "frame:350",
+    "instance:5948",
+    "instance:5951",
+    "instance:5954",
+    "instance:5957",
+    "instance:5960",
+    "instance:5963",
+    "instance:5966",
+    "instance:5969",
+    "instance:5972",
+    "instance:5975",
+    "instance:5983",
+    "instance:6022",
+    "instance:6048",
+    "instance:6056",
+    "frame:351",
+    "instance:6075",
+    "instance:6078",
+    "instance:6081",
+    "instance:6084",
+    "instance:6087",
+    "instance:6090",
+    "instance:6093",
+    "instance:6096",
+    "instance:6099",
+    "instance:6102",
+    "instance:6110",
+    "instance:6166",
+    "instance:6168",
+    "instance:6173",
+    "frame:352",
+    "instance:6182",
+    "instance:6185",
+    "instance:6188",
+    "instance:6191",
+    "instance:6194",
+    "instance:6197",
+    "instance:6200",
+    "instance:6203",
+    "instance:6206",
+    "instance:6209",
+    "instance:6217",
+    "instance:6238",
+    "instance:6294",
+    "frame:6303",
+    "frame:6315",
+    "frame:6327",
+    "frame:353",
+    "instance:6351",
+    "instance:6354",
+    "instance:6357",
+    "instance:6360",
+    "instance:6363",
+    "instance:6366",
+    "instance:6369",
+    "instance:6377",
+    "instance:6396",
+    "instance:6451",
+    "frame:6343",
+    "instance:6461",
+    "instance:6464",
+    "instance:6467",
+    "instance:6470",
+    "instance:6473",
+    "instance:6476",
+    "instance:6479",
+    "instance:6487",
+    "instance:6506",
+    "instance:6561",
+    "frame:6453",
+    "instance:6571",
+    "instance:6574",
+    "instance:6577",
+    "instance:6580",
+    "instance:6583",
+    "instance:6586",
+    "instance:6589",
+    "instance:6597",
+    "instance:6616",
+    "instance:6671",
+    "frame:6563",
+    "text:6686",
+    "text:6687",
+    "text:6688",
+    "frame:6689",
+    "frame:6693",
+    "frame:6694",
+    "instance:6712",
+    "instance:6714",
+    "frame:6673"
+  ],
+  "connections": [
+    {
+      "from": "start",
+      "nodeId": "instance:366",
+      "label": "Khám phá cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "start",
+      "nodeId": "instance:372",
+      "label": "Mở khu vực staff",
+      "to": "staffOverview"
+    },
+    {
+      "from": "start",
+      "nodeId": "instance:378",
+      "label": "Mở khu vực admin",
+      "to": "admin"
+    },
+    {
+      "from": "home",
+      "nodeId": "text:393",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "text:394",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "text:395",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "home",
+      "nodeId": "frame:396",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "frame:400",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "home",
+      "nodeId": "frame:401",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:410",
+      "label": "Khám phá ngay",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "text:412",
+      "label": "Tư vấn cùng AI",
+      "to": "ai"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:442",
+      "label": "Xem tất cả laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:445",
+      "label": "Tất cả laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:447",
+      "label": "Gaming",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:449",
+      "label": "Học tập & văn phòng",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:451",
+      "label": "Mỏng nhẹ",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:453",
+      "label": "Đồ họa",
+      "to": "catalog"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:456",
+      "label": "Product/rog",
+      "to": "detail"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:468",
+      "label": "Xem",
+      "to": "detail"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:470",
+      "label": "Product/dell",
+      "to": "detail"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:482",
+      "label": "Xem",
+      "to": "detail"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:484",
+      "label": "Product/rog32",
+      "to": "detail"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:496",
+      "label": "Xem",
+      "to": "detail"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:498",
+      "label": "Product/office",
+      "to": "detail"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:510",
+      "label": "Xem",
+      "to": "detail"
+    },
+    {
+      "from": "home",
+      "nodeId": "instance:518",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "detail",
+      "nodeId": "text:532",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "detail",
+      "nodeId": "text:533",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "detail",
+      "nodeId": "text:534",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "detail",
+      "nodeId": "frame:535",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "detail",
+      "nodeId": "frame:539",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "detail",
+      "nodeId": "frame:540",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "detail",
+      "nodeId": "text:543",
+      "label": "Trang chủ",
+      "to": "home"
+    },
+    {
+      "from": "detail",
+      "nodeId": "text:545",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "detail",
+      "nodeId": "instance:576",
+      "label": "16GB / 512GB",
+      "to": "detail"
+    },
+    {
+      "from": "detail",
+      "nodeId": "instance:578",
+      "label": "32GB / 1TB",
+      "to": "detail"
+    },
+    {
+      "from": "detail",
+      "nodeId": "instance:585",
+      "label": "Mua ngay",
+      "to": "checkout"
+    },
+    {
+      "from": "detail",
+      "nodeId": "instance:587",
+      "label": "Thêm vào giỏ",
+      "to": "cart"
+    },
+    {
+      "from": "detail",
+      "nodeId": "text:611",
+      "label": "Xem đánh giá",
+      "to": "review"
+    },
+    {
+      "from": "cart",
+      "nodeId": "text:624",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "cart",
+      "nodeId": "text:625",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "cart",
+      "nodeId": "text:626",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "cart",
+      "nodeId": "frame:627",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "cart",
+      "nodeId": "frame:631",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "cart",
+      "nodeId": "frame:632",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "cart",
+      "nodeId": "instance:639",
+      "label": "Tiếp tục mua sắm",
+      "to": "home"
+    },
+    {
+      "from": "cart",
+      "nodeId": "instance:656",
+      "label": "−    1    +",
+      "to": "cart"
+    },
+    {
+      "from": "cart",
+      "nodeId": "text:658",
+      "label": "Xóa sản phẩm",
+      "to": "emptyCart"
+    },
+    {
+      "from": "cart",
+      "nodeId": "instance:666",
+      "label": "Áp dụng",
+      "to": "cart"
+    },
+    {
+      "from": "cart",
+      "nodeId": "instance:687",
+      "label": "Tiến hành thanh toán",
+      "to": "checkout"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "text:704",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "text:705",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "text:706",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "frame:707",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "frame:711",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "frame:712",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "instance:719",
+      "label": "Quay lại giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "instance:728",
+      "label": "Đổi địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "frame:737",
+      "label": "COD",
+      "to": "checkout"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "frame:740",
+      "label": "VNPay",
+      "to": "payPending"
+    },
+    {
+      "from": "checkout",
+      "nodeId": "instance:771",
+      "label": "Đặt hàng",
+      "to": "success"
+    },
+    {
+      "from": "success",
+      "nodeId": "text:788",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "success",
+      "nodeId": "text:789",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "success",
+      "nodeId": "text:790",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "success",
+      "nodeId": "frame:791",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "success",
+      "nodeId": "frame:795",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "success",
+      "nodeId": "frame:796",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "success",
+      "nodeId": "instance:814",
+      "label": "Theo dõi đơn hàng",
+      "to": "tracking"
+    },
+    {
+      "from": "success",
+      "nodeId": "instance:816",
+      "label": "Tiếp tục mua sắm",
+      "to": "home"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:825",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:828",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:831",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:834",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:837",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:840",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:843",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:851",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "staff",
+      "nodeId": "frame:890",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:893",
+      "label": "Tất cả trạng thái",
+      "to": "staff"
+    },
+    {
+      "from": "staff",
+      "nodeId": "instance:895",
+      "label": "24/10/2026",
+      "to": "staff"
+    },
+    {
+      "from": "staff",
+      "nodeId": "frame:906",
+      "label": "#LS24102601",
+      "to": "staffDetail"
+    },
+    {
+      "from": "staff",
+      "nodeId": "frame:921",
+      "label": "#LS24102602",
+      "to": "staffDetail"
+    },
+    {
+      "from": "staff",
+      "nodeId": "frame:936",
+      "label": "#LS23102618",
+      "to": "staffDetail"
+    },
+    {
+      "from": "staff",
+      "nodeId": "frame:951",
+      "label": "#LS23102617",
+      "to": "staffDetail"
+    },
+    {
+      "from": "staff",
+      "nodeId": "frame:966",
+      "label": "#LS23102616",
+      "to": "staffDetail"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:989",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:992",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:995",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:998",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:1001",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:1004",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:1007",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:1015",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:1036",
+      "label": "Xác nhận đơn",
+      "to": "staffConfirmed"
+    },
+    {
+      "from": "staffDetail",
+      "nodeId": "instance:1088",
+      "label": "Quay lại đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1097",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1100",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1103",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1106",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1109",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1112",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1115",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1123",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1144",
+      "label": "Chuẩn bị hàng",
+      "to": "staffProcessing"
+    },
+    {
+      "from": "staffConfirmed",
+      "nodeId": "instance:1199",
+      "label": "Quay lại đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1208",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1211",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1214",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1217",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1220",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1223",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1226",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1234",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1255",
+      "label": "Tạo phiếu nhập",
+      "to": "purchaseEdit"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "frame:1275",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1278",
+      "label": "Tất cả thương hiệu",
+      "to": "inventory"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "instance:1280",
+      "label": "Tồn kho thấp",
+      "to": "inventory"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "frame:1290",
+      "label": "ROG-G15-01",
+      "to": "stockHistory"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "frame:1303",
+      "label": "ROG-G15-02",
+      "to": "stockHistory"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "frame:1316",
+      "label": "XPS13-01",
+      "to": "stockHistory"
+    },
+    {
+      "from": "inventory",
+      "nodeId": "frame:1329",
+      "label": "XPS13-02",
+      "to": "stockHistory"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1349",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1352",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1355",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1358",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1361",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1364",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1367",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1370",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1373",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1376",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1384",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1405",
+      "label": "Xuất báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1495",
+      "label": "Xem đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "admin",
+      "nodeId": "instance:1513",
+      "label": "Kiểm tra tồn kho",
+      "to": "inventory"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1522",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1525",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1528",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1531",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1534",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1537",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1540",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1543",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1546",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1549",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1557",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1578",
+      "label": "Thêm sản phẩm",
+      "to": "productEdit"
+    },
+    {
+      "from": "products",
+      "nodeId": "frame:1581",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1584",
+      "label": "Tất cả danh mục",
+      "to": "products"
+    },
+    {
+      "from": "products",
+      "nodeId": "instance:1586",
+      "label": "Đang kinh doanh",
+      "to": "products"
+    },
+    {
+      "from": "products",
+      "nodeId": "frame:1597",
+      "label": "ASUS ROG Strix G15",
+      "to": "productEdit"
+    },
+    {
+      "from": "products",
+      "nodeId": "frame:1612",
+      "label": "Dell XPS 13",
+      "to": "productEdit"
+    },
+    {
+      "from": "products",
+      "nodeId": "frame:1627",
+      "label": "ROG Zephyrus G14",
+      "to": "productEdit"
+    },
+    {
+      "from": "products",
+      "nodeId": "frame:1642",
+      "label": "Dell Inspiron 15",
+      "to": "productEdit"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1665",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1668",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1671",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1674",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1677",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1680",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1683",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1686",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1689",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1692",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1700",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1721",
+      "label": "Lưu sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1777",
+      "label": "Thay hình ảnh",
+      "to": "productEdit"
+    },
+    {
+      "from": "productEdit",
+      "nodeId": "instance:1786",
+      "label": "Quay lại sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1795",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1798",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1801",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1804",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1807",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1810",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1813",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1816",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1819",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1822",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1830",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "users",
+      "nodeId": "frame:1869",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1872",
+      "label": "Tất cả vai trò",
+      "to": "users"
+    },
+    {
+      "from": "users",
+      "nodeId": "instance:1874",
+      "label": "Đang hoạt động",
+      "to": "users"
+    },
+    {
+      "from": "users",
+      "nodeId": "frame:1884",
+      "label": "Nguyễn Minh An",
+      "to": "userDetail"
+    },
+    {
+      "from": "users",
+      "nodeId": "frame:1897",
+      "label": "Trần Minh Anh",
+      "to": "userDetail"
+    },
+    {
+      "from": "users",
+      "nodeId": "frame:1910",
+      "label": "Anh Khang",
+      "to": "userDetail"
+    },
+    {
+      "from": "users",
+      "nodeId": "frame:1923",
+      "label": "Lê Hoàng Nam",
+      "to": "userDetail"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:1948",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:1949",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:1950",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "frame:1951",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "frame:1955",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "frame:1956",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:1959",
+      "label": "Cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "instance:2026",
+      "label": "Áp dụng bộ lọc",
+      "to": "catalog"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "instance:2034",
+      "label": "Giá: thấp đến cao",
+      "to": "catalog"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:2047",
+      "label": "Xem chi tiết",
+      "to": "detail"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:2058",
+      "label": "Xem chi tiết",
+      "to": "detail"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:2069",
+      "label": "Xem chi tiết",
+      "to": "detail"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:2081",
+      "label": "Xem chi tiết",
+      "to": "detail"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:2092",
+      "label": "Xem chi tiết",
+      "to": "detail"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "text:2103",
+      "label": "Xem chi tiết",
+      "to": "detail"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "instance:2106",
+      "label": "1",
+      "to": "catalog"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "instance:2108",
+      "label": "2",
+      "to": "catalog"
+    },
+    {
+      "from": "catalog",
+      "nodeId": "instance:2110",
+      "label": "3",
+      "to": "catalog"
+    },
+    {
+      "from": "login",
+      "nodeId": "text:2125",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "login",
+      "nodeId": "text:2126",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "login",
+      "nodeId": "text:2127",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "login",
+      "nodeId": "frame:2128",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "login",
+      "nodeId": "frame:2132",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "login",
+      "nodeId": "frame:2133",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "login",
+      "nodeId": "instance:2157",
+      "label": "Đăng nhập",
+      "to": "profile"
+    },
+    {
+      "from": "login",
+      "nodeId": "text:2161",
+      "label": "Đăng ký",
+      "to": "register"
+    },
+    {
+      "from": "login",
+      "nodeId": "text:2162",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "register",
+      "nodeId": "text:2175",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "register",
+      "nodeId": "text:2176",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "register",
+      "nodeId": "text:2177",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "register",
+      "nodeId": "frame:2178",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "register",
+      "nodeId": "frame:2182",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "register",
+      "nodeId": "frame:2183",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "register",
+      "nodeId": "instance:2220",
+      "label": "Đăng ký",
+      "to": "profile"
+    },
+    {
+      "from": "register",
+      "nodeId": "text:2224",
+      "label": "Đăng nhập",
+      "to": "login"
+    },
+    {
+      "from": "register",
+      "nodeId": "text:2225",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2238",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2239",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2240",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "orders",
+      "nodeId": "frame:2241",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "orders",
+      "nodeId": "frame:2245",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "orders",
+      "nodeId": "frame:2246",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2260",
+      "label": "Hồ sơ",
+      "to": "profile"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2262",
+      "label": "Sổ địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2264",
+      "label": "Đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2266",
+      "label": "Đổi mật khẩu",
+      "to": "password"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2268",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2270",
+      "label": "Đăng xuất",
+      "to": "login"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2274",
+      "label": "Tất cả",
+      "to": "catalog"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2276",
+      "label": "Chờ xác nhận",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2278",
+      "label": "Đang chuẩn bị",
+      "to": "orders"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2280",
+      "label": "Đang giao",
+      "to": "orders"
+    },
+    {
+      "from": "orders",
+      "nodeId": "text:2282",
+      "label": "Đã giao",
+      "to": "orders"
+    },
+    {
+      "from": "orders",
+      "nodeId": "instance:2310",
+      "label": "Xem chi tiết",
+      "to": "tracking"
+    },
+    {
+      "from": "orders",
+      "nodeId": "instance:2332",
+      "label": "Xem chi tiết",
+      "to": "tracking"
+    },
+    {
+      "from": "orders",
+      "nodeId": "instance:2354",
+      "label": "Viết đánh giá",
+      "to": "review"
+    },
+    {
+      "from": "orders",
+      "nodeId": "instance:2356",
+      "label": "Xem chi tiết",
+      "to": "tracking"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "text:2370",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "text:2371",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "text:2372",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "frame:2373",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "frame:2377",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "frame:2378",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "text:2381",
+      "label": "Cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "instance:2391",
+      "label": "Đơn hàng của tôi",
+      "to": "orders"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "text:2440",
+      "label": "Viết đánh giá",
+      "to": "review"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "instance:2479",
+      "label": "Thanh toán ngay",
+      "to": "payPending"
+    },
+    {
+      "from": "tracking",
+      "nodeId": "text:2481",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "review",
+      "nodeId": "text:2494",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "review",
+      "nodeId": "text:2495",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "review",
+      "nodeId": "text:2496",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "review",
+      "nodeId": "frame:2497",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "review",
+      "nodeId": "frame:2501",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "review",
+      "nodeId": "frame:2502",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "review",
+      "nodeId": "text:2505",
+      "label": "Cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "review",
+      "nodeId": "instance:2540",
+      "label": "Quay lại đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "review",
+      "nodeId": "instance:2543",
+      "label": "Gửi đánh giá",
+      "to": "orders"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2557",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2558",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2559",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "profile",
+      "nodeId": "frame:2560",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "profile",
+      "nodeId": "frame:2564",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "profile",
+      "nodeId": "frame:2565",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2579",
+      "label": "Hồ sơ",
+      "to": "profile"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2581",
+      "label": "Sổ địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2583",
+      "label": "Đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2585",
+      "label": "Đổi mật khẩu",
+      "to": "password"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2587",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "profile",
+      "nodeId": "text:2589",
+      "label": "Đăng xuất",
+      "to": "login"
+    },
+    {
+      "from": "profile",
+      "nodeId": "instance:2624",
+      "label": "Lưu hồ sơ",
+      "to": "profile"
+    },
+    {
+      "from": "profile",
+      "nodeId": "instance:2633",
+      "label": "Đổi mật khẩu",
+      "to": "password"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2647",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2648",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2649",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "frame:2650",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "frame:2654",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "frame:2655",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2669",
+      "label": "Hồ sơ",
+      "to": "profile"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2671",
+      "label": "Sổ địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2673",
+      "label": "Đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2675",
+      "label": "Đổi mật khẩu",
+      "to": "password"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2677",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2679",
+      "label": "Đăng xuất",
+      "to": "login"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "instance:2684",
+      "label": "Thêm địa chỉ",
+      "to": "addressEdit"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2693",
+      "label": "Sửa địa chỉ",
+      "to": "addressEdit"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2697",
+      "label": "Xóa địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2703",
+      "label": "Sửa địa chỉ",
+      "to": "addressEdit"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2706",
+      "label": "Đặt làm mặc định",
+      "to": "addresses"
+    },
+    {
+      "from": "addresses",
+      "nodeId": "text:2708",
+      "label": "Xóa địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2726",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2727",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2728",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "frame:2729",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "frame:2733",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "frame:2734",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2748",
+      "label": "Hồ sơ",
+      "to": "profile"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2750",
+      "label": "Sổ địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2752",
+      "label": "Đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2754",
+      "label": "Đổi mật khẩu",
+      "to": "password"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2756",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "text:2758",
+      "label": "Đăng xuất",
+      "to": "login"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "instance:2801",
+      "label": "Quay lại sổ địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "addressEdit",
+      "nodeId": "instance:2804",
+      "label": "Lưu địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2818",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2819",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2820",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "password",
+      "nodeId": "frame:2821",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "password",
+      "nodeId": "frame:2825",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "password",
+      "nodeId": "frame:2826",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2840",
+      "label": "Hồ sơ",
+      "to": "profile"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2842",
+      "label": "Sổ địa chỉ",
+      "to": "addresses"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2844",
+      "label": "Đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2846",
+      "label": "Đổi mật khẩu",
+      "to": "profile"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2848",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "password",
+      "nodeId": "text:2850",
+      "label": "Đăng xuất",
+      "to": "login"
+    },
+    {
+      "from": "password",
+      "nodeId": "instance:2871",
+      "label": "Quay lại hồ sơ",
+      "to": "profile"
+    },
+    {
+      "from": "password",
+      "nodeId": "instance:2874",
+      "label": "Đổi mật khẩu",
+      "to": "profile"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2888",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2889",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2890",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "ai",
+      "nodeId": "frame:2891",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "ai",
+      "nodeId": "frame:2895",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "ai",
+      "nodeId": "frame:2896",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2910",
+      "label": "Laptop học tập dưới 20 triệu",
+      "to": "ai"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2912",
+      "label": "Chơi game trong tầm 25 triệu",
+      "to": "ai"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2914",
+      "label": "Máy mỏng nhẹ để đi làm",
+      "to": "ai"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2916",
+      "label": "Laptop dành cho thiết kế",
+      "to": "ai"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2927",
+      "label": "Cuộc trò chuyện mới",
+      "to": "ai"
+    },
+    {
+      "from": "ai",
+      "nodeId": "text:2948",
+      "label": "Xem chi tiết",
+      "to": "detail"
+    },
+    {
+      "from": "ai",
+      "nodeId": "instance:2953",
+      "label": "Gửi tin nhắn",
+      "to": "ai"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "text:2967",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "text:2968",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "text:2969",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "frame:2970",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "frame:2974",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "frame:2975",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "text:2978",
+      "label": "Cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "instance:2996",
+      "label": "Chuyển đến VNPay",
+      "to": "paySuccess"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "text:2998",
+      "label": "Xem chi tiết đơn hàng",
+      "to": "tracking"
+    },
+    {
+      "from": "payPending",
+      "nodeId": "text:3035",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "text:3048",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "text:3049",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "text:3050",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "frame:3051",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "frame:3055",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "frame:3056",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "text:3059",
+      "label": "Cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "instance:3074",
+      "label": "Thanh toán lại",
+      "to": "payPending"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "text:3076",
+      "label": "Xem chi tiết đơn hàng",
+      "to": "tracking"
+    },
+    {
+      "from": "payFail",
+      "nodeId": "text:3113",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "emptyCart",
+      "nodeId": "text:3126",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "emptyCart",
+      "nodeId": "text:3127",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "emptyCart",
+      "nodeId": "text:3128",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "emptyCart",
+      "nodeId": "frame:3129",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "emptyCart",
+      "nodeId": "frame:3133",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "emptyCart",
+      "nodeId": "frame:3134",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "emptyCart",
+      "nodeId": "instance:3142",
+      "label": "Khám phá laptop",
+      "to": "emptyCart"
+    },
+    {
+      "from": "emptyCart",
+      "nodeId": "instance:3144",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "emptySearch",
+      "nodeId": "text:3159",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "emptySearch",
+      "nodeId": "text:3160",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "emptySearch",
+      "nodeId": "text:3161",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "emptySearch",
+      "nodeId": "frame:3162",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "emptySearch",
+      "nodeId": "frame:3166",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "emptySearch",
+      "nodeId": "frame:3167",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "emptySearch",
+      "nodeId": "instance:3175",
+      "label": "Xóa bộ lọc",
+      "to": "catalog"
+    },
+    {
+      "from": "emptySearch",
+      "nodeId": "instance:3177",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "forbidden",
+      "nodeId": "text:3192",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "forbidden",
+      "nodeId": "text:3193",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "forbidden",
+      "nodeId": "text:3194",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "forbidden",
+      "nodeId": "frame:3195",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "forbidden",
+      "nodeId": "frame:3199",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "forbidden",
+      "nodeId": "frame:3200",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "forbidden",
+      "nodeId": "instance:3208",
+      "label": "Đăng nhập tài khoản khác",
+      "to": "login"
+    },
+    {
+      "from": "forbidden",
+      "nodeId": "instance:3210",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "notFound",
+      "nodeId": "text:3225",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "notFound",
+      "nodeId": "text:3226",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "notFound",
+      "nodeId": "text:3227",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "notFound",
+      "nodeId": "frame:3228",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "notFound",
+      "nodeId": "frame:3232",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "notFound",
+      "nodeId": "frame:3233",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "notFound",
+      "nodeId": "instance:3241",
+      "label": "Quay về cửa hàng",
+      "to": "home"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3251",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3254",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3257",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3260",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3263",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3266",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3269",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3277",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3298",
+      "label": "Xem đơn chờ xử lý",
+      "to": "staffDetail"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "text:3328",
+      "label": "Xử lý đơn hàng",
+      "to": "staffDetail"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "text:3334",
+      "label": "Mở phiếu nhập",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "text:3340",
+      "label": "Mở thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3345",
+      "label": "Kiểm tra tồn kho",
+      "to": "inventory"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "instance:3352",
+      "label": "Tất cả đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "frame:3361",
+      "label": "LS-261024-0841\n10:42 · 24/10/2026",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "frame:3374",
+      "label": "LS-261024-0840\n10:25 · 24/10/2026",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffOverview",
+      "nodeId": "frame:3387",
+      "label": "LS-261024-0839\n10:08 · 24/10/2026",
+      "to": "staffOverview"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3407",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3410",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3413",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3416",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3419",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3422",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3425",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3433",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3454",
+      "label": "Xem tồn kho",
+      "to": "inventory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "frame:3486",
+      "label": "24/10/2026 · 10:35\nSM-001285",
+      "to": "stockHistory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "frame:3501",
+      "label": "24/10/2026 · 09:42\nSM-001284",
+      "to": "stockHistory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "frame:3516",
+      "label": "24/10/2026 · 09:15\nSM-001283",
+      "to": "stockHistory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "frame:3531",
+      "label": "23/10/2026 · 16:20\nSM-001282",
+      "to": "stockHistory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "frame:3546",
+      "label": "23/10/2026 · 14:05\nSM-001281",
+      "to": "stockHistory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3564",
+      "label": "Trang trước",
+      "to": "stockHistory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "instance:3572",
+      "label": "Trang sau",
+      "to": "stockHistory"
+    },
+    {
+      "from": "stockHistory",
+      "nodeId": "text:3582",
+      "label": "Xem phiếu nhập",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3590",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3593",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3596",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3599",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3602",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3605",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3608",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3616",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3637",
+      "label": "Tạo phiếu nhập",
+      "to": "purchaseEdit"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "frame:3685",
+      "label": "PN-00042\n24/10/2026",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "frame:3698",
+      "label": "PN-00043\n24/10/2026",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "frame:3711",
+      "label": "PN-00041\n22/10/2026",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "frame:3724",
+      "label": "PN-00040\n21/10/2026",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3740",
+      "label": "Trang trước",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "purchaseOrders",
+      "nodeId": "instance:3748",
+      "label": "Trang sau",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3757",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3760",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3763",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3766",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3769",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3772",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3775",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3783",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3831",
+      "label": "Thêm biến thể",
+      "to": "productEdit"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "frame:3840",
+      "label": "ASUS ROG G15\n16GB / 512GB / Xám",
+      "to": "purchaseEdit"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3865",
+      "label": "Hủy tạo phiếu",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "purchaseEdit",
+      "nodeId": "instance:3867",
+      "label": "Lưu phiếu nhập",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3876",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3879",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3882",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3885",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3888",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3891",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3894",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3902",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "frame:3943",
+      "label": "ASUS ROG G15\nROG-G15-01",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3982",
+      "label": "Quay lại phiếu nhập",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "purchaseReceive",
+      "nodeId": "instance:3984",
+      "label": "Xác nhận nhận 10 máy",
+      "to": "purchaseDone"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:3993",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:3996",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:3999",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:4002",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:4005",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:4008",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:4011",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:4019",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "frame:4065",
+      "label": "ASUS ROG G15\nROG-G15-01",
+      "to": "purchaseDone"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:4094",
+      "label": "Danh sách phiếu nhập",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "purchaseDone",
+      "nodeId": "instance:4096",
+      "label": "Xem lịch sử kho",
+      "to": "stockHistory"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4105",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4108",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4111",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4114",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4117",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4120",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4123",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4131",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "frame:4167",
+      "label": "Công nghệ An Phát\nĐối tác từ 2025",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "frame:4180",
+      "label": "Phân phối Minh Long\nĐối tác từ 2025",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "frame:4193",
+      "label": "Synnex FPT\nĐối tác từ 2024",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "frame:4206",
+      "label": "Công nghệ Nam Việt\nĐối tác từ 2025",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffSuppliers",
+      "nodeId": "instance:4232",
+      "label": "Xem phiếu nhập",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4522",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4525",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4528",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4531",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4534",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4537",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4540",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4548",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "payments",
+      "nodeId": "frame:4616",
+      "label": "PAY-00841\nLS-261024-0841",
+      "to": "paymentDetail"
+    },
+    {
+      "from": "payments",
+      "nodeId": "frame:4631",
+      "label": "PAY-00840\nLS-261024-0840",
+      "to": "paymentDetail"
+    },
+    {
+      "from": "payments",
+      "nodeId": "frame:4646",
+      "label": "PAY-00839\nLS-261024-0839",
+      "to": "paymentDetail"
+    },
+    {
+      "from": "payments",
+      "nodeId": "frame:4661",
+      "label": "PAY-00838\nLS-261024-0838",
+      "to": "paymentDetail"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4679",
+      "label": "Trang trước",
+      "to": "payments"
+    },
+    {
+      "from": "payments",
+      "nodeId": "instance:4687",
+      "label": "Trang sau",
+      "to": "payments"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4696",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4699",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4702",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4705",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4708",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4711",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4714",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4722",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4785",
+      "label": "Xem chi tiết đơn",
+      "to": "staffDetail"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4800",
+      "label": "Quay lại thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "paymentDetail",
+      "nodeId": "instance:4802",
+      "label": "Xác nhận đã thu COD",
+      "to": "codConfirmed"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4811",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4814",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4817",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4820",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4823",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4826",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4829",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4837",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4886",
+      "label": "Xem đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "codConfirmed",
+      "nodeId": "instance:4888",
+      "label": "Về danh sách thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4897",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4900",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4903",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4906",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4909",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4912",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4915",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4923",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "instance:4978",
+      "label": "Ẩn đánh giá",
+      "to": "moderationHidden"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "frame:4987",
+      "label": "ThinkPad E14\nDòng hàng #217",
+      "to": "moderationHidden"
+    },
+    {
+      "from": "moderation",
+      "nodeId": "frame:5000",
+      "label": "MacBook Air M3\nDòng hàng #216",
+      "to": "moderationHidden"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5020",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5023",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5026",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5029",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5032",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5035",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5038",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5046",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "instance:5106",
+      "label": "Hiển thị lại đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "frame:5115",
+      "label": "ThinkPad E14\nDòng hàng #217",
+      "to": "moderationHidden"
+    },
+    {
+      "from": "moderationHidden",
+      "nodeId": "frame:5128",
+      "label": "MacBook Air M3\nDòng hàng #216",
+      "to": "moderationHidden"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5148",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5151",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5154",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5157",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5160",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5163",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5166",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5169",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5172",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5175",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5183",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5204",
+      "label": "Thêm danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "categories",
+      "nodeId": "frame:5221",
+      "label": "Laptop Gaming",
+      "to": "categories"
+    },
+    {
+      "from": "categories",
+      "nodeId": "frame:5234",
+      "label": "Laptop Văn phòng",
+      "to": "categories"
+    },
+    {
+      "from": "categories",
+      "nodeId": "frame:5247",
+      "label": "Laptop Sáng tạo",
+      "to": "categories"
+    },
+    {
+      "from": "categories",
+      "nodeId": "frame:5260",
+      "label": "Ultrabook",
+      "to": "categories"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5294",
+      "label": "Hủy chỉnh sửa",
+      "to": "categories"
+    },
+    {
+      "from": "categories",
+      "nodeId": "instance:5296",
+      "label": "Lưu danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5305",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5308",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5311",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5314",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5317",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5320",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5323",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5326",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5329",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5332",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5340",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5361",
+      "label": "Thêm thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "brands",
+      "nodeId": "frame:5378",
+      "label": "ASUS",
+      "to": "brands"
+    },
+    {
+      "from": "brands",
+      "nodeId": "frame:5391",
+      "label": "Lenovo",
+      "to": "brands"
+    },
+    {
+      "from": "brands",
+      "nodeId": "frame:5404",
+      "label": "Apple",
+      "to": "brands"
+    },
+    {
+      "from": "brands",
+      "nodeId": "frame:5417",
+      "label": "Dell",
+      "to": "brands"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5451",
+      "label": "Hủy chỉnh sửa",
+      "to": "brands"
+    },
+    {
+      "from": "brands",
+      "nodeId": "instance:5453",
+      "label": "Lưu thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5462",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5465",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5468",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5471",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5474",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5477",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5480",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5483",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5486",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5489",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5497",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5518",
+      "label": "Tạo mã giảm giá",
+      "to": "couponEdit"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "frame:5558",
+      "label": "LAPTOP500",
+      "to": "couponEdit"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "frame:5573",
+      "label": "ROG10",
+      "to": "couponEdit"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "frame:5588",
+      "label": "WELCOME300",
+      "to": "couponEdit"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "frame:5603",
+      "label": "BACKTOSCHOOL",
+      "to": "couponEdit"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5621",
+      "label": "Trang trước",
+      "to": "couponList"
+    },
+    {
+      "from": "couponList",
+      "nodeId": "instance:5629",
+      "label": "Trang sau",
+      "to": "couponList"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5638",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5641",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5644",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5647",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5650",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5653",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5656",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5659",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5662",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5665",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5673",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5756",
+      "label": "Quay lại khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5758",
+      "label": "Lưu mã giảm giá",
+      "to": "couponList"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5763",
+      "label": "Lịch sử sử dụng",
+      "to": "couponUsage"
+    },
+    {
+      "from": "couponEdit",
+      "nodeId": "instance:5765",
+      "label": "Tạm ngưng mã",
+      "to": "couponList"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5774",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5777",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5780",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5783",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5786",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5789",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5792",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5795",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5798",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5801",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5809",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5830",
+      "label": "Chỉnh sửa mã giảm giá",
+      "to": "couponEdit"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "frame:5863",
+      "label": "LS-261024-0841",
+      "to": "couponUsage"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "frame:5876",
+      "label": "LS-261024-0836",
+      "to": "couponUsage"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "frame:5889",
+      "label": "LS-261023-0819",
+      "to": "couponUsage"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "frame:5902",
+      "label": "LS-261023-0811",
+      "to": "couponUsage"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "frame:5915",
+      "label": "LS-261022-0796",
+      "to": "couponUsage"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5931",
+      "label": "Trang trước",
+      "to": "couponUsage"
+    },
+    {
+      "from": "couponUsage",
+      "nodeId": "instance:5939",
+      "label": "Trang sau",
+      "to": "couponUsage"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4241",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4244",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4247",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4250",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4253",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4256",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4259",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4262",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4265",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4268",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4276",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4297",
+      "label": "Thêm nhà cung cấp",
+      "to": "supplierEdit"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "frame:4327",
+      "label": "Công nghệ An Phát",
+      "to": "supplierEdit"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "frame:4340",
+      "label": "Phân phối Minh Long",
+      "to": "supplierEdit"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "frame:4353",
+      "label": "Synnex FPT",
+      "to": "supplierEdit"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "frame:4366",
+      "label": "Công nghệ Nam Việt",
+      "to": "supplierEdit"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4382",
+      "label": "Trang trước",
+      "to": "suppliers"
+    },
+    {
+      "from": "suppliers",
+      "nodeId": "instance:4390",
+      "label": "Trang sau",
+      "to": "suppliers"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4399",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4402",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4405",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4408",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4411",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4414",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4417",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4420",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4423",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4426",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4434",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4485",
+      "label": "Quay lại",
+      "to": "suppliers"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4487",
+      "label": "Lưu nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "supplierEdit",
+      "nodeId": "instance:4495",
+      "label": "Xem tất cả phiếu nhập",
+      "to": "purchaseReceive"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5948",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5951",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5954",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5957",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5960",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5963",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5966",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5969",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5972",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5975",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:5983",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:6022",
+      "label": "Khóa tài khoản",
+      "to": "userDetail"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:6048",
+      "label": "Lưu vai trò",
+      "to": "users"
+    },
+    {
+      "from": "userDetail",
+      "nodeId": "instance:6056",
+      "label": "Xem tất cả đơn",
+      "to": "staff"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6075",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6078",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6081",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6084",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6087",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6090",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6093",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6096",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6099",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6102",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6110",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6166",
+      "label": "Hủy điều chỉnh",
+      "to": "stockAdjust"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6168",
+      "label": "Xác nhận điều chỉnh",
+      "to": "inventory"
+    },
+    {
+      "from": "stockAdjust",
+      "nodeId": "instance:6173",
+      "label": "Xem lịch sử điều chỉnh",
+      "to": "stockAdjust"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6182",
+      "label": "Tổng quan",
+      "to": "admin"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6185",
+      "label": "Sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6188",
+      "label": "Danh mục",
+      "to": "categories"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6191",
+      "label": "Thương hiệu",
+      "to": "brands"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6194",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6197",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6200",
+      "label": "Khách hàng & nhân sự",
+      "to": "users"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6203",
+      "label": "Khuyến mãi",
+      "to": "couponList"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6206",
+      "label": "Nhà cung cấp",
+      "to": "suppliers"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6209",
+      "label": "Báo cáo",
+      "to": "report"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6217",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6238",
+      "label": "Tháng 10, 2026",
+      "to": "report"
+    },
+    {
+      "from": "report",
+      "nodeId": "instance:6294",
+      "label": "Xem sản phẩm",
+      "to": "products"
+    },
+    {
+      "from": "report",
+      "nodeId": "frame:6303",
+      "label": "ASUS ROG G15\nROG-G15-01",
+      "to": "report"
+    },
+    {
+      "from": "report",
+      "nodeId": "frame:6315",
+      "label": "MacBook Air M3\nMBA-M3-256",
+      "to": "report"
+    },
+    {
+      "from": "report",
+      "nodeId": "frame:6327",
+      "label": "Lenovo ThinkPad E14\nLNV-E14-16",
+      "to": "report"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6351",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6354",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6357",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6360",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6363",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6366",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6369",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6377",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6396",
+      "label": "Bàn giao vận chuyển",
+      "to": "staffShipping"
+    },
+    {
+      "from": "staffProcessing",
+      "nodeId": "instance:6451",
+      "label": "Quay lại đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6461",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6464",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6467",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6470",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6473",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6476",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6479",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6487",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6506",
+      "label": "Xác nhận đã giao",
+      "to": "staffDelivered"
+    },
+    {
+      "from": "staffShipping",
+      "nodeId": "instance:6561",
+      "label": "Quay lại đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6571",
+      "label": "Tổng quan",
+      "to": "staffOverview"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6574",
+      "label": "Đơn hàng",
+      "to": "staff"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6577",
+      "label": "Kho hàng",
+      "to": "inventory"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6580",
+      "label": "Nhập hàng",
+      "to": "purchaseOrders"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6583",
+      "label": "Nhà cung cấp",
+      "to": "staffSuppliers"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6586",
+      "label": "Thanh toán",
+      "to": "payments"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6589",
+      "label": "Đánh giá",
+      "to": "moderation"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6597",
+      "label": "Chọn vai trò",
+      "to": "start"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6616",
+      "label": "Xác nhận thu COD",
+      "to": "paymentDetail"
+    },
+    {
+      "from": "staffDelivered",
+      "nodeId": "instance:6671",
+      "label": "Quay lại đơn hàng",
+      "to": "orders"
+    },
+    {
+      "from": "paySuccess",
+      "nodeId": "text:6686",
+      "label": "Laptop",
+      "to": "catalog"
+    },
+    {
+      "from": "paySuccess",
+      "nodeId": "text:6687",
+      "label": "Khuyến mãi",
+      "to": "catalog"
+    },
+    {
+      "from": "paySuccess",
+      "nodeId": "text:6688",
+      "label": "Tư vấn AI",
+      "to": "ai"
+    },
+    {
+      "from": "paySuccess",
+      "nodeId": "frame:6689",
+      "label": "Search",
+      "to": "catalog"
+    },
+    {
+      "from": "paySuccess",
+      "nodeId": "frame:6693",
+      "label": "Tài khoản",
+      "to": "profile"
+    },
+    {
+      "from": "paySuccess",
+      "nodeId": "frame:6694",
+      "label": "Giỏ hàng",
+      "to": "cart"
+    },
+    {
+      "from": "paySuccess",
+      "nodeId": "instance:6712",
+      "label": "Theo dõi đơn hàng",
+      "to": "tracking"
+    },
+    {
+      "from": "paySuccess",
+      "nodeId": "instance:6714",
+      "label": "Tiếp tục mua sắm",
+      "to": "home"
+    }
+  ],
+  "unresolved": [],
+  "flowStartingPoints": [
+    {
+      "nodeId": "frame:81",
+      "name": "00 / Chọn trải nghiệm"
+    },
+    {
+      "nodeId": "frame:82",
+      "name": "01 / Mua sắm"
+    },
+    {
+      "nodeId": "frame:332",
+      "name": "02 / Vận hành"
+    },
+    {
+      "nodeId": "frame:91",
+      "name": "03 / Quản trị"
+    }
+  ]
+}

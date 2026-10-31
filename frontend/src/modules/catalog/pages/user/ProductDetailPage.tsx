@@ -1,7 +1,8 @@
+import { resolveImageUrl } from '@/utils/image';
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ProductResponse, VariantSnapshot } from '../../types/catalog';
+import { Link, useParams } from 'react-router-dom';
 import { catalogApi } from '../../api/catalogApi';
+import { ProductResponse, VariantSnapshot } from '../../types/catalog';
 
 const ProductDetailPage: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -107,7 +108,7 @@ const ProductDetailPage: React.FC = () => {
                     {/* Main visual */}
                     <div className="w-full h-[390px] bg-white rounded-[24px] flex justify-center items-center overflow-hidden border border-surface-border">
                         {mainImage ? (
-                            <img src={`http://localhost:8081${mainImage}`} alt={product.name} className="max-h-[300px] object-contain mix-blend-multiply" />
+                            <img src={resolveImageUrl(mainImage)} alt={product.name} className="max-h-[300px] object-contain mix-blend-multiply" />
                         ) : (
                             <span className="text-ink-lighter">Chưa có hình ảnh</span>
                         )}
@@ -123,7 +124,7 @@ const ProductDetailPage: React.FC = () => {
                                     className={`w-[116px] h-full bg-white rounded-xl border flex-shrink-0 cursor-pointer flex items-center justify-center p-2 transition-colors
                                         ${mainImage === img.imageUrl ? 'border-primary ring-1 ring-primary' : 'border-surface-border hover:border-primary/50'}`}
                                 >
-                                    <img src={`http://localhost:8081${img.imageUrl}`} alt="Thumbnail" className="max-h-full object-contain mix-blend-multiply" />
+                                    <img src={resolveImageUrl(img.imageUrl)} alt="Thumbnail" className="max-h-full object-contain mix-blend-multiply" />
                                 </div>
                             ))}
                         </div>

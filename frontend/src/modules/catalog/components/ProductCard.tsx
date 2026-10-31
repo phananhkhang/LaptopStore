@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
+import { resolveImageUrl } from '@/utils/image';
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { ProductSummaryResponse } from '../types';
 
 interface Props {
@@ -11,7 +12,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
         <div className="border rounded-lg p-4 shadow-sm hover:shadow-lg transition-shadow bg-white flex flex-col h-full">
             <div className="w-full h-48 overflow-hidden rounded-md bg-gray-100 mb-4 flex items-center justify-center">
                 {product.thumbnailImage ? (
-                    <img src={product.thumbnailImage} alt={product.name} className="h-full object-contain" />
+                    <img src={resolveImageUrl(product.thumbnailImage)} alt={product.name} className="h-full object-contain" />
                 ) : (
                     <span className="text-gray-400">No Image</span>
                 )}

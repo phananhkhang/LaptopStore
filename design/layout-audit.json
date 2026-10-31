@@ -1,0 +1,680 @@
+{
+  "approximation": "Offline mock of Figma auto layout and Be Vietnam Pro text metrics. Library excluded. Values are preview QA hints; fixed viewport vertical overflow may require scrolling.",
+  "scripts": [
+    {
+      "script": "foundations.js",
+      "nodeCount": 19,
+      "createdNodeCount": 17
+    },
+    {
+      "script": "components.js",
+      "nodeCount": 154,
+      "createdNodeCount": 97
+    },
+    {
+      "script": "assets-expand.js",
+      "nodeCount": 259,
+      "createdNodeCount": 97
+    },
+    {
+      "script": "core-screens.js",
+      "nodeCount": 1825,
+      "createdNodeCount": 936
+    },
+    {
+      "script": "customer-secondary.js",
+      "nodeCount": 3133,
+      "createdNodeCount": 910
+    },
+    {
+      "script": "ops-secondary.js",
+      "nodeCount": 6188,
+      "createdNodeCount": 1941
+    },
+    {
+      "script": "prototype.js",
+      "nodeCount": 6561,
+      "createdNodeCount": 1172
+    }
+  ],
+  "summary": {
+    "screens": 57,
+    "emptyScreens": 0,
+    "placeholderScreens": 0,
+    "contentOverflowIssues": 0,
+    "assetOverflowIssues": 0
+  },
+  "screenBounds": [
+    {
+      "key": "start",
+      "id": "frame:81",
+      "name": "00 · Bắt đầu prototype",
+      "x": -1640,
+      "y": 0,
+      "width": 1440,
+      "height": 960,
+      "children": 6,
+      "placeholder": false
+    },
+    {
+      "key": "home",
+      "id": "frame:82",
+      "name": "01 · User / Khám phá laptop",
+      "x": 0,
+      "y": 0,
+      "width": 1440,
+      "height": 1320,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "detail",
+      "id": "frame:83",
+      "name": "02 · User / Chi tiết sản phẩm",
+      "x": 1640,
+      "y": 0,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "cart",
+      "id": "frame:84",
+      "name": "03 · User / Giỏ hàng",
+      "x": 3280,
+      "y": 0,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "checkout",
+      "id": "frame:85",
+      "name": "04 · User / Thanh toán",
+      "x": 4920,
+      "y": 0,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "success",
+      "id": "frame:86",
+      "name": "05 · User / Đặt hàng thành công",
+      "x": 6560,
+      "y": 0,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "staff",
+      "id": "frame:87",
+      "name": "06 · Staff / Đơn hàng",
+      "x": 0,
+      "y": 1800,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "staffDetail",
+      "id": "frame:88",
+      "name": "07 · Staff / Xử lý đơn hàng",
+      "x": 1640,
+      "y": 1800,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "staffConfirmed",
+      "id": "frame:89",
+      "name": "08 · Staff / Đã xác nhận đơn",
+      "x": 3280,
+      "y": 1800,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "inventory",
+      "id": "frame:90",
+      "name": "09 · Staff / Tồn kho",
+      "x": 4920,
+      "y": 1800,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "admin",
+      "id": "frame:91",
+      "name": "10 · Admin / Tổng quan",
+      "x": 0,
+      "y": 3400,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "products",
+      "id": "frame:92",
+      "name": "11 · Admin / Sản phẩm",
+      "x": 1640,
+      "y": 3400,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "productEdit",
+      "id": "frame:93",
+      "name": "12 · Admin / Chỉnh sửa sản phẩm",
+      "x": 3280,
+      "y": 3400,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "users",
+      "id": "frame:94",
+      "name": "13 · Admin / Khách hàng & nhân sự",
+      "x": 4920,
+      "y": 3400,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "catalog",
+      "id": "frame:315",
+      "name": "14 · User / Danh sách & bộ lọc",
+      "x": 0,
+      "y": 5200,
+      "width": 1440,
+      "height": 1280,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "login",
+      "id": "frame:316",
+      "name": "15 · Auth / Đăng nhập",
+      "x": 1640,
+      "y": 5200,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "register",
+      "id": "frame:317",
+      "name": "16 · Auth / Đăng ký",
+      "x": 3280,
+      "y": 5200,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "orders",
+      "id": "frame:318",
+      "name": "17 · User / Đơn hàng của tôi",
+      "x": 4920,
+      "y": 5200,
+      "width": 1440,
+      "height": 1280,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "tracking",
+      "id": "frame:319",
+      "name": "18 · User / Theo dõi đơn hàng",
+      "x": 6560,
+      "y": 5200,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "review",
+      "id": "frame:320",
+      "name": "19 · User / Viết đánh giá",
+      "x": 8200,
+      "y": 5200,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "profile",
+      "id": "frame:321",
+      "name": "20 · User / Hồ sơ cá nhân",
+      "x": 0,
+      "y": 6800,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "addresses",
+      "id": "frame:322",
+      "name": "21 · User / Sổ địa chỉ",
+      "x": 1640,
+      "y": 6800,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "addressEdit",
+      "id": "frame:323",
+      "name": "22 · User / Thêm địa chỉ",
+      "x": 3280,
+      "y": 6800,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "password",
+      "id": "frame:324",
+      "name": "23 · User / Đổi mật khẩu",
+      "x": 4920,
+      "y": 6800,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "ai",
+      "id": "frame:325",
+      "name": "24 · User / Trợ lý AI",
+      "x": 6560,
+      "y": 6800,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "payPending",
+      "id": "frame:326",
+      "name": "25 · User / Thanh toán VNPay",
+      "x": 8200,
+      "y": 6800,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "payFail",
+      "id": "frame:327",
+      "name": "26 · User / Thanh toán thất bại",
+      "x": 0,
+      "y": 8400,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "emptyCart",
+      "id": "frame:328",
+      "name": "27 · User / Giỏ hàng trống",
+      "x": 1640,
+      "y": 8400,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "emptySearch",
+      "id": "frame:329",
+      "name": "28 · User / Không có kết quả",
+      "x": 3280,
+      "y": 8400,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "forbidden",
+      "id": "frame:330",
+      "name": "29 · System / Không có quyền",
+      "x": 4920,
+      "y": 8400,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "notFound",
+      "id": "frame:331",
+      "name": "30 · System / Không tìm thấy trang",
+      "x": 6560,
+      "y": 8400,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    },
+    {
+      "key": "staffOverview",
+      "id": "frame:332",
+      "name": "31 · Staff / Tổng quan vận hành",
+      "x": 8200,
+      "y": 8400,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "stockHistory",
+      "id": "frame:333",
+      "name": "32 · Staff / Biến động kho",
+      "x": 0,
+      "y": 10000,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "purchaseOrders",
+      "id": "frame:334",
+      "name": "33 · Staff / Phiếu nhập hàng",
+      "x": 1640,
+      "y": 10000,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "purchaseEdit",
+      "id": "frame:335",
+      "name": "34 · Staff / Tạo phiếu nhập",
+      "x": 3280,
+      "y": 10000,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "purchaseReceive",
+      "id": "frame:336",
+      "name": "35 · Staff / Nhận hàng",
+      "x": 4920,
+      "y": 10000,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "purchaseDone",
+      "id": "frame:337",
+      "name": "36 · Staff / Đã nhận hàng",
+      "x": 6560,
+      "y": 10000,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "staffSuppliers",
+      "id": "frame:338",
+      "name": "37 · Staff / Tra cứu nhà cung cấp",
+      "x": 8200,
+      "y": 10000,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "payments",
+      "id": "frame:339",
+      "name": "38 · Staff / Thanh toán",
+      "x": 0,
+      "y": 11600,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "paymentDetail",
+      "id": "frame:340",
+      "name": "39 · Staff / Chi tiết thanh toán COD",
+      "x": 1640,
+      "y": 11600,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "codConfirmed",
+      "id": "frame:341",
+      "name": "40 · Staff / Đã xác nhận thu COD",
+      "x": 3280,
+      "y": 11600,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "moderation",
+      "id": "frame:342",
+      "name": "41 · Staff / Kiểm duyệt đánh giá",
+      "x": 4920,
+      "y": 11600,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "moderationHidden",
+      "id": "frame:343",
+      "name": "42 · Staff / Đã ẩn đánh giá",
+      "x": 6560,
+      "y": 11600,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "categories",
+      "id": "frame:344",
+      "name": "43 · Admin / Danh mục",
+      "x": 8200,
+      "y": 11600,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "brands",
+      "id": "frame:345",
+      "name": "44 · Admin / Thương hiệu",
+      "x": 0,
+      "y": 13200,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "couponList",
+      "id": "frame:346",
+      "name": "45 · Admin / Khuyến mãi",
+      "x": 1640,
+      "y": 13200,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "couponEdit",
+      "id": "frame:347",
+      "name": "46 · Admin / Tạo mã giảm giá",
+      "x": 3280,
+      "y": 13200,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "couponUsage",
+      "id": "frame:348",
+      "name": "47 · Admin / Lượt sử dụng mã",
+      "x": 4920,
+      "y": 13200,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "suppliers",
+      "id": "frame:349",
+      "name": "48 · Admin / Nhà cung cấp",
+      "x": 6560,
+      "y": 13200,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "supplierEdit",
+      "id": "frame:350",
+      "name": "49 · Admin / Chỉnh sửa nhà cung cấp",
+      "x": 8200,
+      "y": 13200,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "userDetail",
+      "id": "frame:351",
+      "name": "50 · Admin / Phân quyền tài khoản",
+      "x": 0,
+      "y": 14800,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "stockAdjust",
+      "id": "frame:352",
+      "name": "51 · Admin / Điều chỉnh tồn kho",
+      "x": 1640,
+      "y": 14800,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "report",
+      "id": "frame:353",
+      "name": "52 · Admin / Báo cáo doanh thu",
+      "x": 3280,
+      "y": 14800,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "staffProcessing",
+      "id": "frame:6343",
+      "name": "54 · Staff / Đang chuẩn bị",
+      "x": 0,
+      "y": 16400,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "staffShipping",
+      "id": "frame:6453",
+      "name": "54 · Staff / Đang giao",
+      "x": 1640,
+      "y": 16400,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "staffDelivered",
+      "id": "frame:6563",
+      "name": "54 · Staff / Đã giao",
+      "x": 3280,
+      "y": 16400,
+      "width": 1440,
+      "height": 1080,
+      "children": 1,
+      "placeholder": false
+    },
+    {
+      "key": "paySuccess",
+      "id": "frame:6673",
+      "name": "57 · User / Thanh toán thành công",
+      "x": 4920,
+      "y": 16400,
+      "width": 1440,
+      "height": 1080,
+      "children": 2,
+      "placeholder": false
+    }
+  ],
+  "empty": [],
+  "placeholder": [],
+  "overflow": [],
+  "assetOverflow": []
+}

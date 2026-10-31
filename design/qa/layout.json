@@ -1,0 +1,1373 @@
+{
+  "errors": [],
+  "layout": [
+    {
+      "key": "start",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 535,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "home",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 1290,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "catalog",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 1067,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "emptySearch",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 509,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "detail",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 858,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "cart",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 435,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "emptyCart",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 198,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "checkout",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 670,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "success",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 281,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "paySuccess",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 276,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payPending",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 416,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payFail",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 425,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "profile",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 357,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "addresses",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 321,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "addressEdit",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 357,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "password",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 380,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "orders",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 548,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "tracking",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 722,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "review",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 367,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "login",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 365,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "register",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 399,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "ai",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 555,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "forbidden",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 141,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "notFound",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 121,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "admin",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 1089,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffOverview",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 1022,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staff",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 814,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffDetail",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffConfirmed",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffProcessing",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffShipping",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffDelivered",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "inventory",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 977,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "stockHistory",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 320,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "stockAdjust",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 578,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseOrders",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 327,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseEdit",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 511,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseReceive",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 422,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseDone",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 483,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffSuppliers",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 361,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "suppliers",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 360,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "supplierEdit",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 212,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payments",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 626,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "paymentDetail",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 531,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "codConfirmed",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 570,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "moderation",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 389,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "moderationHidden",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 272,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "products",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 689,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "productEdit",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 635,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "categories",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 380,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "brands",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 371,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "users",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 627,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "userDetail",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 495,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponList",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 349,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponEdit",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 441,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponUsage",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 359,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "report",
+      "viewport": 1440,
+      "width": 1440,
+      "main": 718,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "start",
+      "viewport": 768,
+      "width": 768,
+      "main": 535,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "home",
+      "viewport": 768,
+      "width": 768,
+      "main": 1290,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "catalog",
+      "viewport": 768,
+      "width": 768,
+      "main": 1067,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "emptySearch",
+      "viewport": 768,
+      "width": 768,
+      "main": 509,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "detail",
+      "viewport": 768,
+      "width": 768,
+      "main": 858,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "cart",
+      "viewport": 768,
+      "width": 768,
+      "main": 435,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "emptyCart",
+      "viewport": 768,
+      "width": 768,
+      "main": 198,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "checkout",
+      "viewport": 768,
+      "width": 768,
+      "main": 670,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "success",
+      "viewport": 768,
+      "width": 768,
+      "main": 281,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "paySuccess",
+      "viewport": 768,
+      "width": 768,
+      "main": 276,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payPending",
+      "viewport": 768,
+      "width": 768,
+      "main": 416,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payFail",
+      "viewport": 768,
+      "width": 768,
+      "main": 425,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "profile",
+      "viewport": 768,
+      "width": 768,
+      "main": 357,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "addresses",
+      "viewport": 768,
+      "width": 768,
+      "main": 321,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "addressEdit",
+      "viewport": 768,
+      "width": 768,
+      "main": 357,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "password",
+      "viewport": 768,
+      "width": 768,
+      "main": 380,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "orders",
+      "viewport": 768,
+      "width": 768,
+      "main": 548,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "tracking",
+      "viewport": 768,
+      "width": 768,
+      "main": 722,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "review",
+      "viewport": 768,
+      "width": 768,
+      "main": 367,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "login",
+      "viewport": 768,
+      "width": 768,
+      "main": 365,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "register",
+      "viewport": 768,
+      "width": 768,
+      "main": 399,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "ai",
+      "viewport": 768,
+      "width": 768,
+      "main": 303,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "forbidden",
+      "viewport": 768,
+      "width": 768,
+      "main": 141,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "notFound",
+      "viewport": 768,
+      "width": 768,
+      "main": 121,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "admin",
+      "viewport": 768,
+      "width": 768,
+      "main": 1089,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffOverview",
+      "viewport": 768,
+      "width": 768,
+      "main": 1022,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staff",
+      "viewport": 768,
+      "width": 768,
+      "main": 814,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffDetail",
+      "viewport": 768,
+      "width": 768,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffConfirmed",
+      "viewport": 768,
+      "width": 768,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffProcessing",
+      "viewport": 768,
+      "width": 768,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffShipping",
+      "viewport": 768,
+      "width": 768,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffDelivered",
+      "viewport": 768,
+      "width": 768,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "inventory",
+      "viewport": 768,
+      "width": 768,
+      "main": 977,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "stockHistory",
+      "viewport": 768,
+      "width": 768,
+      "main": 320,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "stockAdjust",
+      "viewport": 768,
+      "width": 768,
+      "main": 578,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseOrders",
+      "viewport": 768,
+      "width": 768,
+      "main": 327,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseEdit",
+      "viewport": 768,
+      "width": 768,
+      "main": 511,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseReceive",
+      "viewport": 768,
+      "width": 768,
+      "main": 422,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseDone",
+      "viewport": 768,
+      "width": 768,
+      "main": 483,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffSuppliers",
+      "viewport": 768,
+      "width": 768,
+      "main": 361,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "suppliers",
+      "viewport": 768,
+      "width": 768,
+      "main": 360,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "supplierEdit",
+      "viewport": 768,
+      "width": 768,
+      "main": 212,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payments",
+      "viewport": 768,
+      "width": 768,
+      "main": 626,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "paymentDetail",
+      "viewport": 768,
+      "width": 768,
+      "main": 531,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "codConfirmed",
+      "viewport": 768,
+      "width": 768,
+      "main": 570,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "moderation",
+      "viewport": 768,
+      "width": 768,
+      "main": 389,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "moderationHidden",
+      "viewport": 768,
+      "width": 768,
+      "main": 272,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "products",
+      "viewport": 768,
+      "width": 768,
+      "main": 689,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "productEdit",
+      "viewport": 768,
+      "width": 768,
+      "main": 635,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "categories",
+      "viewport": 768,
+      "width": 768,
+      "main": 380,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "brands",
+      "viewport": 768,
+      "width": 768,
+      "main": 371,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "users",
+      "viewport": 768,
+      "width": 768,
+      "main": 627,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "userDetail",
+      "viewport": 768,
+      "width": 768,
+      "main": 495,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponList",
+      "viewport": 768,
+      "width": 768,
+      "main": 349,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponEdit",
+      "viewport": 768,
+      "width": 768,
+      "main": 441,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponUsage",
+      "viewport": 768,
+      "width": 768,
+      "main": 359,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "report",
+      "viewport": 768,
+      "width": 768,
+      "main": 718,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "start",
+      "viewport": 390,
+      "width": 390,
+      "main": 535,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "home",
+      "viewport": 390,
+      "width": 390,
+      "main": 1290,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "catalog",
+      "viewport": 390,
+      "width": 390,
+      "main": 896,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "emptySearch",
+      "viewport": 390,
+      "width": 390,
+      "main": 338,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "detail",
+      "viewport": 390,
+      "width": 390,
+      "main": 858,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "cart",
+      "viewport": 390,
+      "width": 390,
+      "main": 435,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "emptyCart",
+      "viewport": 390,
+      "width": 390,
+      "main": 198,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "checkout",
+      "viewport": 390,
+      "width": 390,
+      "main": 670,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "success",
+      "viewport": 390,
+      "width": 390,
+      "main": 281,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "paySuccess",
+      "viewport": 390,
+      "width": 390,
+      "main": 276,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payPending",
+      "viewport": 390,
+      "width": 390,
+      "main": 416,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payFail",
+      "viewport": 390,
+      "width": 390,
+      "main": 425,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "profile",
+      "viewport": 390,
+      "width": 390,
+      "main": 329,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "addresses",
+      "viewport": 390,
+      "width": 390,
+      "main": 293,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "addressEdit",
+      "viewport": 390,
+      "width": 390,
+      "main": 329,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "password",
+      "viewport": 390,
+      "width": 390,
+      "main": 352,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "orders",
+      "viewport": 390,
+      "width": 390,
+      "main": 432,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "tracking",
+      "viewport": 390,
+      "width": 390,
+      "main": 722,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "review",
+      "viewport": 390,
+      "width": 390,
+      "main": 367,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "login",
+      "viewport": 390,
+      "width": 390,
+      "main": 201,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "register",
+      "viewport": 390,
+      "width": 390,
+      "main": 235,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "ai",
+      "viewport": 390,
+      "width": 390,
+      "main": 298,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "forbidden",
+      "viewport": 390,
+      "width": 390,
+      "main": 141,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "notFound",
+      "viewport": 390,
+      "width": 390,
+      "main": 121,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "admin",
+      "viewport": 390,
+      "width": 390,
+      "main": 1089,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffOverview",
+      "viewport": 390,
+      "width": 390,
+      "main": 1022,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staff",
+      "viewport": 390,
+      "width": 390,
+      "main": 814,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffDetail",
+      "viewport": 390,
+      "width": 390,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffConfirmed",
+      "viewport": 390,
+      "width": 390,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffProcessing",
+      "viewport": 390,
+      "width": 390,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffShipping",
+      "viewport": 390,
+      "width": 390,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffDelivered",
+      "viewport": 390,
+      "width": 390,
+      "main": 771,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "inventory",
+      "viewport": 390,
+      "width": 390,
+      "main": 977,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "stockHistory",
+      "viewport": 390,
+      "width": 390,
+      "main": 320,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "stockAdjust",
+      "viewport": 390,
+      "width": 390,
+      "main": 578,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseOrders",
+      "viewport": 390,
+      "width": 390,
+      "main": 327,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseEdit",
+      "viewport": 390,
+      "width": 390,
+      "main": 511,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseReceive",
+      "viewport": 390,
+      "width": 390,
+      "main": 422,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "purchaseDone",
+      "viewport": 390,
+      "width": 390,
+      "main": 483,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "staffSuppliers",
+      "viewport": 390,
+      "width": 390,
+      "main": 361,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "suppliers",
+      "viewport": 390,
+      "width": 390,
+      "main": 360,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "supplierEdit",
+      "viewport": 390,
+      "width": 390,
+      "main": 212,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "payments",
+      "viewport": 390,
+      "width": 390,
+      "main": 626,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "paymentDetail",
+      "viewport": 390,
+      "width": 390,
+      "main": 531,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "codConfirmed",
+      "viewport": 390,
+      "width": 390,
+      "main": 570,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "moderation",
+      "viewport": 390,
+      "width": 390,
+      "main": 389,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "moderationHidden",
+      "viewport": 390,
+      "width": 390,
+      "main": 272,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "products",
+      "viewport": 390,
+      "width": 390,
+      "main": 689,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "productEdit",
+      "viewport": 390,
+      "width": 390,
+      "main": 635,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "categories",
+      "viewport": 390,
+      "width": 390,
+      "main": 380,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "brands",
+      "viewport": 390,
+      "width": 390,
+      "main": 371,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "users",
+      "viewport": 390,
+      "width": 390,
+      "main": 627,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "userDetail",
+      "viewport": 390,
+      "width": 390,
+      "main": 495,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponList",
+      "viewport": 390,
+      "width": 390,
+      "main": 349,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponEdit",
+      "viewport": 390,
+      "width": 390,
+      "main": 441,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "couponUsage",
+      "viewport": 390,
+      "width": 390,
+      "main": 359,
+      "broken": 0,
+      "unknown": []
+    },
+    {
+      "key": "report",
+      "viewport": 390,
+      "width": 390,
+      "main": 718,
+      "broken": 0,
+      "unknown": []
+    }
+  ]
+}
