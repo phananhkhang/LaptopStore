@@ -144,26 +144,45 @@ private final PurchaseOrderRepository purchaseOrderRepository;
                 .toList();
     }
 
+/*
+======================== ĐÃ XÓA CODE CŨ VÀ CẬP NHẬP CODE MỚI - Hàm receivePurchaseOrder =======================
+*Hàm receivePurchaseOrder CŨ có một lỗ hổng logic. Nếu Frontend (hoặc ai đó dùng Postman) gửi một request nhận hàng nhưng danh sách request.getLines() bị rỗng [], hoặc gửi danh sách toàn số lượng 0 (ví dụ: [{variantId: 1, quantity: 0}]):
+    1. Code vẫn chạy qua bước gom nhóm receiveMap.
+    2. Phiếu nhập nháp (DRAFT) sẽ bị đổi trạng thái thành PARTIALLY_RECEIVED (do không nhận đủ hàng) mặc dù thực tế chẳng nhận được món nào.
+    3. Sau đó, nó ném mảng rỗng sang inventoryService.receivePurchase, và bị tầng Inventory quăng lỗi ValidationException. → Lỗi văng ra làm Rollback, nhưng API trả về 500 Internal Server Error hoặc 400 Bad Request chưa rõ ràng cho Frontend.
+*/
+
     @Override
     @Transactional
     public PurchaseOrderResponse receivePurchaseOrder(Long id, Long actorId, ReceivePurchaseOrderRequest request) {
         // 1. Khóa phiếu nhập bằng PESSIMISTIC_WRITE
-        PurchaseOrder purchaseOrder = purchaseOrderRepository.findByIdForUpdate(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiếu nhập với ID: " + id));
+        PurchaseOrder purchaseOrder = purchaseOrderRepository.findByIdForUpdate(id).orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiếu nhập với ID: " + id));
 
         // 2. Kiểm tra trạng thái hợp lệ
         if ("RECEIVED".equalsIgnoreCase(purchaseOrder.getStatus()) || "CANCELLED".equalsIgnoreCase(purchaseOrder.getStatus())) {
-            throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_PO_STATE", 
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_PO_STATE",
                     "Phiếu nhập đã hoàn tất hoặc đã hủy, không thể nhận thêm hàng.");
         }
 
-        // 3. Gom nhóm request gửi lên (đề phòng client gửi mảng có 2 phần tử cùng chung variantId)
+        // 3. CHẶN LỖI PAYLOAD RỖNG VÀ LỌC SỐ LƯỢNG ẢO
+        if (request.getLines() == null || request.getLines().isEmpty()) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_PAYLOAD",
+                    "Danh sách nhận hàng không được để trống!");
+        }
+
         Map<Long, Integer> receiveMap = request.getLines().stream()
+                .filter(line -> line.getQuantity() != null && line.getQuantity() > 0) // Loại bỏ hàng gửi lên có quantity <= 0
                 .collect(Collectors.toMap(
                         PurchaseStockReceipt::getVariantId,
                         PurchaseStockReceipt::getQuantity,
                         Integer::sum
                 ));
+
+        if (receiveMap.isEmpty()) {
+            throw new BusinessException(HttpStatus.BAD_REQUEST, "INVALID_PAYLOAD", 
+                    "Không có sản phẩm nào có số lượng nhận hợp lệ (> 0)!");
+        }
+
 
         // 4. Kiểm tra mã hàng gửi lên có thuộc phiếu nhập này không
         Set<Long> poVariantIds = purchaseOrder.getItems().stream().map(PurchaseOrderItem::getVariantId).collect(Collectors.toSet());
@@ -211,7 +230,7 @@ private final PurchaseOrderRepository purchaseOrderRepository;
                 .map(e -> new PurchaseStockReceipt(e.getKey(), e.getValue()))
                 .toList();
 
-        inventoryService.receivePurchase(purchaseOrder.getId(), actorId, stockReceipts);
+        inventoryService.receivePurchase(purchaseOrder.getId(), actorId, request.getIdempotencyKey(), stockReceipts);
 
         return purchaseOrderMapper.toResponse(savedOrder);
     }

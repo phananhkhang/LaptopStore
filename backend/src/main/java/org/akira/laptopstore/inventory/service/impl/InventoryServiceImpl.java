@@ -154,7 +154,7 @@ public class InventoryServiceImpl implements InventoryService {
 
     @Override
     @Transactional(propagation = Propagation.MANDATORY)
-    public void receivePurchase(Long purchaseOrderId, Long actorId, List<PurchaseStockReceipt> lines) {
+    public void receivePurchase(Long purchaseOrderId, Long actorId, String idempotencyKey, List<PurchaseStockReceipt> lines) {
         if (purchaseOrderId == null || purchaseOrderId <= 0 || lines == null || lines.isEmpty()) {
             throw new ValidationException("Bắt buộc phải có thông tin phiếu nhập và danh sách sản phẩm");
         }
@@ -171,10 +171,46 @@ public class InventoryServiceImpl implements InventoryService {
             }
 
             // Khóa chống trùng lặp theo ID Phiếu Nhập và Variant
+
+/*
+*Tại sao đã đưa ra Giải pháp chuẩn Industry (Chuẩn Enterprise): "Client-Generated Idempotency Key" nhưng mà lại xóa bỏ hàm System.currentTimeMillis() và thay thế `purchaseOrderId` thành `idempotencyKey`?
+    *1. Tại sao phải XÓA BỎ triệt để System.currentTimeMillis()?
+        - Bản chất của lỗi trùng lặp (Double-click / Retry) là Client gửi cùng một data thành 2 request riêng biệt nhưng cách nhau một khoảng thời gian rất nhỏ (ví dụ vài chục mili-giây).
+        - Nếu dùng System.currentTimeMillis():
+            + Request đầu tiên sẽ tạo ra khóa: ...-1730000000001
+            + Request thứ 2 (do double-click) sinh ra sau đó 20ms sẽ tạo ra khóa: ...-1730000000021
+            → Hậu quả: Database nhìn thấy 2 khóa này khác nhau hoàn toàn.
+            → Hàm alreadyProcessed() bị vô hiệu hóa vì nó tưởng đây là 2 lần nhập hàng khác nhau
+                → Sinh ra nhiều dòng StockMovement (làm rớt bài test).
+        * Nguyên tắc tối thượng của Idempotency là:
+                Các request lặp lại (do lỗi mạng hoặc double-click) của CÙNG MỘT HÀNH ĐỘNG phải sinh ra CÙNG MỘT KHÓA.
+                Thời gian là thứ luôn trôi đi, nên tuyệt đối không được dùng thời gian làm khóa Idempotency.
+    * 2. Tại sao lại dùng idempotencyKey để thay thế (và có cần giữ lại purchaseOrderId không)?
+        *Version 1 (Cũ nhất): receipt - purchaseOrderId - variantId
+            → Yếu điểm:
+                - Nếu phiếu nhập PO#1 có 10 cái Laptop.
+                - Hôm nay em nhận 5 cái.
+                - Ngày mai em vào nhận 5 cái còn lại.
+                - Hệ thống sẽ chặn đợt nhận ngày mai, vì khóa receipt-1-variant-1 đã bị lưu trong DB từ hôm nay rồi.
+                - Vĩnh viễn không thể nhận hàng đợt 2.
+        *Version 2 (Bị lỗi test): receipt - purchaseOrderId - variantId - currentTimeMillis
+            → Yếu điểm: Giải quyết được vụ nhận hàng nhiều đợt, nhưng lại bị lỗi Double-click như mình vừa phân tích ở trên.
+        *Version 3 (Chuẩn Enterprise): receipt - idempotencyKey - variantId
+            - idempotencyKey là một chuỗi ngẫu nhiên (UUID) do Frontend tạo ra một lần duy nhất khi người dùng mở popup "Nhận hàng".
+            - Nếu user bấm "Lưu" liên tục 5 lần, Frontend vẫn chỉ gửi duy nhất 1 mã UUID đó xuống Backend.
+                → Backend thấy 5 request có chung UUID → Chỉ xử lý cái đầu tiên, chặn 4 cái sau (Chống được Double-click).
+            - Ngày mai, user mở popup lên để nhận đợt 2, Frontend sẽ sinh ra một UUID hoàn toàn mới.
+                → Backend thấy UUID mới → Hiểu đây là một đợt nhập hàng mới và cho phép chạy (Giải quyết được vụ nhập hàng nhiều đợt).
+*Về mặt logic, bản thân cái idempotencyKey (UUID) đã là độc nhất vô nhị trên toàn thế giới rồi.
+    → Việc nối thêm variantId vào chỉ để tách riêng từng dòng sản phẩm trong mảng lines thành các record StockMovement riêng biệt.
+    → Em hoàn toàn có thể giữ lại chữ purchaseOrderId cho dễ đọc trong Database (ví dụ: receipt-PO1-UUID-variant1), nhưng về mặt logic cốt lõi để khóa chống trùng lặp hoạt động, thì UUID mới là nhân tố quyết định.
+                */
             // SỬA LỖI: Thêm System.currentTimeMillis() để đảm bảo mỗi lần nhận hàng (dù cùng 1 phiếu) đều có operationKey duy nhất
-            String operationKey = "receipt-" + purchaseOrderId + "-variant-" + line.getVariantId() + "-" + System.currentTimeMillis();
+            String operationKey = "receipt-" + idempotencyKey + "-variant-" + line.getVariantId();
             if (alreadyProcessed(operationKey)) {
-                continue; // Bỏ qua nếu đã xử lý rồi (Idempotency)
+                continue;
+                // Bỏ qua nếu đã xử lý rồi (Idempotency)
+                // Chặn đứng double-click hoàn hảo!
             }
 
             // Gọi catalog để TĂNG tồn kho

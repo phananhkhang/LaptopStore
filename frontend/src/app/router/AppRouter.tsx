@@ -3,11 +3,14 @@ import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleBasedRoute } from './RoleBasedRoute';
 import { ROLES } from '@/constants/roles';
+import { PublicLayout } from '../../layouts/PublicLayout';
+import { HomeUser } from '@/modules/catalog/pages/user/HomeUser';
 
 // Auth & User Pages
 import { LoginPage } from '@/modules/auth/pages/LoginPage';
 import { RegisterPage } from '@/modules/auth/pages/RegisterPage';
 import { ProfilePage } from '@/modules/user/pages/ProfilePage';
+import { StaffLayout } from '../../layouts/StaffLayout';
 
 // AI Pages & Widget
 import { AIChatPage } from '@/modules/ai/pages/AIChatPage';
@@ -23,11 +26,16 @@ import { OrderHistoryPage } from '@/modules/order/pages/user/OrderHistoryPage';
 // Catalog
 import { CatalogRoutes } from '@/modules/catalog/routes/CatalogRoutes';
 
+// Inventory
+import { InventoryPage } from '../../modules/inventory/pages/admin/InventoryPage';
+
 // Promotion
 import { PromotionRoutes } from '@/modules/promotion/routes/PromotionRoutes';
 
 // Review
 import { ProductReviewsPage, StaffReviewPage, WriteReviewPage } from '@/modules/review/routes/ReviewRoutes';
+import ProductListPage from '../../modules/catalog/pages/user/ProductListPage';
+import ProductDetailPage from '@/modules/catalog/pages/user/ProductDetailPage';
 
 // Placeholders for remaining admin/staff dashboards
 const StaffDashboard = () => (
@@ -71,8 +79,19 @@ export const AppRouter: React.FC = () => {
     <BrowserRouter>
       <div className="min-h-screen bg-gray-50 text-gray-900">
         <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Navigate to="/products" replace />} />
+          {/* CẤU TRÚC MỚI: Bọc các trang Public bằng PublicLayout */}
+          <Route element={<PublicLayout />}>
+            {/* Route gốc / sẽ render HomeUser */}
+            <Route path="/" element={<HomeUser />} />
+            <Route path="/products" element={<ProductListPage />} />
+            <Route path="/products/:productId" element={<ProductDetailPage />} />
+
+            {/* Các trang Public khác có thể đưa vào đây nếu muốn có Header/Footer */}
+            {/* Ví dụ: CatalogRoutes sẽ cần phải được thiết kế lại chút nếu muốn dùng chung layout này */}
+          </Route>
+
+          {/* <Route path="/" element={<Navigate to="/products" replace />} /> */}
+          {/* Các route không cần Header/Footer chung (Ví dụ: Trang Login/Register có thiết kế riêng) */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/ai-assistant" element={<AIChatPage />} />
@@ -96,9 +115,13 @@ export const AppRouter: React.FC = () => {
 
           {/* Staff & Admin Protected Routes */}
           <Route element={<RoleBasedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]} />}>
-            <Route path="/staff/orders" element={<StaffOrderListPage />} />
-            <Route path="/staff/reviews" element={<StaffReviewPage />} />
-            <Route path="/staff/*" element={<StaffDashboard />} />
+            {/* ĐÂY LÀ CHỖ THAY ĐỔI: Bọc StaffLayout ra ngoài */}
+            <Route element={<StaffLayout />}>
+              <Route path="/staff/inventory" element={<InventoryPage />} />
+              <Route path="/staff/orders" element={<StaffOrderListPage />} />
+              <Route path="/staff/reviews" element={<StaffReviewPage />} />
+              <Route path="/staff/*" element={<StaffDashboard />} />
+            </Route>
           </Route>
 
           {/* Admin Only Routes */}
