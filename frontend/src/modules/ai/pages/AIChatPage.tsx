@@ -1,181 +1,69 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { aiApi } from '../api/aiApi';
-import { ChatMessage } from '../types';
+import { Icon, PageHeading } from '@/components/ui';
+import React, { useEffect, useRef, useState } from 'react';
+import { useAIChat } from '../hooks/useAIChat';
+
+const SUGGESTIONS = [
+  'Mình cần laptop văn phòng mỏng nhẹ dưới 20 triệu, pin tốt.',
+  'Sinh viên IT học lập trình, ngân sách khoảng 25 triệu thì nên chọn máy nào?',
+  'Laptop gaming RTX 4060, RAM 16GB trở lên, dưới 40 triệu.',
+  'Máy cho thiết kế đồ họa, màn hình chuẩn màu.',
+];
 
 export const AIChatPage: React.FC = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'init',
-      sender: 'assistant',
-      text: 'Chào mừng bạn đến với Trung tâm Tư vấn AI của LaptopStore! Tôi đã được nạp dữ liệu danh mục và tình trạng tồn kho của cửa hàng. Bạn cần tìm laptop để làm việc, học tập, đồ họa hay giải trí với ngân sách bao nhiêu?',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    },
-  ]);
-  const [input, setInput] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const { messages, loading, send, reset } = useAIChat(
+    'Chào bạn! Mình là trợ lý tư vấn của LaptopStore. Hãy kể nhu cầu (học tập, làm việc, đồ họa, chơi game) và ngân sách, mình sẽ gợi ý chiếc máy phù hợp nhé.'
+  );
+  const [input, setInput] = useState('');
+  const listRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = async (textToSend?: string) => {
-    const text = (textToSend || input).trim();
-    if (!text || loading) return;
+  useEffect(() => {
+    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
+  }, [messages, loading]);
 
-    const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
-      sender: 'user',
-      text,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
+  const submit = (text: string) => {
+    void send(text);
     setInput('');
-    setLoading(true);
-
-    try {
-      const response = await aiApi.chat({ prompt: text });
-      const aiMsg: ChatMessage = {
-        id: `ai-${Date.now()}`,
-        sender: 'assistant',
-        text: response.reply,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, aiMsg]);
-    } catch {
-      const errorMsg: ChatMessage = {
-        id: `err-${Date.now()}`,
-        sender: 'assistant',
-        text: 'Không thể kết nối máy chủ AI lúc này. Vui lòng thử lại sau.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, errorMsg]);
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
-    <div style={{ maxWidth: 840, margin: '2rem auto', padding: '0 1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 700, margin: 0, color: '#0f172a' }}>
-            Trợ Lý AI Tư Vấn Laptop
-          </h1>
-          <p style={{ color: '#64748b', margin: '0.25rem 0 0', fontSize: '0.9375rem' }}>
-            Hỏi đáp thông minh kết hợp trực tiếp dữ liệu kho hàng LaptopStore
-          </p>
-        </div>
-        <Link to="/" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>
-          ← Về trang chủ
-        </Link>
-      </div>
-
-      <div style={{
-        backgroundColor: '#ffffff',
-        borderRadius: 16,
-        border: '1px solid #e2e8f0',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '65vh',
-        overflow: 'hidden',
-      }}>
-        {/* Messages */}
-        <div style={{
-          flex: 1,
-          padding: '1.5rem',
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1rem',
-          backgroundColor: '#f8fafc',
-        }}>
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              style={{
-                alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start',
-                maxWidth: '75%',
-              }}
-            >
-              <div
-                style={{
-                  padding: '1rem 1.25rem',
-                  borderRadius: 14,
-                  fontSize: '0.9375rem',
-                  lineHeight: 1.5,
-                  backgroundColor: m.sender === 'user' ? '#2563eb' : '#ffffff',
-                  color: m.sender === 'user' ? '#ffffff' : '#1e293b',
-                  border: m.sender === 'assistant' ? '1px solid #e2e8f0' : 'none',
-                  borderBottomRightRadius: m.sender === 'user' ? 2 : 14,
-                  borderBottomLeftRadius: m.sender === 'assistant' ? 2 : 14,
-                  whiteSpace: 'pre-line',
-                }}
-              >
-                {m.text}
-              </div>
-              <div style={{
-                fontSize: '0.6875rem',
-                color: '#94a3b8',
-                marginTop: 4,
-                textAlign: m.sender === 'user' ? 'right' : 'left',
-              }}>
-                {m.timestamp}
-              </div>
-            </div>
+    <div className="ls-container section">
+      <PageHeading
+        eyebrow="Tư vấn cùng AI"
+        title="Kể nhu cầu, nhận gợi ý ngay."
+        sub="Trợ lý tham khảo danh mục và tồn kho hiện có của cửa hàng."
+        actions={<button type="button" className="btn sm" onClick={reset}><Icon name="refresh" /> Cuộc trò chuyện mới</button>}
+      />
+      <div className="chat-layout">
+        <aside className="panel chat-suggestions">
+          <h3>Gợi ý câu hỏi</h3>
+          {SUGGESTIONS.map((s) => (
+            <button key={s} type="button" disabled={loading} onClick={() => submit(s)}>{s}</button>
           ))}
-
-          {loading && (
-            <div style={{ alignSelf: 'flex-start', padding: '0.75rem 1rem', backgroundColor: '#ffffff', borderRadius: 12, border: '1px solid #e2e8f0', color: '#64748b', fontSize: '0.875rem' }}>
-              🤖 AI đang suy nghĩ câu trả lời phù hợp nhất...
-            </div>
-          )}
+        </aside>
+        <div className="chat-box">
+          <div className="chat-messages" ref={listRef} aria-live="polite">
+            {messages.map((m) => (
+              <div key={m.id} className={`chat-message ${m.sender === 'user' ? 'user' : ''}`}>
+                {m.text}
+                <time>{m.timestamp}</time>
+              </div>
+            ))}
+            {loading && <div className="chat-message"><span className="typing"><span /><span /><span /></span></div>}
+          </div>
+          <form className="chat-compose" onSubmit={(e) => { e.preventDefault(); submit(input); }}>
+            <input
+              className="input"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ví dụ: Tôi có 18 triệu, muốn mua laptop ASUS hoặc Lenovo cho học tập..."
+              aria-label="Câu hỏi cho trợ lý AI"
+              disabled={loading}
+            />
+            <button type="submit" className="btn primary" disabled={loading || !input.trim()}>
+              <Icon name="send" /> Gửi
+            </button>
+          </form>
         </div>
-
-        {/* Input Form */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleSend();
-          }}
-          style={{
-            padding: '1rem',
-            borderTop: '1px solid #e2e8f0',
-            display: 'flex',
-            gap: '0.75rem',
-            backgroundColor: '#ffffff',
-          }}
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ví dụ: Tôi có 18 triệu muốn mua laptop Asus hoặc Lenovo cấu hình tốt..."
-            disabled={loading}
-            style={{
-              flex: 1,
-              padding: '0.75rem 1rem',
-              borderRadius: 8,
-              border: '1px solid #cbd5e1',
-              fontSize: '0.9375rem',
-              outline: 'none',
-            }}
-          />
-          <button
-            type="submit"
-            disabled={loading || !input.trim()}
-            style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: loading || !input.trim() ? '#93c5fd' : '#2563eb',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 8,
-              fontWeight: 600,
-              fontSize: '0.9375rem',
-              cursor: loading || !input.trim() ? 'not-allowed' : 'pointer',
-            }}
-          >
-            Gửi câu hỏi
-          </button>
-        </form>
       </div>
     </div>
   );

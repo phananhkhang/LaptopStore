@@ -1,58 +1,175 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { useCart } from '@/app/providers/CartProvider';
+import { Brand, Icon, useToast } from '@/components/ui';
+import { ROLES } from '@/constants/roles';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+
+const initials = (name?: string, email?: string) => {
+    const source = (name || email || 'LS').trim();
+    const parts = source.split(/\s+/).filter(Boolean);
+    return (parts.length > 1 ? parts[parts.length - 2][0] + parts[parts.length - 1][0] : source.slice(0, 2)).toUpperCase();
+};
 
 export const Header: React.FC = () => {
+    const { user, isAuthenticated, logout } = useAuth();
+    const { count } = useCart();
+    const toast = useToast();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
+
+    const [keyword, setKeyword] = useState(searchParams.get('keyword') ?? '');
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    const isOffer = searchParams.get('offer') === '1';
+    const isStaff = !!user?.roles.some((r) => r === ROLES.STAFF || r === ROLES.ADMIN);
+    const isAdmin = !!user?.roles.includes(ROLES.ADMIN);
+
+    // Đồng bộ ô tìm kiếm với URL và đóng menu khi chuyển trang.
+    useEffect(() => {
+        setKeyword(searchParams.get('keyword') ?? '');
+    }, [searchParams]);
+    useEffect(() => {
+        setMenuOpen(false);
+        setMobileOpen(false);
+    }, [location.pathname, location.search]);
+
+    useEffect(() => {
+        if (!menuOpen) return;
+        const onClick = (e: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
+        };
+        const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false);
+        document.addEventListener('mousedown', onClick);
+        document.addEventListener('keydown', onKey);
+        return () => {
+            document.removeEventListener('mousedown', onClick);
+            document.removeEventListener('keydown', onKey);
+        };
+    }, [menuOpen]);
+
+    const submitSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const q = keyword.trim();
+        navigate(q ? `/products?keyword=${encodeURIComponent(q)}` : '/products');
+    };
+
+    const handleLogout = async () => {
+        setMenuOpen(false);
+        try {
+            await logout();
+        } finally {
+            toast('Bạn đã đăng xuất. Hẹn gặp lại!');
+            navigate('/');
+        }
+    };
+
+    const searchForm = (className: string) => (
+        <form className={`search ${className}`} onSubmit={submitSearch} role="search">
+            <Icon name="search" />
+            <input
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+                placeholder="Bạn đang tìm laptop nào?"
+                aria-label="Tìm sản phẩm"
+            />
+        </form>
+    );
+
+    const navLinks = (
+        <>
+            <NavLink to="/products" className={({ isActive }) => (isActive && !isOffer ? 'active' : '')}>Laptop</NavLink>
+            <Link to="/products?sortPriceDirection=asc&offer=1" className={isOffer ? 'active' : ''}>Khuyến mãi</Link>
+            <NavLink to="/ai-assistant" className={({ isActive }) => (isActive ? 'active' : '')}>Tư vấn AI</NavLink>
+        </>
+    );
+
     return (
-        <header className="w-full bg-surface flex flex-col font-sans border-b border-surface-border sticky top-0 z-50">
-            {/* Utility bar */}
-            <div className="w-full h-[30px] bg-primary-light flex items-center px-4 md:px-[80px] justify-between">
-                <span className="text-primary text-[11px] font-medium">Công nghệ tốt hơn. Mỗi ngày.</span>
-                <div className="flex gap-4">
-                    <span className="text-ink-lighter text-[11px]">Giao hàng toàn quốc</span>
-                    <span className="text-ink-lighter text-[11px] font-semibold">Hotline 1800 2026</span>
+        <>
+            <div className="utility">
+                <div className="ls-container">
+                    <span>Công nghệ tốt hơn. Mỗi ngày.</span>
+                    <span className="utility-extra">
+                        Giao hàng toàn quốc <span style={{ margin: '0 12px', color: '#d7c3b7' }}>|</span>
+                        <a href="tel:18002026">Hotline 1800 2026</a>
+                    </span>
                 </div>
             </div>
+            <header className="shop-header">
+                <div className="ls-container header-main">
+                    <Brand />
+                    <nav className="shop-nav" aria-label="Cửa hàng">{navLinks}</nav>
+                    {searchForm('shop-search')}
 
-            {/* Main navigation */}
-            <div className="w-full h-[86px] bg-surface flex items-center px-4 md:px-[80px] gap-[28px]">
-                {/* Brand */}
-                <Link to="/" className="flex items-center gap-2">
-                    <div className="w-[34px] h-[34px] bg-primary rounded-lg flex justify-center items-center">
-                        {/* Icon Laptop giả lập bằng CSS */}
-                        <div className="w-[22px] h-[22px] border-[1.8px] border-white rounded-[2px] relative">
-                            <div className="absolute bottom-[-6px] left-[-2px] right-[-2px] border-[1.8px] border-white rounded-sm"></div>
-                        </div>
+                    <div className="header-actions">
+                        <button
+                            type="button"
+                            className="icon-btn mobile-only"
+                            aria-label={mobileOpen ? 'Đóng menu' : 'Mở menu'}
+                            aria-expanded={mobileOpen}
+                            onClick={() => setMobileOpen((v) => !v)}
+                        >
+                            <Icon name={mobileOpen ? 'close' : 'menu'} />
+                        </button>
+
+                        {isAuthenticated ? (
+                            <div className="account-menu" ref={menuRef}>
+                                <button
+                                    type="button"
+                                    className="icon-btn"
+                                    aria-haspopup="menu"
+                                    aria-expanded={menuOpen}
+                                    aria-label="Tài khoản"
+                                    onClick={() => setMenuOpen((v) => !v)}
+                                >
+                                    <span className="avatar" style={{ width: 30, height: 30, borderRadius: 9, fontSize: 11 }}>
+                                        {initials(user?.fullName, user?.email)}
+                                    </span>
+                                </button>
+                                {menuOpen && (
+                                    <div className="menu-pop" role="menu">
+                                        <div className="menu-head">
+                                            <strong style={{ display: 'block', fontSize: 13 }}>{user?.fullName || 'Khách hàng'}</strong>
+                                            <small className="muted">{user?.email}</small>
+                                        </div>
+                                        <Link to="/profile" role="menuitem"><Icon name="user" />Hồ sơ của tôi</Link>
+                                        <Link to="/orders" role="menuitem"><Icon name="orders" />Đơn hàng</Link>
+                                        <Link to="/me/addresses" role="menuitem"><Icon name="home" />Sổ địa chỉ</Link>
+                                        {isStaff && (
+                                            <Link to={isAdmin ? '/admin' : '/staff/dashboard'} role="menuitem">
+                                                <Icon name="grid" />{isAdmin ? 'Không gian quản trị' : 'Không gian nhân viên'}
+                                            </Link>
+                                        )}
+                                        <button type="button" role="menuitem" onClick={() => void handleLogout()}>
+                                            <Icon name="logout" />Đăng xuất
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <Link to="/login" state={{ from: location }} className="icon-btn" aria-label="Đăng nhập">
+                                <Icon name="user" />
+                            </Link>
+                        )}
+
+                        <Link to="/cart" className="icon-btn cart-link" aria-label={`Giỏ hàng${count ? `, ${count} sản phẩm` : ''}`}>
+                            <Icon name="cart" />
+                            {count > 0 && <span className="cart-count">{count > 99 ? '99+' : count}</span>}
+                        </Link>
                     </div>
-                    <span className="text-ink text-[20px] font-semibold">laptopstore</span>
-                </Link>
-
-                {/* Shop links */}
-                <nav className="hidden md:flex gap-[24px]">
-                    <Link to="/products" className="text-primary text-[13px] font-semibold">Laptop</Link>
-                    <Link to="/promotions" className="text-ink text-[13px] font-semibold">Khuyến mãi</Link>
-                    <Link to="/ai-assistant" className="text-ink text-[13px] font-semibold">Tư vấn AI</Link>
-                </nav>
-
-                <div className="flex-1"></div>
-
-                {/* Search */}
-                <div className="hidden md:flex items-center bg-surface-gray rounded-xl h-[44px] w-[300px] px-3 gap-3">
-                    <svg className="w-5 h-5 text-ink-lighter" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <input type="text" placeholder="Tìm chiếc laptop của bạn..." className="bg-transparent border-none outline-none text-[12px] text-ink-lighter w-full" />
                 </div>
 
-                {/* Icons (Tài khoản & Giỏ hàng) */}
-                <div className="flex gap-4">
-                    <Link to="/login" className="w-[22px] h-[22px] text-ink hover:text-primary">
-                        <svg fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    </Link>
-                    <Link to="/cart" className="w-[22px] h-[22px] text-ink hover:text-primary relative">
-                        <svg fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                    </Link>
+                <div className={`mobile-nav ${mobileOpen ? 'open' : ''}`}>
+                    <div className="ls-container">
+                        {searchForm('')}
+                        {navLinks}
+                        {!isAuthenticated && <Link to="/login">Đăng nhập / Đăng ký</Link>}
+                    </div>
                 </div>
-            </div>
-        </header>
+            </header>
+        </>
     );
 };

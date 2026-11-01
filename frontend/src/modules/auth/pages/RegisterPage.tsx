@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/app/providers/AuthProvider';
+import { apiErrorMessage, useToast } from '@/components/ui';
+import React, { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AuthLayout } from '../components/AuthLayout';
+
+type FromState = { from?: { pathname?: string; search?: string } };
 
 export const RegisterPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const toast = useToast();
   const { register } = useAuth();
 
   const [fullName, setFullName] = useState<string>('');
@@ -14,22 +20,23 @@ export const RegisterPage: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
+  const from = (location.state as FromState | null)?.from;
+  const redirectPath = from?.pathname && !['/login', '/register'].includes(from.pathname) ? `${from.pathname}${from.search ?? ''}` : '/';
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!fullName.trim() || !email.trim() || !password) {
-      setError('Vui lòng điền đầy đủ các thông tin bắt buộc (*)');
+      setError('Vui lòng điền đầy đủ các thông tin bắt buộc (*).');
       return;
     }
-
     if (password.length < 6) {
-      setError('Mật khẩu phải chứa ít nhất 6 ký tự');
+      setError('Mật khẩu phải chứa ít nhất 6 ký tự.');
       return;
     }
-
     if (password !== confirmPassword) {
-      setError('Mật khẩu xác nhận không khớp');
+      setError('Mật khẩu xác nhận không khớp.');
       return;
     }
 
@@ -41,205 +48,51 @@ export const RegisterPage: React.FC = () => {
         phone: phone.trim() ? phone.trim() : undefined,
         password,
       });
-      navigate('/', { replace: true });
+      toast('Tạo tài khoản thành công. Chào mừng bạn đến với LaptopStore!');
+      navigate(redirectPath, { replace: true });
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })?.response?.data?.message
-        || 'Đăng ký không thành công. Email có thể đã được sử dụng.';
-      setError(msg);
+      setError(apiErrorMessage(err, 'Đăng ký không thành công. Email có thể đã được sử dụng.'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      minHeight: '85vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem 1rem',
-      backgroundColor: '#f8fafc',
-    }}>
-      <div style={{
-        maxWidth: 480,
-        width: '100%',
-        backgroundColor: '#ffffff',
-        borderRadius: 12,
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
-        padding: '2.5rem',
-        border: '1px solid #e2e8f0',
-      }}>
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-            Tạo Tài Khoản
-          </h1>
-          <p style={{ color: '#64748b', marginTop: '0.5rem', fontSize: '0.875rem' }}>
-            Tham gia LaptopStore để nhận ưu đãi và mua sắm tiện lợi
-          </p>
+    <AuthLayout
+      title="Tạo tài khoản"
+      subtitle="Cùng bạn tìm chiếc laptop thật phù hợp."
+      error={error}
+      footer={<>Đã có tài khoản? <Link to="/login" state={location.state} className="text-btn">Đăng nhập</Link></>}
+    >
+      <form onSubmit={handleSubmit} noValidate>
+        <label className="field">
+          <span>Họ và tên *</span>
+          <input required maxLength={150} autoComplete="name" placeholder="Nguyễn Văn A" value={fullName} onChange={(e) => setFullName(e.target.value)} disabled={loading} />
+        </label>
+        <div className="field-row">
+          <label className="field">
+            <span>Địa chỉ email *</span>
+            <input type="email" required autoComplete="email" placeholder="ban@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={loading} />
+          </label>
+          <label className="field">
+            <span>Số điện thoại</span>
+            <input type="tel" autoComplete="tel" placeholder="0901234567" value={phone} onChange={(e) => setPhone(e.target.value)} disabled={loading} />
+          </label>
         </div>
-
-        {error && (
-          <div style={{
-            backgroundColor: '#fef2f2',
-            border: '1px solid #fecaca',
-            color: '#dc2626',
-            padding: '0.75rem 1rem',
-            borderRadius: 8,
-            marginBottom: '1.5rem',
-            fontSize: '0.875rem',
-          }}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: '0.875rem', fontWeight: 600, color: '#334155' }}>
-              Họ và tên *
-            </label>
-            <input
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Nguyễn Văn A"
-              disabled={loading}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: 8,
-                fontSize: '0.9375rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: '0.875rem', fontWeight: 600, color: '#334155' }}>
-              Địa chỉ Email *
-            </label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@laptopstore.com"
-              disabled={loading}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: 8,
-                fontSize: '0.9375rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: '0.875rem', fontWeight: 600, color: '#334155' }}>
-              Số điện thoại
-            </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="0987654321"
-              disabled={loading}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: 8,
-                fontSize: '0.9375rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '1.25rem' }}>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: '0.875rem', fontWeight: 600, color: '#334155' }}>
-              Mật khẩu * (Tối thiểu 6 ký tự)
-            </label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              disabled={loading}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: 8,
-                fontSize: '0.9375rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <div style={{ marginBottom: '1.75rem' }}>
-            <label style={{ display: 'block', marginBottom: 6, fontSize: '0.875rem', fontWeight: 600, color: '#334155' }}>
-              Xác nhận mật khẩu *
-            </label>
-            <input
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="••••••••"
-              disabled={loading}
-              style={{
-                width: '100%',
-                padding: '0.75rem 1rem',
-                border: '1px solid #cbd5e1',
-                borderRadius: 8,
-                fontSize: '0.9375rem',
-                outline: 'none',
-                boxSizing: 'border-box',
-              }}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '0.875rem',
-              backgroundColor: loading ? '#93c5fd' : '#2563eb',
-              color: '#ffffff',
-              border: 'none',
-              borderRadius: 8,
-              fontSize: '1rem',
-              fontWeight: 600,
-              cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background-color 0.2s',
-            }}
-          >
-            {loading ? 'Đang tạo tài khoản...' : 'Đăng Ký'}
-          </button>
-        </form>
-
-        <div style={{ marginTop: '2rem', textAlign: 'center', fontSize: '0.875rem', color: '#64748b' }}>
-          Đã có tài khoản?{' '}
-          <Link to="/login" style={{ color: '#2563eb', fontWeight: 600, textDecoration: 'none' }}>
-            Đăng nhập ngay
-          </Link>
+        <div className="field-row">
+          <label className="field">
+            <span>Mật khẩu *</span>
+            <input type="password" required minLength={6} autoComplete="new-password" placeholder="Tối thiểu 6 ký tự" value={password} onChange={(e) => setPassword(e.target.value)} disabled={loading} />
+          </label>
+          <label className="field">
+            <span>Xác nhận mật khẩu *</span>
+            <input type="password" required minLength={6} autoComplete="new-password" placeholder="Nhập lại mật khẩu" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} disabled={loading} />
+          </label>
         </div>
-
-        <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-          <Link to="/" style={{ color: '#94a3b8', fontSize: '0.8125rem', textDecoration: 'none' }}>
-            ← Quay lại trang chủ
-          </Link>
-        </div>
-      </div>
-    </div>
+        <button type="submit" className="btn primary full" disabled={loading} style={{ minHeight: 48 }}>
+          {loading ? 'Đang tạo tài khoản...' : 'Đăng ký'}
+        </button>
+      </form>
+    </AuthLayout>
   );
 };

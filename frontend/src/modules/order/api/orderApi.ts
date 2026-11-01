@@ -1,11 +1,12 @@
 import { apiClient } from '@/services/api/apiClient';
 import {
-  CheckoutPreviewRequest,
-  CheckoutPreviewResponse,
-  CreateOrderRequest,
-  OrderDetail,
-  OrderSummary,
-  PageResponse,
+    CheckoutPreviewRequest,
+    CheckoutPreviewResponse,
+    CreateOrderRequest,
+    OrderDetail,
+    OrderStatus,
+    OrderSummary,
+    PageResponse,
 } from '../types';
 
 export const orderApi = {
@@ -17,8 +18,16 @@ export const orderApi = {
     await apiClient.get<OrderDetail>(`/me/orders/${orderId}`)
   ).data,
 
-  getAllForStaff: async (): Promise<PageResponse<OrderSummary>> => (
-    await apiClient.get<PageResponse<OrderSummary>>('/staff/orders')
+  getAllForStaff: async (params?: { page?: number; size?: number }): Promise<PageResponse<OrderSummary>> => (
+    await apiClient.get<PageResponse<OrderSummary>>('/staff/orders', { params })
+  ).data,
+
+  getStaffOrderById: async (orderId: number): Promise<OrderDetail> => (
+    await apiClient.get<OrderDetail>(`/staff/orders/${orderId}`)
+  ).data,
+
+  updateStatus: async (orderId: number, status: OrderStatus, note?: string): Promise<OrderDetail> => (
+    await apiClient.put<OrderDetail>(`/staff/orders/${orderId}/status`, { status, note })
   ).data,
 
   previewCheckout: async (payload: CheckoutPreviewRequest): Promise<CheckoutPreviewResponse> => (

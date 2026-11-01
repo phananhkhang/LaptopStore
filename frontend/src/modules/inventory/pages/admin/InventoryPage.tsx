@@ -1,160 +1,239 @@
-import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { apiErrorMessage, Badge, formatDateTime, formatMoney, Icon, Modal, PageHeading, ProductImage, Spinner, useToast } from '@/components/ui';
+import { ROLES } from '@/constants/roles';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { catalogApi } from '../../../catalog/api/catalogApi';
 import { VariantSnapshot } from '../../../catalog/types/catalog';
+import { inventoryApi } from '../../api/inventoryApi';
+import { StockMovement } from '../../types';
 
-// Mở rộng interface Variant để kẹp thêm tên sản phẩm phục vụ hiển thị
 interface InventoryItem extends VariantSnapshot {
+  productId: number;
   productName: string;
   categoryName: string;
+  thumbnail: string | null;
 }
 
+const LOW_STOCK = 5;
+
 export const InventoryPage: React.FC = () => {
-  const [inventoryItems, setInventoryItems] = useState<InventoryItem[]>([]);
+  const { user } = useAuth();
+  const toast = useToast();
+  const isAdmin = !!user?.roles.includes(ROLES.ADMIN);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [keyword, setKeyword] = useState('');
+  const [category, setCategory] = useState('');
+  const lowOnly = searchParams.get('low') === '1';
 
-  // State tính toán số liệu thống kê (Metrics)
-  const [metrics, setMetrics] = useState({
-    totalVariants: 0,
-    totalStock: 0,
-    lowStock: 0,
-    outOfStock: 0
-  });
+  const [adjusting, setAdjusting] = useState<InventoryItem | null>(null);
+  const [delta, setDelta] = useState('');
+  const [reason, setReason] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [history, setHistory] = useState<{ item: InventoryItem; rows: StockMovement[] | null } | null>(null);
 
-  useEffect(() => {
-    fetchInventory();
-  }, []);
-
-  const fetchInventory = async () => {
+  const load = useCallback(async () => {
     try {
       setLoading(true);
-      // Gọi API lấy sản phẩm (Tạm để size lớn để lấy nhiều data mô phỏng kho)
-      const response = await catalogApi.searchProducts({ size: 100 });
-      
-      let allVariants: InventoryItem[] = [];
-      let totalStock = 0;
-      let lowStock = 0;
-      let outOfStock = 0;
-
-
-      setInventoryItems(allVariants);
-      setMetrics({
-        totalVariants: allVariants.length,
-        totalStock,
-        lowStock,
-        outOfStock
-      });
-
-    } catch (error) {
-      console.error("Lỗi lấy dữ liệu kho hàng", error);
+      setError(null);
+      const products = await catalogApi.getAllProducts();
+      setItems(products.flatMap((p) => (p.variants ?? []).map((v) => ({
+        ...v,
+        productId: p.id,
+        productName: p.name,
+        categoryName: p.categoryName,
+        thumbnail: (p.images ?? []).find((i) => i.isPrimary)?.imageUrl ?? p.images?.[0]?.imageUrl ?? null,
+      }))));
+    } catch {
+      setError('Không tải được dữ liệu kho. Kiểm tra kết nối backend.');
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { void load(); }, [load]);
+
+  const categories = useMemo(() => [...new Set(items.map((i) => i.categoryName).filter(Boolean))].sort(), [items]);
+
+  const visible = useMemo(() => {
+    const q = keyword.trim().toLowerCase();
+    return items.filter((i) => (!q || i.sku.toLowerCase().includes(q) || i.productName.toLowerCase().includes(q))
+      && (!category || i.categoryName === category)
+      && (!lowOnly || i.quantity <= LOW_STOCK));
+  }, [items, keyword, category, lowOnly]);
+
+  const metrics = useMemo(() => ({
+    total: items.length,
+    stock: items.reduce((s, i) => s + (i.quantity || 0), 0),
+    low: items.filter((i) => i.quantity > 0 && i.quantity <= LOW_STOCK).length,
+    out: items.filter((i) => i.quantity === 0).length,
+  }), [items]);
+
+  const toggleLow = () => {
+    const next = new URLSearchParams(searchParams);
+    if (lowOnly) next.delete('low'); else next.set('low', '1');
+    setSearchParams(next);
+  };
+
+  const openHistory = async (item: InventoryItem) => {
+    setHistory({ item, rows: null });
+    try {
+      const res = await inventoryApi.getVariantHistory(item.id, 0, 20);
+      setHistory({ item, rows: res.data.content });
+    } catch (err) {
+      toast(apiErrorMessage(err, 'Không tải được lịch sử kho.'), { tone: 'error' });
+      setHistory({ item, rows: [] });
+    }
+  };
+
+  const submitAdjust = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!adjusting) return;
+    const d = Number(delta);
+    if (!Number.isInteger(d) || d === 0) {
+      toast('Số lượng thay đổi phải là số nguyên khác 0.', { tone: 'error' });
+      return;
+    }
+    if (adjusting.quantity + d < 0) {
+      toast('Điều chỉnh này làm tồn kho âm.', { tone: 'error' });
+      return;
+    }
+    if (reason.trim().length < 5) {
+      toast('Lý do cần tối thiểu 5 ký tự.', { tone: 'error' });
+      return;
+    }
+    try {
+      setSaving(true);
+      await inventoryApi.adjustStock(adjusting.id, { delta: d, reason: reason.trim() });
+      toast(`Đã điều chỉnh ${adjusting.sku}: ${adjusting.quantity} → ${adjusting.quantity + d}.`);
+      setAdjusting(null);
+      await load();
+    } catch (err) {
+      toast(apiErrorMessage(err, 'Không thể điều chỉnh tồn kho.'), { tone: 'error' });
+    } finally {
+      setSaving(false);
     }
   };
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto flex flex-col gap-6 font-sans">
-      
-      {/* Page Title */}
-      <div className="flex justify-between items-end">
-        <div className="flex flex-col gap-1">
-          <span className="text-primary text-[11px] font-semibold uppercase tracking-wider">Vận hành / Kho hàng</span>
-          <h1 className="text-ink text-[30px] font-bold leading-tight">Tồn kho luôn trong tầm mắt.</h1>
-          <p className="text-ink-lighter text-[13px]">Theo dõi tồn thực tế theo từng SKU.</p>
-        </div>
-        <button className="bg-primary text-white px-5 py-3 rounded-xl text-[13px] font-semibold hover:bg-primary-dark transition-colors">
-          Tạo phiếu nhập
-        </button>
+    <>
+      <PageHeading
+        eyebrow="Vận hành / Kho hàng"
+        title="Tồn kho luôn trong tầm mắt."
+        sub="Theo dõi tồn thực tế theo từng SKU."
+        actions={<>
+          <button type="button" className="btn sm" onClick={() => void load()}><Icon name="refresh" /> Làm mới</button>
+          <Link to="/staff/procurement?new=1" className="btn sm primary"><Icon name="plus" /> Tạo phiếu nhập</Link>
+        </>}
+      />
+
+      <div className="metrics">
+        <div className="metric"><div className="metric-label">Tổng biến thể (SKU)<Icon name="box" /></div><div className="metric-value">{metrics.total}</div><small>Đang quản lý</small></div>
+        <div className="metric"><div className="metric-label">Số lượng tồn<Icon name="chart" /></div><div className="metric-value">{metrics.stock.toLocaleString('vi-VN')}</div><small>Máy sẵn sàng giao</small></div>
+        <div className="metric"><div className="metric-label">Sắp hết hàng<Icon name="alert" /></div><div className="metric-value">{metrics.low}</div><small className="warn">Tồn ≤ {LOW_STOCK} máy</small></div>
+        <div className="metric"><div className="metric-label">Hết hàng<Icon name="close" /></div><div className="metric-value">{metrics.out}</div><small className="bad">Cần nhập gấp</small></div>
       </div>
 
-      {/* Metrics */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white border border-surface-border rounded-[16px] p-5 flex flex-col gap-1">
-          <span className="text-ink-lighter text-[12px] font-medium">Tổng biến thể (SKU)</span>
-          <span className="text-ink text-[28px] font-bold">{metrics.totalVariants}</span>
-          <span className="text-[#16835B] text-[11px] font-semibold mt-1">Đang kinh doanh</span>
-        </div>
-        <div className="bg-white border border-surface-border rounded-[16px] p-5 flex flex-col gap-1">
-          <span className="text-ink-lighter text-[12px] font-medium">Số lượng tồn</span>
-          <span className="text-ink text-[28px] font-bold">{metrics.totalStock.toLocaleString('vi-VN')}</span>
-          <span className="text-[#16835B] text-[11px] font-semibold mt-1">Máy sẵn sàng giao</span>
-        </div>
-        <div className="bg-white border border-surface-border rounded-[16px] p-5 flex flex-col gap-1">
-          <span className="text-ink-lighter text-[12px] font-medium">Sắp hết hàng</span>
-          <span className="text-ink text-[28px] font-bold">{metrics.lowStock}</span>
-          <span className="text-[#C74615] text-[11px] font-semibold mt-1">Tồn kho ≤ 5 máy</span>
-        </div>
-        <div className="bg-white border border-surface-border rounded-[16px] p-5 flex flex-col gap-1">
-          <span className="text-ink-lighter text-[12px] font-medium">Hết hàng</span>
-          <span className="text-ink text-[28px] font-bold">{metrics.outOfStock}</span>
-          <span className="text-[#BE3E3E] text-[11px] font-semibold mt-1">Cần nhập gấp</span>
-        </div>
+      <div className="ops-toolbar">
+        <label className="search">
+          <Icon name="search" />
+          <input value={keyword} onChange={(e) => setKeyword(e.target.value)} placeholder="Tìm tên laptop, mã SKU..." aria-label="Tìm trong kho" />
+        </label>
+        <select className="select" value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Lọc danh mục">
+          <option value="">Tất cả danh mục</option>
+          {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <button type="button" className={`chip ${lowOnly ? 'active' : ''}`} onClick={toggleLow} aria-pressed={lowOnly}>Tồn kho thấp</button>
+        <span className="small muted push">{visible.length} SKU</span>
       </div>
 
-      {/* Filter Toolbar */}
-      <div className="flex items-center gap-3 w-full">
-         <div className="flex-1 bg-white border border-surface-border rounded-xl h-[48px] px-3 flex items-center gap-2">
-            <svg className="w-4 h-4 text-ink-lighter" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-            <input type="text" placeholder="Tìm tên laptop, mã SKU..." className="w-full bg-transparent border-none outline-none text-[12px] text-ink" />
-         </div>
-         <button className="bg-white border border-surface-border px-5 h-[48px] rounded-xl text-ink text-[13px] font-semibold hover:bg-surface-gray">
-            Tất cả danh mục
-         </button>
-         <button className="bg-white border border-surface-border px-5 h-[48px] rounded-xl text-ink text-[13px] font-semibold hover:bg-surface-gray">
-            Tồn kho thấp
-         </button>
-      </div>
-
-      {/* Inventory Table */}
-      <div className="bg-white border border-surface-border rounded-[16px] overflow-hidden flex flex-col">
-        <div className="bg-surface-gray h-[48px] flex items-center px-4 border-b border-surface-border">
-          <div className="w-[170px] text-ink-lighter text-[11px] font-bold tracking-wider">SKU</div>
-          <div className="w-[380px] text-ink-lighter text-[11px] font-bold tracking-wider">SẢN PHẨM / CẤU HÌNH</div>
-          <div className="w-[140px] text-ink-lighter text-[11px] font-bold tracking-wider">TỒN KHO</div>
-          <div className="w-[200px] text-ink-lighter text-[11px] font-bold tracking-wider">TRẠNG THÁI</div>
-          <div className="w-[214px] text-ink-lighter text-[11px] font-bold tracking-wider text-right">THAO TÁC</div>
+      {loading ? <Spinner /> : (
+        <div className="table-wrap">
+          <table className="data-table">
+            <thead><tr><th>Sản phẩm / Cấu hình</th><th>SKU</th><th>Giá bán</th><th>Tồn kho</th><th>Trạng thái</th><th style={{ textAlign: 'right' }}>Thao tác</th></tr></thead>
+            <tbody>
+              {error ? <tr><td colSpan={6} className="table-empty">{error}</td></tr>
+                : visible.length === 0 ? <tr><td colSpan={6} className="table-empty">Không có kết quả phù hợp. Thử bỏ bớt điều kiện lọc.</td></tr>
+                : visible.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <div className="row" style={{ gap: 12 }}>
+                        <ProductImage className="thumb-cell" src={item.thumbnail} alt={item.productName} hint={`${item.categoryName} ${item.productName}`} />
+                        <div><div className="primary-cell">{item.productName}</div><div className="subcell">{item.ram} · {item.storage} · {item.color}</div></div>
+                      </div>
+                    </td>
+                    <td>{item.sku}</td>
+                    <td>{formatMoney(item.price)}</td>
+                    <td className="primary-cell">{item.quantity}</td>
+                    <td>
+                      {item.quantity === 0 ? <Badge tone="red">Hết hàng</Badge>
+                        : item.quantity <= LOW_STOCK ? <Badge tone="orange">Sắp hết hàng</Badge>
+                        : <Badge tone="green">Còn hàng</Badge>}
+                    </td>
+                    <td>
+                      <div className="row" style={{ justifyContent: 'flex-end', gap: 8 }}>
+                        <button type="button" className="btn sm" onClick={() => void openHistory(item)}>Lịch sử</button>
+                        {isAdmin && (
+                          <button type="button" className="btn sm soft" onClick={() => { setDelta(''); setReason(''); setAdjusting(item); }}>
+                            Điều chỉnh
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
+      )}
+      {!isAdmin && <p className="small muted" style={{ marginTop: 12 }}>Điều chỉnh tồn kho thủ công chỉ dành cho Admin. Nhân viên nhập hàng qua phiếu nhập.</p>}
 
-        {loading ? (
-           <div className="p-8 text-center text-ink-lighter text-sm">Đang tải dữ liệu kho...</div>
-        ) : inventoryItems.length === 0 ? (
-           <div className="p-8 text-center text-ink-lighter text-sm bg-[#FFF2E9]">
-             <span className="text-[#C74615] font-semibold">Không có kết quả phù hợp</span>
-             <br/>Thử bỏ bớt điều kiện lọc hoặc chọn Tất cả.
-           </div>
-        ) : (
-          <div className="flex flex-col divide-y divide-surface-border">
-            {inventoryItems.map((item) => (
-              <div key={item.id} className="h-[70px] flex items-center px-4 hover:bg-surface-gray/30 transition-colors">
-                <div className="w-[170px] text-ink text-[12px] font-semibold">{item.sku}</div>
-                
-                <div className="w-[380px] flex flex-col justify-center">
-                   <span className="text-ink text-[12px] truncate pr-4">
-                     {item.productName} · {item.ram} / {item.storage}
-                   </span>
-                </div>
-                
-                <div className="w-[140px] text-ink text-[12px] font-medium">{item.quantity}</div>
-                
-                <div className="w-[200px]">
-                   {item.quantity === 0 ? (
-                     <span className="bg-[#FFF0F0] text-[#BE3E3E] px-2.5 py-1.5 rounded-lg text-[11px] font-semibold">Hết hàng</span>
-                   ) : item.quantity <= 5 ? (
-                     <span className="bg-[#FFF2E9] text-[#C74615] px-2.5 py-1.5 rounded-lg text-[11px] font-semibold">Sắp hết hàng</span>
-                   ) : (
-                     <span className="bg-[#EAF7F0] text-[#16835B] px-2.5 py-1.5 rounded-lg text-[11px] font-semibold">Đang kinh doanh</span>
-                   )}
-                </div>
+      <Modal
+        open={!!adjusting}
+        title={`Điều chỉnh tồn · ${adjusting?.sku ?? ''}`}
+        onClose={() => setAdjusting(null)}
+        actions={<>
+          <button type="button" className="btn" onClick={() => setAdjusting(null)}>Hủy</button>
+          <button type="submit" form="adjust-form" className="btn primary" disabled={saving}>{saving ? 'Đang lưu...' : 'Xác nhận điều chỉnh'}</button>
+        </>}
+      >
+        <form id="adjust-form" className="stack" onSubmit={submitAdjust}>
+          <p className="muted small">{adjusting?.productName} · Tồn hiện tại <strong>{adjusting?.quantity}</strong></p>
+          <label className="field"><span>Số lượng thay đổi (âm để giảm)</span>
+            <input type="number" step={1} required value={delta} onChange={(e) => setDelta(e.target.value)} placeholder="Ví dụ: 5 hoặc -2" />
+          </label>
+          <label className="field"><span>Lý do *</span>
+            <textarea required minLength={5} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Kiểm kê cuối tháng, hàng lỗi..." style={{ minHeight: 70 }} />
+          </label>
+        </form>
+      </Modal>
 
-                <div className="w-[214px] text-right text-primary text-[12px] font-semibold cursor-pointer hover:underline pr-2">
-                   Điều chỉnh &rarr;
-                </div>
-              </div>
-            ))}
+      <Modal open={!!history} title={`Lịch sử kho · ${history?.item.sku ?? ''}`} onClose={() => setHistory(null)} wide>
+        {history?.rows === null ? <Spinner /> : (
+          <div className="table-wrap">
+            <table className="data-table">
+              <thead><tr><th>Thời gian</th><th>Loại</th><th>Thay đổi</th><th>Tồn</th><th>Ghi chú</th></tr></thead>
+              <tbody>
+                {(history?.rows ?? []).length === 0 ? <tr><td colSpan={5} className="table-empty">Chưa có biến động kho.</td></tr>
+                  : history!.rows!.map((m) => (
+                    <tr key={m.id}>
+                      <td>{formatDateTime(m.createdAt)}</td>
+                      <td>{m.type}</td>
+                      <td style={{ color: m.delta > 0 ? 'var(--green)' : 'var(--red)', fontWeight: 600 }}>{m.delta > 0 ? `+${m.delta}` : m.delta}</td>
+                      <td>{m.quantityBefore} → {m.quantityAfter}</td>
+                      <td style={{ whiteSpace: 'normal' }}>{m.note || m.referenceType || '—'}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           </div>
         )}
-      </div>
-
-    </div>
+      </Modal>
+    </>
   );
 };
-export default InventoryPage; // Cần export default để trùng với cấu trúc code cũ của em
+
+export default InventoryPage;

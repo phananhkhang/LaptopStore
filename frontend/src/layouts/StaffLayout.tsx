@@ -1,74 +1,95 @@
-import React from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/app/providers/AuthProvider';
+import { Brand, Icon, IconName, useToast } from '@/components/ui';
+import { ROLES } from '@/constants/roles';
+import React, { useEffect, useState } from 'react';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
+type NavItem = { to: string; label: string; icon: IconName; end?: boolean };
+
+const STAFF_NAV: NavItem[] = [
+  { to: '/staff/dashboard', label: 'Tổng quan', icon: 'grid' },
+  { to: '/staff/orders', label: 'Đơn hàng', icon: 'orders' },
+  { to: '/staff/inventory', label: 'Kho hàng', icon: 'box' },
+  { to: '/staff/procurement', label: 'Nhập hàng', icon: 'truck' },
+  { to: '/staff/suppliers', label: 'Nhà cung cấp', icon: 'users' },
+  { to: '/staff/reviews', label: 'Đánh giá', icon: 'star' },
+];
+
+const ADMIN_NAV: NavItem[] = [
+  { to: '/admin', label: 'Tổng quan', icon: 'grid', end: true },
+  { to: '/admin/products', label: 'Sản phẩm', icon: 'laptop' },
+  { to: '/admin/categories', label: 'Danh mục', icon: 'tag' },
+  { to: '/admin/promotions', label: 'Khuyến mãi', icon: 'wallet' },
+  ...STAFF_NAV.filter((i) => i.to !== '/staff/dashboard'),
+];
+
+const initials = (name?: string, email?: string) => {
+  const parts = (name || email || 'LS').trim().split(/\s+/).filter(Boolean);
+  return (parts.length > 1 ? parts[parts.length - 2][0] + parts[parts.length - 1][0] : parts[0].slice(0, 2)).toUpperCase();
+};
+
+/** Không gian làm việc Staff/Admin theo design (.ops / .sidebar / .ops-header). */
 export const StaffLayout: React.FC = () => {
+  const { user, logout } = useAuth();
+  const toast = useToast();
+  const navigate = useNavigate();
   const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Hàm helper để check active menu
-  const isActive = (path: string) => location.pathname.includes(path);
+  const isAdmin = !!user?.roles.includes(ROLES.ADMIN);
+  const nav = isAdmin ? ADMIN_NAV : STAFF_NAV;
 
-  const menuItems = [
-    { path: '/staff/dashboard', label: 'Tổng quan', icon: 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z' },
-    { path: '/staff/orders', label: 'Đơn hàng', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-    { path: '/staff/inventory', label: 'Kho hàng', icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4' },
-    { path: '/staff/procurement', label: 'Nhập hàng', icon: 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z' },
-  ];
+  useEffect(() => setSidebarOpen(false), [location.pathname]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } finally {
+      toast('Bạn đã đăng xuất.');
+      navigate('/login');
+    }
+  };
 
   return (
-    <div className="flex h-screen bg-surface-gray font-sans overflow-hidden w-full">
-      {/* Sidebar */}
-      <aside className="w-[240px] bg-white border-r border-surface-border flex flex-col p-4 gap-1 flex-shrink-0 z-10">
-        <Link to="/staff/dashboard" className="flex items-center gap-2 p-2 mb-2">
-          <div className="w-[26px] h-[26px] border-[1.8px] border-primary rounded flex items-center justify-center">
-            <span className="text-[10px] font-bold text-primary">LS</span>
-          </div>
-          <span className="text-ink text-[18px] font-semibold">laptopstore</span>
-        </Link>
-        
-        <div className="px-3 py-2 text-ink-lighter text-[10px] font-semibold uppercase tracking-wider">
-          Vận hành cửa hàng
-        </div>
-        
-        <nav className="flex flex-col gap-1 flex-1">
-          {menuItems.map((item) => (
-            <Link 
-              key={item.path}
-              to={item.path}
-              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                isActive(item.path) 
-                  ? 'bg-primary-light text-primary' 
-                  : 'text-ink-lighter hover:bg-surface-gray hover:text-ink'
-              }`}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d={item.icon} />
-              </svg>
-              <span className="text-[12px] font-semibold">{item.label}</span>
-            </Link>
+    <div className="ops">
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`} aria-label="Điều hướng quản trị">
+        <Brand to={isAdmin ? '/admin' : '/staff/dashboard'} />
+        <p className="nav-label">{isAdmin ? 'Quản trị hệ thống' : 'Vận hành cửa hàng'}</p>
+        <nav>
+          {nav.map((item) => (
+            <NavLink key={item.to} to={item.to} end={item.end} className={({ isActive }) => (isActive ? 'active' : '')}>
+              <Icon name={item.icon} /><span>{item.label}</span>
+            </NavLink>
           ))}
         </nav>
+        <div className="sidebar-bottom">
+          <div className="sidebar-help">
+            <Icon name="headset" />
+            <strong style={{ display: 'block' }}>Một ngày thật hiệu quả</strong>
+            <p>Mọi thao tác, cùng một nơi.</p>
+          </div>
+          <Link to="/"><Icon name="arrow-left" /> Về cửa hàng</Link>
+          <button type="button" onClick={() => void handleLogout()}><Icon name="logout" /> Đăng xuất</button>
+        </div>
       </aside>
+      <div className="mobile-backdrop" onClick={() => setSidebarOpen(false)} aria-hidden="true" />
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Header */}
-        <header className="h-[80px] bg-white border-b border-surface-border px-6 flex items-center justify-between flex-shrink-0 z-10">
-          <span className="text-ink-lighter text-[14px] font-medium">Không gian nhân viên</span>
-          
-          <div className="flex items-center gap-4">
-             {/* Avatar */}
-             <div className="flex items-center gap-3 bg-white px-2 py-1.5 rounded-xl border border-surface-border cursor-pointer hover:bg-surface-gray transition-colors">
-                <div className="w-9 h-9 bg-primary-light rounded-xl flex items-center justify-center text-primary font-bold text-[12px]">AK</div>
-                <div className="flex flex-col pr-2">
-                   <span className="text-ink text-[13px] font-semibold leading-tight">Anh Khang</span>
-                   <span className="text-ink-lighter text-[10px] font-medium">Kho & Vận hành</span>
-                </div>
-             </div>
+      <div className="ops-shell">
+        <header className="ops-header">
+          <button type="button" className="icon-btn mobile-only" aria-label="Mở menu" onClick={() => setSidebarOpen(true)}>
+            <Icon name="menu" />
+          </button>
+          <span>{isAdmin ? 'Không gian quản trị' : 'Không gian nhân viên'}</span>
+          <div className="push">
+            <Link to="/staff/orders" className="icon-btn" aria-label="Đơn hàng cần xử lý"><Icon name="bell" /></Link>
+            <div className="avatar" style={{ width: 36, height: 36 }}>{initials(user?.fullName, user?.email)}</div>
+            <div className="user-name">
+              {user?.fullName || user?.email}
+              <div className="muted" style={{ fontWeight: 400, fontSize: 10 }}>{isAdmin ? 'Quản trị viên' : 'Nhân viên vận hành'}</div>
+            </div>
           </div>
         </header>
-
-        {/* Dynamic Content (Pages) */}
-        <main className="flex-1 overflow-y-auto p-8 bg-surface-gray">
+        <main id="main" className="ops-main">
           <Outlet />
         </main>
       </div>

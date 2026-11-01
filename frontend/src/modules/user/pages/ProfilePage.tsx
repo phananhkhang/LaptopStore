@@ -1,519 +1,232 @@
-import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/app/providers/AuthProvider';
+import { apiErrorMessage, Badge, EmptyState, Icon, Modal, Spinner, useToast } from '@/components/ui';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { userApi } from '../api/userApi';
+import { AccountLayout } from '../components/AccountLayout';
 import { Address, CreateAddressRequest } from '../types';
 
-export const ProfilePage: React.FC = () => {
-  const { user, logout, refreshProfile } = useAuth();
+const ROLE_LABEL: Record<string, string> = { ROLE_USER: 'Khách hàng', ROLE_STAFF: 'Nhân viên', ROLE_ADMIN: 'Quản trị viên' };
+const EMPTY_ADDRESS: CreateAddressRequest = { recipientName: '', phone: '', street: '', ward: '', district: '', city: '', postalCode: '', isDefault: false };
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'addresses'>('profile');
-
-  // Profile update form state
-  const [fullName, setFullName] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
-  const [profileSaving, setProfileSaving] = useState<boolean>(false);
-  const [profileMessage, setProfileMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  // Addresses state
-  const [addresses, setAddresses] = useState<Address[]>([]);
-  const [loadingAddresses, setLoadingAddresses] = useState<boolean>(false);
-  const [showAddAddress, setShowAddAddress] = useState<boolean>(false);
-  const [addressSaving, setAddressSaving] = useState<boolean>(false);
-  const [addressError, setAddressError] = useState<string | null>(null);
-
-  // New Address form fields
-  const [newRecipientName, setNewRecipientName] = useState<string>('');
-  const [newPhone, setNewPhone] = useState<string>('');
-  const [newStreet, setNewStreet] = useState<string>('');
-  const [newWard, setNewWard] = useState<string>('');
-  const [newDistrict, setNewDistrict] = useState<string>('');
-  const [newCity, setNewCity] = useState<string>('');
-  const [newPostalCode, setNewPostalCode] = useState<string>('');
-  const [newIsDefault, setNewIsDefault] = useState<boolean>(false);
+const ProfileForm: React.FC = () => {
+  const { user, refreshProfile } = useAuth();
+  const toast = useToast();
+  const [fullName, setFullName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (user) {
-      setFullName(user.fullName || '');
-      setPhone(user.phone || '');
-    }
+    setFullName(user?.fullName || '');
+    setPhone(user?.phone || '');
   }, [user]);
 
-  const loadAddresses = async () => {
-    try {
-      setLoadingAddresses(true);
-      const data = await userApi.getAddresses();
-      setAddresses(data);
-    } catch {
-      // ignore
-    } finally {
-      setLoadingAddresses(false);
-    }
-  };
-
-  useEffect(() => {
-    if (activeTab === 'addresses') {
-      loadAddresses();
-    }
-  }, [activeTab]);
-
-  const handleUpdateProfile = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setProfileMessage(null);
-    try {
-      setProfileSaving(true);
-      await userApi.updateProfile({
-        fullName: fullName.trim(),
-        phone: phone.trim() ? phone.trim() : undefined,
-      });
-      await refreshProfile();
-      setProfileMessage({ type: 'success', text: 'Cập nhật thông tin thành công!' });
-    } catch {
-      setProfileMessage({ type: 'error', text: 'Không thể cập nhật thông tin. Vui lòng thử lại.' });
-    } finally {
-      setProfileSaving(false);
-    }
-  };
-
-  const handleCreateAddress = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setAddressError(null);
-
-    if (!newRecipientName.trim() || !newPhone.trim() || !newStreet.trim() || !newCity.trim()) {
-      setAddressError('Vui lòng điền đầy đủ các thông tin bắt buộc (*)');
+    if (!fullName.trim()) {
+      toast('Họ và tên không được để trống.', { tone: 'error' });
       return;
     }
-
     try {
-      setAddressSaving(true);
-      const payload: CreateAddressRequest = {
-        recipientName: newRecipientName.trim(),
-        phone: newPhone.trim(),
-        street: newStreet.trim(),
-        ward: newWard.trim() ? newWard.trim() : undefined,
-        district: newDistrict.trim() ? newDistrict.trim() : undefined,
-        city: newCity.trim(),
-        postalCode: newPostalCode.trim() ? newPostalCode.trim() : undefined,
-        isDefault: newIsDefault,
-      };
-
-      await userApi.createAddress(payload);
-      setShowAddAddress(false);
-      // Reset form
-      setNewRecipientName('');
-      setNewPhone('');
-      setNewStreet('');
-      setNewWard('');
-      setNewDistrict('');
-      setNewCity('');
-      setNewPostalCode('');
-      setNewIsDefault(false);
-      await loadAddresses();
-    } catch {
-      setAddressError('Lỗi khi thêm địa chỉ. Vui lòng thử lại.');
+      setSaving(true);
+      await userApi.updateProfile({ fullName: fullName.trim(), phone: phone.trim() || undefined });
+      await refreshProfile();
+      toast('Đã lưu hồ sơ.');
+    } catch (err) {
+      toast(apiErrorMessage(err, 'Không thể cập nhật thông tin. Vui lòng thử lại.'), { tone: 'error' });
     } finally {
-      setAddressSaving(false);
-    }
-  };
-
-  const handleDeleteAddress = async (id: number) => {
-    if (window.confirm('Bạn có chắc muốn xóa địa chỉ này?')) {
-      try {
-        await userApi.deleteAddress(id);
-        setAddresses((prev) => prev.filter((a) => a.id !== id));
-      } catch {
-        alert('Không thể xóa địa chỉ. Vui lòng thử lại.');
-      }
+      setSaving(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: 900, margin: '2rem auto', padding: '0 1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+    <form className="panel stack" onSubmit={handleSubmit}>
+      <div className="row wrap">
         <div>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
-            Hồ Sơ Tài Khoản
-          </h1>
-          <p style={{ color: '#64748b', margin: '0.25rem 0 0', fontSize: '0.9375rem' }}>
-            Quản lý thông tin cá nhân và sổ địa chỉ giao nhận hàng
-          </p>
+          <h3>{user?.fullName || 'Khách hàng LaptopStore'}</h3>
+          <small className="muted">Thành viên từ {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('vi-VN') : '—'}</small>
         </div>
-        <button
-          onClick={() => logout()}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#f1f5f9',
-            color: '#ef4444',
-            border: '1px solid #e2e8f0',
-            borderRadius: 8,
-            fontWeight: 600,
-            cursor: 'pointer',
-          }}
-        >
-          Đăng xuất
+        <div className="row wrap push gap8">
+          {user?.roles.map((r) => <Badge key={r} tone={r === 'ROLE_USER' ? 'neutral' : 'orange'}>{ROLE_LABEL[r] ?? r}</Badge>)}
+          <Badge tone="green">{user?.status === 'ACTIVE' || !user?.status ? 'Đang hoạt động' : user.status}</Badge>
+        </div>
+      </div>
+      <hr className="divider" style={{ margin: 0 }} />
+      <div className="field-row">
+        <label className="field"><span>Họ và tên</span>
+          <input required value={fullName} onChange={(e) => setFullName(e.target.value)} autoComplete="name" />
+        </label>
+        <label className="field"><span>Số điện thoại</span>
+          <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" placeholder="0901234567" />
+        </label>
+      </div>
+      <label className="field"><span>Email đăng nhập</span>
+        <input type="email" value={user?.email || ''} readOnly />
+        <small>Email được dùng để đăng nhập và nhận thông tin đơn hàng.</small>
+      </label>
+      <div className="form-actions">
+        <button type="submit" className="btn primary" disabled={saving}>{saving ? 'Đang lưu...' : 'Lưu hồ sơ'}</button>
+      </div>
+    </form>
+  );
+};
+
+const AddressBook: React.FC = () => {
+  const toast = useToast();
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [form, setForm] = useState<CreateAddressRequest>(EMPTY_ADDRESS);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<Address | null>(null);
+
+  const load = useCallback(async () => {
+    try {
+      setLoading(true);
+      setAddresses(await userApi.getAddresses());
+    } catch {
+      toast('Không tải được sổ địa chỉ.', { tone: 'error' });
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
+
+  useEffect(() => { void load(); }, [load]);
+
+  const set = (key: keyof CreateAddressRequest) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setForm((f) => ({ ...f, [key]: key === 'isDefault' ? e.target.checked : e.target.value }));
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    if (!form.recipientName.trim() || !form.phone.trim() || !form.street.trim() || !form.city.trim()) {
+      setFormError('Vui lòng điền đầy đủ các trường bắt buộc (*).');
+      return;
+    }
+    const trimmed = (v?: string) => (v && v.trim() ? v.trim() : undefined);
+    try {
+      setSaving(true);
+      await userApi.createAddress({
+        recipientName: form.recipientName.trim(),
+        phone: form.phone.trim(),
+        street: form.street.trim(),
+        city: form.city.trim(),
+        ward: trimmed(form.ward),
+        district: trimmed(form.district),
+        postalCode: trimmed(form.postalCode),
+        isDefault: form.isDefault || addresses.length === 0,
+      });
+      setModalOpen(false);
+      setForm(EMPTY_ADDRESS);
+      toast('Đã lưu địa chỉ.');
+      await load();
+    } catch (err) {
+      setFormError(apiErrorMessage(err, 'Lỗi khi thêm địa chỉ. Vui lòng thử lại.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleting) return;
+    try {
+      await userApi.deleteAddress(deleting.id);
+      setAddresses((prev) => prev.filter((a) => a.id !== deleting.id));
+      toast('Đã xóa địa chỉ.');
+    } catch (err) {
+      toast(apiErrorMessage(err, 'Không thể xóa địa chỉ.'), { tone: 'error' });
+    } finally {
+      setDeleting(null);
+    }
+  };
+
+  return (
+    <>
+      <div className="row between" style={{ marginBottom: 16 }}>
+        <span className="muted small">{addresses.length} địa chỉ đã lưu</span>
+        <button type="button" className="btn primary sm" onClick={() => { setForm(EMPTY_ADDRESS); setFormError(null); setModalOpen(true); }}>
+          <Icon name="plus" /> Thêm địa chỉ
         </button>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '2px solid #e2e8f0', marginBottom: '2rem' }}>
-        <button
-          onClick={() => setActiveTab('profile')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            border: 'none',
-            background: 'none',
-            fontSize: '1rem',
-            fontWeight: activeTab === 'profile' ? 700 : 500,
-            color: activeTab === 'profile' ? '#2563eb' : '#64748b',
-            borderBottom: activeTab === 'profile' ? '2px solid #2563eb' : 'none',
-            marginBottom: -2,
-            cursor: 'pointer',
-          }}
-        >
-          Thông tin cá nhân
-        </button>
-        <button
-          onClick={() => setActiveTab('addresses')}
-          style={{
-            padding: '0.75rem 1.5rem',
-            border: 'none',
-            background: 'none',
-            fontSize: '1rem',
-            fontWeight: activeTab === 'addresses' ? 700 : 500,
-            color: activeTab === 'addresses' ? '#2563eb' : '#64748b',
-            borderBottom: activeTab === 'addresses' ? '2px solid #2563eb' : 'none',
-            marginBottom: -2,
-            cursor: 'pointer',
-          }}
-        >
-          Sổ địa chỉ nhận hàng
-        </button>
-      </div>
-
-      {activeTab === 'profile' && (
-        <div style={{
-          backgroundColor: '#ffffff',
-          borderRadius: 12,
-          border: '1px solid #e2e8f0',
-          padding: '2rem',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
-        }}>
-          {profileMessage && (
-            <div style={{
-              padding: '0.75rem 1rem',
-              borderRadius: 8,
-              marginBottom: '1.5rem',
-              backgroundColor: profileMessage.type === 'success' ? '#f0fdf4' : '#fef2f2',
-              border: `1px solid ${profileMessage.type === 'success' ? '#bbf7d0' : '#fecaca'}`,
-              color: profileMessage.type === 'success' ? '#16a34a' : '#dc2626',
-              fontSize: '0.875rem',
-            }}>
-              {profileMessage.text}
-            </div>
-          )}
-
-          <form onSubmit={handleUpdateProfile}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '0.875rem', color: '#334155' }}>
-                  Địa chỉ Email (Không thể đổi)
-                </label>
-                <input
-                  type="email"
-                  value={user?.email || ''}
-                  disabled
-                  style={{
-                    width: '100%',
-                    padding: '0.625rem 0.875rem',
-                    backgroundColor: '#f8fafc',
-                    border: '1px solid #e2e8f0',
-                    borderRadius: 6,
-                    color: '#64748b',
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '0.875rem', color: '#334155' }}>
-                  Vai trò (Role)
-                </label>
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-                  {user?.roles?.map((role) => (
-                    <span
-                      key={role}
-                      style={{
-                        padding: '0.25rem 0.625rem',
-                        backgroundColor: '#dbeafe',
-                        color: '#1d4ed8',
-                        borderRadius: 999,
-                        fontSize: '0.75rem',
-                        fontWeight: 700,
-                      }}
-                    >
-                      {role}
-                    </span>
-                  ))}
+      {loading ? <Spinner /> : addresses.length === 0 ? (
+        <EmptyState icon="home" title="Chưa có địa chỉ nhận hàng" copy="Thêm địa chỉ để thanh toán nhanh hơn trong lần mua tiếp theo.">
+          <button type="button" className="btn primary" onClick={() => setModalOpen(true)}>Thêm địa chỉ đầu tiên</button>
+        </EmptyState>
+      ) : (
+        <div className="stack" style={{ gap: 14 }}>
+          {addresses.map((addr) => (
+            <article className="panel row between wrap" key={addr.id} style={addr.isDefault ? { borderColor: '#f2ceb8' } : undefined}>
+              <div style={{ minWidth: 0 }}>
+                <div className="row wrap gap8">
+                  <strong>{addr.recipientName}</strong>
+                  <span className="muted small">{addr.phone}</span>
+                  {addr.isDefault && <Badge tone="orange">Mặc định</Badge>}
                 </div>
+                <p className="small muted" style={{ marginTop: 6 }}>
+                  {[addr.street, addr.ward, addr.district, addr.city, addr.postalCode].filter(Boolean).join(', ')}
+                </p>
               </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '0.875rem', color: '#334155' }}>
-                  Họ và tên
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.625rem 0.875rem',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: 6,
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: 6, fontWeight: 600, fontSize: '0.875rem', color: '#334155' }}>
-                  Số điện thoại
-                </label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.625rem 0.875rem',
-                    border: '1px solid #cbd5e1',
-                    borderRadius: 6,
-                    boxSizing: 'border-box',
-                  }}
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={profileSaving}
-              style={{
-                padding: '0.625rem 1.5rem',
-                backgroundColor: profileSaving ? '#93c5fd' : '#2563eb',
-                color: '#ffffff',
-                border: 'none',
-                borderRadius: 6,
-                fontWeight: 600,
-                cursor: profileSaving ? 'not-allowed' : 'pointer',
-              }}
-            >
-              {profileSaving ? 'Đang lưu...' : 'Lưu thay đổi'}
-            </button>
-          </form>
+              <button type="button" className="btn sm danger" onClick={() => setDeleting(addr)}>
+                <Icon name="trash" /> Xóa
+              </button>
+            </article>
+          ))}
         </div>
       )}
 
-      {activeTab === 'addresses' && (
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 600, color: '#1e293b', margin: 0 }}>
-              Địa chỉ của tôi ({addresses.length})
-            </h2>
-            <button
-              onClick={() => setShowAddAddress(!showAddAddress)}
-              style={{
-                padding: '0.5rem 1rem',
-                backgroundColor: showAddAddress ? '#f1f5f9' : '#2563eb',
-                color: showAddAddress ? '#334155' : '#ffffff',
-                border: 'none',
-                borderRadius: 6,
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              {showAddAddress ? 'Hủy' : '+ Thêm địa chỉ mới'}
-            </button>
+      <Modal
+        open={modalOpen}
+        title="Thêm địa chỉ nhận hàng"
+        onClose={() => setModalOpen(false)}
+        wide
+        actions={<>
+          <button type="button" className="btn" onClick={() => setModalOpen(false)}>Hủy</button>
+          <button type="submit" form="address-form" className="btn primary" disabled={saving}>{saving ? 'Đang lưu...' : 'Lưu địa chỉ'}</button>
+        </>}
+      >
+        <form id="address-form" className="stack" onSubmit={handleCreate}>
+          {formError && <div className="notice red"><Icon name="alert" /><div>{formError}</div></div>}
+          <div className="field-row">
+            <label className="field"><span>Họ tên người nhận *</span><input required value={form.recipientName} onChange={set('recipientName')} autoComplete="name" /></label>
+            <label className="field"><span>Số điện thoại *</span><input type="tel" required value={form.phone} onChange={set('phone')} autoComplete="tel" /></label>
           </div>
+          <label className="field"><span>Số nhà, tên đường *</span><input required value={form.street} onChange={set('street')} placeholder="273 An Dương Vương" autoComplete="address-line1" /></label>
+          <div className="field-row">
+            <label className="field"><span>Phường / Xã</span><input value={form.ward} onChange={set('ward')} /></label>
+            <label className="field"><span>Quận / Huyện</span><input value={form.district} onChange={set('district')} /></label>
+          </div>
+          <div className="field-row">
+            <label className="field"><span>Tỉnh / Thành phố *</span><input required value={form.city} onChange={set('city')} placeholder="TP. Hồ Chí Minh" /></label>
+            <label className="field"><span>Mã bưu chính</span><input value={form.postalCode} onChange={set('postalCode')} /></label>
+          </div>
+          <label className="check-label"><input type="checkbox" checked={!!form.isDefault} onChange={set('isDefault')} />Đặt làm địa chỉ mặc định</label>
+        </form>
+      </Modal>
 
-          {showAddAddress && (
-            <div style={{
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: 12,
-              padding: '1.5rem',
-              marginBottom: '2rem',
-            }}>
-              <h3 style={{ margin: '0 0 1rem', fontSize: '1.125rem' }}>Nhập thông tin địa chỉ mới</h3>
-              {addressError && (
-                <div style={{ color: '#dc2626', marginBottom: '1rem', fontSize: '0.875rem' }}>{addressError}</div>
-              )}
-              <form onSubmit={handleCreateAddress}>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1rem', marginBottom: '1rem' }}>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: 4, fontSize: '0.8125rem', fontWeight: 600 }}>Họ tên người nhận *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newRecipientName}
-                      onChange={(e) => setNewRecipientName(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: 4, fontSize: '0.8125rem', fontWeight: 600 }}>Số điện thoại *</label>
-                    <input
-                      type="tel"
-                      required
-                      value={newPhone}
-                      onChange={(e) => setNewPhone(e.target.value)}
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: 4, fontSize: '0.8125rem', fontWeight: 600 }}>Tỉnh / Thành phố *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newCity}
-                      onChange={(e) => setNewCity(e.target.value)}
-                      placeholder="TP. Hồ Chí Minh"
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: 4, fontSize: '0.8125rem', fontWeight: 600 }}>Quận / Huyện</label>
-                    <input
-                      type="text"
-                      value={newDistrict}
-                      onChange={(e) => setNewDistrict(e.target.value)}
-                      placeholder="Quận 1"
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: 4, fontSize: '0.8125rem', fontWeight: 600 }}>Phường / Xã</label>
-                    <input
-                      type="text"
-                      value={newWard}
-                      onChange={(e) => setNewWard(e.target.value)}
-                      placeholder="Phường Bến Nghé"
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: 4, fontSize: '0.8125rem', fontWeight: 600 }}>Địa chỉ số nhà, tên đường *</label>
-                    <input
-                      type="text"
-                      required
-                      value={newStreet}
-                      onChange={(e) => setNewStreet(e.target.value)}
-                      placeholder="Số 10 Lê Duẩn"
-                      style={{ width: '100%', padding: '0.5rem', borderRadius: 6, border: '1px solid #cbd5e1', boxSizing: 'border-box' }}
-                    />
-                  </div>
-                </div>
+      <Modal
+        open={!!deleting}
+        title="Xóa địa chỉ này?"
+        onClose={() => setDeleting(null)}
+        actions={<>
+          <button type="button" className="btn" onClick={() => setDeleting(null)}>Hủy</button>
+          <button type="button" className="btn primary" onClick={() => void confirmDelete()}>Xóa địa chỉ</button>
+        </>}
+      >
+        <p className="muted">Địa chỉ của {deleting?.recipientName} sẽ được xóa khỏi sổ địa chỉ.</p>
+      </Modal>
+    </>
+  );
+};
 
-                <div style={{ marginBottom: '1.25rem' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.875rem' }}>
-                    <input
-                      type="checkbox"
-                      checked={newIsDefault}
-                      onChange={(e) => setNewIsDefault(e.target.checked)}
-                    />
-                    Đặt làm địa chỉ nhận hàng mặc định
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={addressSaving}
-                  style={{
-                    padding: '0.625rem 1.25rem',
-                    backgroundColor: addressSaving ? '#93c5fd' : '#16a34a',
-                    color: '#ffffff',
-                    border: 'none',
-                    borderRadius: 6,
-                    fontWeight: 600,
-                    cursor: addressSaving ? 'not-allowed' : 'pointer',
-                  }}
-                >
-                  {addressSaving ? 'Đang lưu...' : 'Thêm địa chỉ'}
-                </button>
-              </form>
-            </div>
-          )}
-
-          {loadingAddresses ? (
-            <p style={{ color: '#64748b' }}>Đang tải danh sách địa chỉ...</p>
-          ) : addresses.length === 0 ? (
-            <div style={{
-              textAlign: 'center',
-              padding: '3rem',
-              backgroundColor: '#ffffff',
-              borderRadius: 12,
-              border: '1px solid #e2e8f0',
-              color: '#64748b',
-            }}>
-              Bạn chưa có địa chỉ nhận hàng nào. Hãy nhấn "+ Thêm địa chỉ mới" để thêm!
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {addresses.map((addr) => (
-                <div
-                  key={addr.id}
-                  style={{
-                    backgroundColor: '#ffffff',
-                    border: addr.isDefault ? '2px solid #3b82f6' : '1px solid #e2e8f0',
-                    borderRadius: 12,
-                    padding: '1.25rem 1.5rem',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}
-                >
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.375rem' }}>
-                      <strong style={{ fontSize: '1rem', color: '#0f172a' }}>{addr.recipientName}</strong>
-                      <span style={{ color: '#64748b', fontSize: '0.875rem' }}>{addr.phone}</span>
-                      {addr.isDefault && (
-                        <span style={{
-                          fontSize: '0.6875rem',
-                          fontWeight: 700,
-                          backgroundColor: '#dbeafe',
-                          color: '#1d4ed8',
-                          padding: '0.125rem 0.5rem',
-                          borderRadius: 4,
-                        }}>
-                          Mặc định
-                        </span>
-                      )}
-                    </div>
-                    <p style={{ margin: 0, color: '#475467', fontSize: '0.875rem' }}>
-                      {[addr.street, addr.ward, addr.district, addr.city, addr.postalCode].filter(Boolean).join(', ')}
-                    </p>
-                  </div>
-                  <div>
-                    <button
-                      onClick={() => handleDeleteAddress(addr.id)}
-                      style={{
-                        padding: '0.375rem 0.75rem',
-                        border: '1px solid #fecaca',
-                        backgroundColor: '#fff5f5',
-                        color: '#dc2626',
-                        borderRadius: 6,
-                        fontSize: '0.8125rem',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Xóa
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
+/** /profile: hồ sơ cá nhân; /me/addresses: sổ địa chỉ. */
+export const ProfilePage: React.FC = () => {
+  const { pathname } = useLocation();
+  const isAddresses = pathname.startsWith('/me/addresses');
+  return (
+    <AccountLayout title={isAddresses ? 'Sổ địa chỉ' : 'Hồ sơ của tôi'} sub={isAddresses ? 'Quản lý địa chỉ nhận hàng cho những lần mua sau.' : undefined}>
+      {isAddresses ? <AddressBook /> : <ProfileForm />}
+    </AccountLayout>
   );
 };

@@ -1,6 +1,8 @@
 package org.akira.laptopstore.security;
 
-import lombok.RequiredArgsConstructor;
+import java.security.SecureRandom;
+import java.util.List;
+
 import org.akira.laptopstore.security.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +12,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,8 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.security.SecureRandom;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
@@ -63,6 +63,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/products/**", "/api/v1/brands/**",
                                 "/api/v1/categories/**", "/api/v1/reviews/**")
                         .permitAll()
+                        // Ảnh sản phẩm tĩnh: thẻ <img> không gửi JWT nên phải public (chỉ GET)
+                        .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                         // VNPay không có JWT của user trong hệ thống
                         .requestMatchers(
                                 "/api/v1/payments/vnpay/ipn",

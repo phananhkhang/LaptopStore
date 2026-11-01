@@ -62,4 +62,6 @@ export interface PurchaseStockReceipt {
 
 export interface ReceivePurchaseOrderRequest {
     lines: PurchaseStockReceipt[];
+    // Backend bắt buộc (chống double-submit); sinh mới cho mỗi lần mở hộp thoại nhận hàng.
+    idempotencyKey: string;
 }

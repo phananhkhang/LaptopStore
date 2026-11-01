@@ -1,142 +1,128 @@
-import React from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { EmptyState, ToastProvider } from '@/components/ui';
+import { ROLES } from '@/constants/roles';
+import React, { useEffect } from 'react';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { PublicLayout } from '../../layouts/PublicLayout';
+import { StaffLayout } from '../../layouts/StaffLayout';
+import { CartProvider } from '../providers/CartProvider';
 import { ProtectedRoute } from './ProtectedRoute';
 import { RoleBasedRoute } from './RoleBasedRoute';
-import { ROLES } from '@/constants/roles';
-import { PublicLayout } from '../../layouts/PublicLayout';
-import { HomeUser } from '@/modules/catalog/pages/user/HomeUser';
 
-// Auth & User Pages
+// Catalog
+import AdminCategoryPage from '@/modules/catalog/pages/admin/AdminCategoryPage';
+import AdminProductPage from '@/modules/catalog/pages/admin/AdminProductPage';
+import { HomeUser } from '@/modules/catalog/pages/user/HomeUser';
+import ProductDetailPage from '@/modules/catalog/pages/user/ProductDetailPage';
+import ProductListPage from '@/modules/catalog/pages/user/ProductListPage';
+
+// Auth & User
 import { LoginPage } from '@/modules/auth/pages/LoginPage';
 import { RegisterPage } from '@/modules/auth/pages/RegisterPage';
 import { ProfilePage } from '@/modules/user/pages/ProfilePage';
-import { StaffLayout } from '../../layouts/StaffLayout';
 
-// AI Pages & Widget
-import { AIChatPage } from '@/modules/ai/pages/AIChatPage';
+// AI
 import { AIChatWidget } from '@/modules/ai/components/AIChatWidget';
+import { AIChatPage } from '@/modules/ai/pages/AIChatPage';
 
-// Cart & Order Pages
+// Cart & Order
 import { CartPage } from '@/modules/cart/pages/CartPage';
-import { CheckoutPage } from '@/modules/order/pages/checkout/CheckoutPage';
 import { StaffOrderListPage } from '@/modules/order/pages/admin/StaffOrderListPage';
+import { CheckoutPage } from '@/modules/order/pages/checkout/CheckoutPage';
 import { OrderDetailPage } from '@/modules/order/pages/user/OrderDetailPage';
 import { OrderHistoryPage } from '@/modules/order/pages/user/OrderHistoryPage';
 
-// Catalog
-import { CatalogRoutes } from '@/modules/catalog/routes/CatalogRoutes';
-
-// Inventory
-import { InventoryPage } from '../../modules/inventory/pages/admin/InventoryPage';
-
-// Promotion
+// Staff / Admin
+import { OpsDashboardPage } from '@/modules/dashboard/pages/OpsDashboardPage';
+import { InventoryPage } from '@/modules/inventory/pages/admin/InventoryPage';
+import PurchaseOrderListPage from '@/modules/procurement/pages/staff/PurchaseOrderListPage';
+import SupplierListPage from '@/modules/procurement/pages/staff/SupplierListPage';
 import { PromotionRoutes } from '@/modules/promotion/routes/PromotionRoutes';
-
-// Review
 import { ProductReviewsPage, StaffReviewPage, WriteReviewPage } from '@/modules/review/routes/ReviewRoutes';
-import ProductListPage from '../../modules/catalog/pages/user/ProductListPage';
-import ProductDetailPage from '@/modules/catalog/pages/user/ProductDetailPage';
 
-// Placeholders for remaining admin/staff dashboards
-const StaffDashboard = () => (
-  <div className="max-w-7xl mx-auto p-6">
-    <h1 className="text-2xl font-bold text-gray-800">Bàn Làm Việc Nhân Viên (Staff Protected)</h1>
-    <p className="text-gray-500 mt-2">Khu vực xử lý đơn hàng và điều phối kho bãi.</p>
+const ErrorPage: React.FC<{ kind: 'forbidden' | 'notFound' }> = ({ kind }) => (
+  <div className="ls-container section">
+    {kind === 'forbidden' ? (
+      <EmptyState icon="lock" title="Không gian này cần quyền truy cập." copy="Tài khoản của bạn chưa có quyền vào khu vực này. Hãy quay lại cửa hàng hoặc đăng nhập bằng tài khoản khác." action={{ label: 'Về trang chủ', to: '/' }} />
+    ) : (
+      <EmptyState icon="search" title="Có vẻ bạn đang đi lạc." copy="Đường dẫn không còn tồn tại. Cùng quay lại khám phá những chiếc laptop phù hợp nhé." action={{ label: 'Về trang chủ', to: '/' }} />
+    )}
   </div>
 );
 
-const AdminDashboard = () => (
-  <div className="max-w-7xl mx-auto p-6">
-    <h1 className="text-2xl font-bold text-gray-800">Trang Quản Trị Hệ Thống (Admin Protected)</h1>
-    <p className="text-gray-500 mt-2">Khu vực quản lý cấu hình, người dùng và báo cáo doanh thu toàn hệ thống.</p>
-  </div>
-);
+/** Cuộn lên đầu khi đổi trang (giữ nguyên khi chỉ đổi query như lọc/phân trang). */
+const ScrollToTop: React.FC = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
 
-const ForbiddenPage = () => (
-  <div className="max-w-md mx-auto mt-20 p-8 text-center bg-white rounded-xl shadow-md border border-red-100">
-    <h1 className="text-4xl font-extrabold text-red-600 mb-2">403</h1>
-    <h2 className="text-xl font-bold text-gray-800 mb-2">Truy cập bị từ chối</h2>
-    <p className="text-gray-600 mb-6">Bạn không có quyền truy cập vào tài nguyên hoặc trang này.</p>
-    <a href="/products" className="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
-      Về trang sản phẩm
-    </a>
-  </div>
-);
+/** Widget tư vấn chỉ hiện ở khu mua hàng, không che bảng ở trang Staff/Admin. */
+const ChatWidgetGate: React.FC = () => {
+  const { pathname } = useLocation();
+  if (pathname.startsWith('/staff') || pathname.startsWith('/admin') || pathname.startsWith('/ai-assistant')) return null;
+  return <AIChatWidget />;
+};
 
-const NotFoundPage = () => (
-  <div className="max-w-md mx-auto mt-20 p-8 text-center bg-white rounded-xl shadow-md border border-gray-100">
-    <h1 className="text-4xl font-extrabold text-gray-800 mb-2">404</h1>
-    <h2 className="text-xl font-bold text-gray-700 mb-2">Không tìm thấy trang</h2>
-    <p className="text-gray-500 mb-6">Đường dẫn bạn yêu cầu không tồn tại hoặc đã bị di chuyển.</p>
-    <a href="/products" className="inline-block bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
-      Về trang chủ
-    </a>
-  </div>
-);
-
-export const AppRouter: React.FC = () => {
-  return (
-    <BrowserRouter>
-      <div className="min-h-screen bg-gray-50 text-gray-900">
+export const AppRouter: React.FC = () => (
+  <BrowserRouter>
+    <ToastProvider>
+      <CartProvider>
+        <ScrollToTop />
         <Routes>
-          {/* CẤU TRÚC MỚI: Bọc các trang Public bằng PublicLayout */}
+          {/* Khu mua hàng: Header + Footer */}
           <Route element={<PublicLayout />}>
-            {/* Route gốc / sẽ render HomeUser */}
             <Route path="/" element={<HomeUser />} />
             <Route path="/products" element={<ProductListPage />} />
             <Route path="/products/:productId" element={<ProductDetailPage />} />
+            <Route path="/products/:productId/reviews" element={<ProductReviewsPage />} />
+            <Route path="/promotions" element={<Navigate to="/products?sortPriceDirection=asc&offer=1" replace />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/ai-assistant" element={<AIChatPage />} />
+            <Route path="/403" element={<ErrorPage kind="forbidden" />} />
 
-            {/* Các trang Public khác có thể đưa vào đây nếu muốn có Header/Footer */}
-            {/* Ví dụ: CatalogRoutes sẽ cần phải được thiết kế lại chút nếu muốn dùng chung layout này */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/me/addresses" element={<ProfilePage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+              <Route path="/orders" element={<OrderHistoryPage />} />
+              <Route path="/orders/:orderId" element={<OrderDetailPage />} />
+              <Route path="/me/order-items/:orderItemId/review" element={<WriteReviewPage />} />
+            </Route>
+
+            <Route path="*" element={<ErrorPage kind="notFound" />} />
           </Route>
 
-          {/* <Route path="/" element={<Navigate to="/products" replace />} /> */}
-          {/* Các route không cần Header/Footer chung (Ví dụ: Trang Login/Register có thiết kế riêng) */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/ai-assistant" element={<AIChatPage />} />
-          <Route path="/403" element={<ForbiddenPage />} />
-
-          <Route path="/products/:productId/reviews" element={<ProductReviewsPage />} />
-
-          {/* Catalog Module Routes */}
-          <Route path="/*" element={<CatalogRoutes />} />
-
-          {/* User Protected Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/me/addresses" element={<ProfilePage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<CheckoutPage />} />
-            <Route path="/orders" element={<OrderHistoryPage />} />
-            <Route path="/orders/:orderId" element={<OrderDetailPage />} />
-            <Route path="/me/order-items/:orderItemId/review" element={<WriteReviewPage />} />
-          </Route>
-
-          {/* Staff & Admin Protected Routes */}
+          {/* Staff & Admin */}
           <Route element={<RoleBasedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]} />}>
-            {/* ĐÂY LÀ CHỖ THAY ĐỔI: Bọc StaffLayout ra ngoài */}
             <Route element={<StaffLayout />}>
-              <Route path="/staff/inventory" element={<InventoryPage />} />
+              <Route path="/staff" element={<Navigate to="/staff/dashboard" replace />} />
+              <Route path="/staff/dashboard" element={<OpsDashboardPage />} />
               <Route path="/staff/orders" element={<StaffOrderListPage />} />
+              <Route path="/staff/inventory" element={<InventoryPage />} />
+              <Route path="/staff/procurement" element={<PurchaseOrderListPage />} />
+              <Route path="/staff/suppliers" element={<SupplierListPage />} />
               <Route path="/staff/reviews" element={<StaffReviewPage />} />
-              <Route path="/staff/*" element={<StaffDashboard />} />
+              <Route path="/staff/*" element={<Navigate to="/staff/dashboard" replace />} />
             </Route>
           </Route>
 
-          {/* Admin Only Routes */}
+          {/* Admin only */}
           <Route element={<RoleBasedRoute allowedRoles={[ROLES.ADMIN]} />}>
-            <Route path="/admin/promotions/*" element={<PromotionRoutes />} />
-            <Route path="/admin/*" element={<AdminDashboard />} />
+            <Route element={<StaffLayout />}>
+              <Route path="/admin" element={<OpsDashboardPage />} />
+              <Route path="/admin/products" element={<AdminProductPage />} />
+              <Route path="/admin/categories" element={<AdminCategoryPage />} />
+              <Route path="/admin/promotions/*" element={<PromotionRoutes />} />
+              <Route path="/admin/*" element={<Navigate to="/admin" replace />} />
+            </Route>
           </Route>
-
-          {/* 404 Catch-All */}
-          <Route path="*" element={<NotFoundPage />} />
         </Routes>
-
-        {/* Floating AI Consultant Assistant Widget on all pages */}
-        <AIChatWidget />
-      </div>
-    </BrowserRouter>
-  );
-};
+        <ChatWidgetGate />
+      </CartProvider>
+    </ToastProvider>
+  </BrowserRouter>
+);

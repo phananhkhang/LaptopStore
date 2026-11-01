@@ -1,19 +1,17 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
-import { Header } from '../components/navigation/Header';
 import { Footer } from '../components/navigation/Footer';
+import { Header } from '../components/navigation/Header';
 
-export const PublicLayout: React.FC = () => {
-    return (
-        <div className="min-h-screen flex flex-col bg-gray-50">
-            <Header />
-
-            {/* Phần main sẽ tự động co giãn đẩy Footer xuống đáy trang nhờ flex-grow */}
-            <main className="flex-grow container mx-auto px-4 py-8">
-                <Outlet />
-            </main>
-
-            <Footer />
-        </div>
-    );
-};
+export const PublicLayout: React.FC = () => (
+    <div className="min-h-screen flex flex-col bg-white">
+        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[200] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg">
+            Bỏ qua tới nội dung chính
+        </a>
+        <Header />
+        <main id="main" className="flex-grow">
+            <Outlet />
+        </main>
+        <Footer />
+    </div>
+);

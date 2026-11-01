@@ -1,5 +1,5 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { env } from '@/config/env';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 export const apiClient = axios.create({
   baseURL: env.apiBaseUrl,
@@ -19,8 +19,18 @@ export const getAccessToken = (): string | null => {
   return inMemoryAccessToken;
 };
 
+// Một số module gọi '/api/v1/...' trong khi baseURL đã là '/api/v1' → URL bị lặp
+// ('/api/v1/api/v1/...') và trả 404. Bỏ tiền tố trùng để mọi API dùng chung một baseURL.
+const API_PREFIX = '/api/v1';
+const stripDuplicatedPrefix = (url?: string) => {
+  if (!url || !env.apiBaseUrl.replace(/\/+$/, '').endsWith(API_PREFIX)) return url;
+  if (url === API_PREFIX) return '/';
+  return url.startsWith(`${API_PREFIX}/`) ? url.slice(API_PREFIX.length) : url;
+};
+
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    config.url = stripDuplicatedPrefix(config.url);
     if (inMemoryAccessToken && config.headers) {
       config.headers.Authorization = `Bearer ${inMemoryAccessToken}`;
     }

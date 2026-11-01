@@ -3,6 +3,7 @@ export type OrderStatus =
   | 'PENDING_PAYMENT'
   | 'WAITING_CONFIRMATION'
   | 'CONFIRMED'
+  | 'PACKING'
   | 'PACKED'
   | 'SHIPPING'
   | 'DELIVERED'

@@ -35,9 +35,9 @@ export interface ProductSummaryResponse {
   brandName: string;
   categoryName: string;
   status: string;
-  thumbnailImage: string;
+  thumbnailImage: string | null; // null khi sản phẩm chưa có ảnh
   active: boolean;
-  startingPrice: number; // Đã map với BigDecimal bên Java
+  startingPrice: number | null; // BigDecimal bên Java; null khi chưa có biến thể
 }
 
 export interface VariantSnapshot {
@@ -75,7 +75,7 @@ export interface ProductResponse {
   status: string;
   brandName: string;
   categoryName: string;
-  specification: ProductSpecificationDto;
-  images: ProductImageDto[];
-  variants: VariantSnapshot[];
+  specification: ProductSpecificationDto | null;
+  images: ProductImageDto[] | null;
+  variants: VariantSnapshot[] | null;
 }

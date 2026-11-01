@@ -1,35 +1,49 @@
-import { resolveImageUrl } from '@/utils/image';
+import { formatMoney, Icon, ProductImage } from '@/components/ui';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ProductSummaryResponse } from '../types';
+import { ProductSummaryResponse } from '../types/catalog';
 
 interface Props {
     product: ProductSummaryResponse;
 }
 
+/** Thẻ sản phẩm theo design (.product-card). */
 const ProductCard: React.FC<Props> = ({ product }) => {
+    const href = `/products/${product.id}`;
     return (
-        <div className="border rounded-lg p-4 shadow-sm hover:shadow-lg transition-shadow bg-white flex flex-col h-full">
-            <div className="w-full h-48 overflow-hidden rounded-md bg-gray-100 mb-4 flex items-center justify-center">
-                {product.thumbnailImage ? (
-                    <img src={resolveImageUrl(product.thumbnailImage)} alt={product.name} className="h-full object-contain" />
+        <article className="product-card">
+            <Link to={href} className="product-visual" aria-label={`Xem ${product.name}`}>
+                {product.categoryName && <span className="mini-tag">{product.categoryName}</span>}
+                <ProductImage src={product.thumbnailImage} alt={product.name} hint={`${product.categoryName} ${product.name}`} />
+            </Link>
+            <div className="eyebrow">{product.brandName}</div>
+            <h3><Link to={href}>{product.name}</Link></h3>
+            <p className="spec">Chính hãng · Bảo hành 12 tháng</p>
+            <div className="price">
+                {product.startingPrice != null ? (
+                    <><small>Giá từ</small>{formatMoney(product.startingPrice)}</>
                 ) : (
-                    <span className="text-gray-400">No Image</span>
+                    <span className="muted" style={{ fontSize: 14, fontWeight: 600 }}>Liên hệ để báo giá</span>
                 )}
             </div>
-            <h3 className="text-xs text-gray-500 mb-1 uppercase tracking-wide">{product.brandName} • {product.categoryName}</h3>
-            <p className="font-semibold text-gray-800 mb-4 flex-grow line-clamp-2" title={product.name}>{product.name}</p>
-            
-            <div className="flex justify-between items-center mt-auto border-t pt-3">
-               <span className={`px-2 py-1 text-xs font-medium rounded-full ${product.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                   {product.status}
-               </span>
-               <Link to={`/products/${product.id}`} className="bg-blue-600 text-white px-3 py-1.5 rounded text-sm hover:bg-blue-700 font-medium transition-colors">
-                   Xem chi tiết
-               </Link>
+            <div className="card-foot">
+                <span className="rating"><span className="star">✓</span> Miễn phí giao hàng</span>
+                <Link to={href} className="btn sm" aria-label={`Xem ${product.name}`}>
+                    <Icon name="arrow-right" />
+                </Link>
             </div>
-        </div>
+        </article>
     );
 };
+
+export const ProductCardSkeleton: React.FC = () => (
+    <div className="product-card" aria-hidden="true">
+        <div className="skeleton" style={{ aspectRatio: '1.48', marginBottom: 16 }} />
+        <div className="skeleton" style={{ height: 10, width: '40%', marginBottom: 10 }} />
+        <div className="skeleton" style={{ height: 16, width: '90%', marginBottom: 8 }} />
+        <div className="skeleton" style={{ height: 16, width: '60%', marginBottom: 18 }} />
+        <div className="skeleton" style={{ height: 22, width: '50%' }} />
+    </div>
+);
 
 export default ProductCard;

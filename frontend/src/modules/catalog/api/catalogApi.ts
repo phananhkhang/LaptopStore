@@ -5,9 +5,9 @@ import { PageResponse } from '@/types/common';
 import {
     Brand,
     Category,
+    ProductResponse,
     ProductSearchCriteria,
-    ProductSummaryResponse,
-    ProductResponse
+    ProductSummaryResponse
 } from '../types/catalog';
 
 export const catalogApi = {
@@ -28,8 +28,13 @@ export const catalogApi = {
         });
     },
 
-        // Lấy chi tiết sản phẩm theo ID
+    // Lấy chi tiết sản phẩm theo ID
     getProductById: (id: number): Promise<ProductResponse> => {
         return axiosClient.get(`/products/${id}`);
+    },
+
+    // Toàn bộ sản phẩm kèm biến thể/tồn kho (dùng cho màn kho hàng)
+    getAllProducts: (): Promise<ProductResponse[]> => {
+        return axiosClient.get('/products');
     }
 };
