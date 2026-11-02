@@ -42,8 +42,25 @@ public class PaymentImpl implements PaymentService {
         @Override
         @Transactional
         public PaymentResponse startPayment(Long userId, StartPaymentRequest request) {
-                orderQueryService.validateOrderOwner(request.getOrderId(), userId);
-                orderQueryService.validateOrderPayable(request.getOrderId());
+                orderQueryService.validateOrderOwner(
+                                request.getOrderId(),
+                                userId);
+
+                if (request.getMethod() == PaymentMethod.VNPAY) {
+
+                        orderQueryService.validateOrderForOnlinePayment(
+                                        request.getOrderId());
+
+                } else if (request.getMethod() == PaymentMethod.COD) {
+
+                        orderQueryService.validateOrderForCodPayment(
+                                        request.getOrderId());
+
+                } else {
+
+                        throw new InvalidPaymentException(
+                                        "Unsupported payment method");
+                }
                 if (paymentRepository.existsByOrderId(request.getOrderId())) {
                         throw new PaymentAlreadyExistsException(
                                         "Payment already exists for this order");
@@ -52,12 +69,20 @@ public class PaymentImpl implements PaymentService {
                 // contract to orderservice
                 BigDecimal amount = orderQueryService.getOrderTotalAmount(
                                 request.getOrderId());
+                Instant expiresAt = null;
+
+                if (request.getMethod() == PaymentMethod.VNPAY) {
+
+                        expiresAt = orderQueryService.getOnlinePaymentDeadline(
+                                        request.getOrderId());
+                }
 
                 Payment payment = Payment.builder()
                                 .orderId(request.getOrderId())
                                 .method(request.getMethod())
                                 .amount(amount)
                                 .status(PaymentStatus.PENDING)
+                                .expiresAt(expiresAt)
                                 .build();
 
                 Payment saved = paymentRepository.save(payment);
@@ -156,7 +181,7 @@ public class PaymentImpl implements PaymentService {
                                 payment.getOrderId(),
                                 userId);
 
-                orderQueryService.validateOrderPayable(
+                orderQueryService.validateOrderForOnlinePayment(
                                 payment.getOrderId());
 
                 if (payment.getMethod() != PaymentMethod.VNPAY) {
@@ -169,6 +194,18 @@ public class PaymentImpl implements PaymentService {
 
                         throw new InvalidPaymentStatusException(
                                         "Payment is already paid");
+                }
+
+                if (payment.getExpiresAt() == null) {
+
+                        payment.setExpiresAt(
+                                        orderQueryService.getOnlinePaymentDeadline(
+                                                        payment.getOrderId()));
+                }
+                if (!Instant.now().isBefore(payment.getExpiresAt())) {
+
+                        throw new InvalidPaymentStatusException(
+                                        "Payment has expired");
                 }
 
                 if (payment.getStatus() == PaymentStatus.CANCELLED) {
@@ -201,8 +238,7 @@ public class PaymentImpl implements PaymentService {
                                 .toString()
                                 .replace("-", "");
 
-                Instant expiresAt = Instant.now()
-                                .plusSeconds(15 * 60);
+                Instant expiresAt = payment.getExpiresAt();
 
                 paymentTransactionService
                                 .createPendingTransaction(
@@ -211,10 +247,7 @@ public class PaymentImpl implements PaymentService {
                                                 null,
                                                 reference);
 
-                payment.setStatus(
-                                PaymentStatus.PENDING);
-
-                payment.setExpiresAt(expiresAt);
+                payment.setStatus(PaymentStatus.PENDING);
 
                 paymentRepository.save(payment);
 
@@ -229,5 +262,36 @@ public class PaymentImpl implements PaymentService {
                                 .paymentUrl(paymentUrl)
                                 .expiresAt(expiresAt)
                                 .build();
+        }
+
+        @Override
+        @Transactional
+        public int expirePendingPayments() {
+
+                Instant now = Instant.now();
+
+                var expiredPayments = paymentRepository.findByStatusAndExpiresAtBefore(
+                                PaymentStatus.PENDING,
+                                now);
+
+                int count = 0;
+
+                for (Payment payment : expiredPayments) {
+
+                        // COD không dùng expiresAt nên chỉ xử lý
+                        // payment online thực sự có deadline.
+                        if (payment.getExpiresAt() == null) {
+                                continue;
+                        }
+
+                        payment.setStatus(PaymentStatus.FAILED);
+                        payment.setUpdatedAt(now);
+
+                        paymentRepository.save(payment);
+
+                        count++;
+                }
+
+                return count;
         }
 }

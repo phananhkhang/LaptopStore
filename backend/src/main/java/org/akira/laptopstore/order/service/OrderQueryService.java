@@ -1,6 +1,7 @@
 package org.akira.laptopstore.order.service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,7 +16,8 @@ public interface OrderQueryService {
     // Contract cho review: lấy nhiều order item một lần để tránh N+1
     List<OrderItemReviewInfo> getOrderItemsForReview(Collection<Long> orderItemIds);
 
-    // Contract cho review: id các order item của một sản phẩm (review theo sản phẩm, điểm trung bình)
+    // Contract cho review: id các order item của một sản phẩm (review theo sản
+    // phẩm, điểm trung bình)
     List<Long> getOrderItemIdsByProduct(Long productId);
 
     // Contract cho review: id các order item của một user (review của tôi)
@@ -23,7 +25,11 @@ public interface OrderQueryService {
 
     void validateOrderOwner(Long orderId, Long userId);
 
-    void validateOrderPayable(Long orderId);
+    void validateOrderForOnlinePayment(Long orderId);
+
+    void validateOrderForCodPayment(Long orderId);
+
+    Instant getOnlinePaymentDeadline(Long orderId);
 
     void validateOrderDelivered(Long orderId);
 }
