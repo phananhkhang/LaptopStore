@@ -37,4 +37,13 @@ public interface PaymentService {
      * sinh mã tham chiếu giao dịch và URL để chuyển người dùng sang VNPay.
      */
     PaymentSessionResponse createVnpaySession(Long userId, Long paymentId, String clientIp);
+
+    /**
+     * Quét các Payment online đã quá thời hạn thanh toán.
+     *
+     * PENDING -> FAILED
+     *
+     * @return số payment đã hết hạn
+     */
+    int expirePendingPayments();
 }

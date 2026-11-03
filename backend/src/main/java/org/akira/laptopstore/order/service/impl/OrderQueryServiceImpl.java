@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
+import java.time.Duration;
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         return toReviewInfo(orderItem);
     }
 
-    //Lấy thông tin cả một trang review trong một lần gọi
+    // Lấy thông tin cả một trang review trong một lần gọi
     @Override
     public List<OrderItemReviewInfo> getOrderItemsForReview(Collection<Long> orderItemIds) {
         if (orderItemIds == null || orderItemIds.isEmpty()) {
@@ -52,7 +54,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
                 .toList();
     }
 
-    //Review theo sản phẩm, điểm trung bình
+    // Review theo sản phẩm, điểm trung bình
     @Override
     public List<Long> getOrderItemIdsByProduct(Long productId) {
         if (productId == null || productId <= 0) {
@@ -61,7 +63,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         return orderItemRepository.findIdsByProductId(productId);
     }
 
-    //	Review của tôi
+    // Review của tôi
     @Override
     public List<Long> getOrderItemIdsByUser(Long userId) {
         if (userId == null || userId <= 0) {
@@ -93,12 +95,40 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         }
     }
 
+    // ONLINE PAYMENT
     @Override
-    public void validateOrderPayable(Long orderId) {
+    public void validateOrderForOnlinePayment(Long orderId) {
+
         Order order = findOrderOrThrow(orderId);
-        if (order.getStatus() != OrderStatus.PENDING_PAYMENT && order.getStatus() != OrderStatus.CONFIRMED) {
-            throw new ValidationException("Order cannot be paid in current status");
+
+        if (order.getStatus() != OrderStatus.PENDING_PAYMENT) {
+
+            throw new ValidationException(
+                    "Order is not waiting for online payment");
         }
+    }
+
+    // COD
+    @Override
+    public void validateOrderForCodPayment(Long orderId) {
+
+        Order order = findOrderOrThrow(orderId);
+
+        if (order.getStatus() != OrderStatus.WAITING_CONFIRMATION) {
+
+            throw new ValidationException(
+                    "Order is not a COD order waiting for confirmation");
+        }
+    }
+
+    // Deadline VNPay
+    @Override
+    public Instant getOnlinePaymentDeadline(Long orderId) {
+
+        Order order = findOrderOrThrow(orderId);
+
+        return order.getCreatedAt()
+                .plus(Duration.ofMinutes(15));
     }
 
     @Override
